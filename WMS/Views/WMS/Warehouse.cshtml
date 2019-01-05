@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>库区</title>
+    <title>仓库</title>
     <style type="text/css">
         .layui-form-pane .layui-form-select {
             display: inline-block;
@@ -27,43 +27,21 @@
     </style>
     <script type="text/javascript">
         layui.use(['table', 'form','layer'], function () {
-            var table = layui.table, $ = layui.jquery, form = layui.form,layer=layui.layer;
-            var datas, tableIns;
-            var map = new Map();
-            var statu = 0;
-            $(document).ajaxStop(function () {
-                for (var i = 0; i < datas.length; i++) {
-                    $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
-                    form.render()
-                }
-            })
+            var table = layui.table, $ = layui.jquery, form = layui.form,layer=layui.layer, tableIns;
             function ajax() {
-                var tp = "";
-                if (statu == 1) {
-                    tp = "tbody ";
-                }
                 $.get("/WMS/checkWo", function (data) {
                     if (data != null) {
-                        $(tp+".WHID").empty();
-                        $(tp +".WHID").append("<option value='' selected>请选择</option>")
+                        $(".WHID").empty();
+                        $(".WHID").append("<option value='' selected>请选择</option>")
                         for (var i = 0; i < data.length; i++) {
-                            $(tp +".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                        }
-                    }
-                    form.render()
-                })
-                $.get("/WMS/checkkq", function (data) {
-                    if (data != null) {
-                        $(tp + ".WHAreaID").empty();
-                        $(tp + ".WHAreaID").append("<option value='' selected>请选择</option>")
-                        for (var i = 0; i < data.length; i++) {
-                            $(tp + ".WHAreaID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
+                            $(".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
                         }
                     }
                     form.render()
                 })
 
             }
+          
             function Add(name, i) {
                 var index = layer.open({
                     type: 2,
@@ -85,84 +63,59 @@
             }
            tableIns= table.render({
                elem: '#laytable'
-               , url: "/WMS/checkkq?id=1&data=" + null
+               , url: "/WMS/checkWo"
+               , where:{id:"1"}
                 , height: 'full-20'
                 , cols: [[
                     { type: "checkbox" }
-                    , { field: 'ID', title: '库区编码' }
-                    , { field: 'Name', title: '库区名称', edit: "text" }
-                    , { field: 'WHID', title: '仓库名称', toolbar: '#selectca', width: 200}
+                    , { field: 'ID', title: '仓库编码'}
+                    , { field: 'Name', title: '仓库名称', edit: "text" }
                     , { field: 'Description', title: '描述', edit: "text" }
                     , { field: 'CreatedTime', title: '创建时间' }
                     , { field: 'CreatedBy', title: '创建人' }
-                    , { field: 'UpdatedTime', title: '更新时间' }
-                    , { field: 'UpdatedBy', title: '更新人' }
                     , { align: 'center', toolbar: '#barDemo' }
                 ]]
-                , done: function (res) {
-                    ajax()
-                    datas = res.data
-                }
             });
             $("i").click(function () {
-                var name = 'layui-icon layui-icon-add-1 '
-                switch ($(this).attr("class")) {
-                    case name + 'ca':
+              
                         Add('添加仓库', 1)
-                        break;
-                    case name + 'kq':
-                        Add('添加库区', 2)
-                        break;
-                }
 
-            })
-            form.on('select(tableca)', function (data) {
-                var index = $("tbody .WHID").index(data.elem)
-                table.cache.laytable[index].WHID = data.value
             })
             table.on('tool(table)', function (obj) {
                 var data = obj.data;
                 var layEvent = obj.event;
-                var tr = obj.tr;
+         
                 if (layEvent === 'del') {
                     layer.confirm('确定删除么', function (index) {
-                        $.post("/WMS/DelSingle", { id: data.ID,type:"kq"}, function (data) {
+                        $.post("/WMS/DelSingle", { id: data.ID,type:"ca"}, function (data) {
                             obj.del();
                             layer.close(index);
                             layer.msg("删除成功")
                         })
                     });
                 } else if (layEvent === 'edit') {
-                    $.post("/WMS/UpAll", { data: data, type:"kq" }, function (data) {
+                    $.post("/WMS/UpAll", { data: data}, function (data) {
                         layer.msg("更新完成")
+                        tableIns.reload({
+                        })
+                        ajax()
                     })
                 }
             });
-
-            form.on('select', function (data) {
-                if ($(data.elem).parents("table").attr("class") == undefined) {
-                    map.set(data.elem, data.value)
-                    var ce = new Object()
-                    statu = 1;
-                    map.forEach(function (value, key) {
-                        ce[$(key).attr("class")]= value
-                    })
+            form.on('select(ca)', function (data) {
                     tableIns.reload({
-                        url: "/WMS/checkkq",
-                        where: { id: "1", data:ce }
-                    })
-
-                }
+                        url: "/WMS/checkWo",
+                        where: {id:"1", data: data.value }
+                })
             })
             $(".del").click(function () {
                 var checkStatu = table.checkStatus('laytable')
                 var arr = new Array();
                 layer.confirm('确定删除' + checkStatu.data.length + '项么', function () {
-
                     for (var i = 0; i < checkStatu.data.length; i++) {
                         arr[i] = checkStatu.data[i].ID
                     }
-                    $.post("/WMS/DelAll", { id: arr, type: "kq" }, function () {
+                    $.post("/WMS/DelAll", { id: arr, type: "ca" }, function () {
                         layer.msg("删除成功")
                         tableIns.reload({
                         })
@@ -170,31 +123,30 @@
                 })
             })
             $(".add").click(function () {
-                Add('添加库区', 2)
+                Add('添加仓库', 1)
             })
             $(".up").click(function () {
                 var checkStatu = table.checkStatus('laytable')
                 for (var i = 0; i < checkStatu.data.length; i++) {
-                    $.post("/WMS/UpAll", { data: checkStatu.data[i],type:"kq" }, function (data) {
+                    $.post("/WMS/UpAll", { data: checkStatu.data[i], type:"ca" }, function (data) {
 
                     })
                 }
                 layer.msg("更新完成")
                 tableIns.reload({
                 })
+                ajax()
             })
+            ajax()
         })
     </script>
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-xs" lay-event="edit">更新</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
-    <script type="text/html" id="selectca">
-        <select lay-search lay-filter="tableca" class="WHID"></select>
-    </script>
 </head>
 <body>
-    <blockquote class="layui-elem-quote">库区信息注册</blockquote>
+    <blockquote class="layui-elem-quote">仓库信息注册</blockquote>
     <div class="layui-form layui-form-pane" lay-filter="form">
         <div class="layui-form-item">
             <label class="layui-form-label">仓库名：</label>
@@ -203,15 +155,8 @@
                 <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 ca"></i></button>
             </div>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">库区名：</label>
-            <div class="layui-input-block">
-                <select lay-search lay-filter="kq" class="WHAreaID"></select>
-                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 kq"></i></button>
-            </div>
-        </div>
     </div>
-    <button class="layui-btn add">新增库区</button>
+    <button class="layui-btn add">新增仓库</button>
     <button class="layui-btn layui-btn-warm up">更新选中</button>
     <button class="layui-btn layui-btn-danger del">删除选中</button>
     <table lay-filter="table" id="laytable"></table>

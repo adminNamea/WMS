@@ -15,7 +15,6 @@
         dl dd a {
             margin-left:20px
         }
-
     </style>
 </head>
 <body class="layui-layout-body">
@@ -39,14 +38,13 @@
                 <li class="layui-nav-item">
                     <a href="javascript:;">
                         <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-                        贤心
+                        <span class="userName"></span>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a href="">基本资料</a></dd>
-                        <dd><a href="">安全设置</a></dd>
+                        <dd><a href="javascript:;" class="UserData">基本资料</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="">退了</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" class="out">退了</a></li>
             </ul>
         </div>
 
@@ -58,7 +56,7 @@
                         <a class="" href="javascript:;">WMS</a>
                         <dl class="layui-nav-child">
                             <dd><a href="javascript:;">WMS操作</a></dd>
-                            <dd><a href="javascript:;">WMS基础资料</a></dd>
+                            <dd><a href="javascript:;" class="data">WMS基础资料</a></dd>
                         </dl>
                     </li>
                     <li class="layui-nav-item">
@@ -87,14 +85,65 @@
         </div>
 
         <div class="layui-footer">
-            <!-- 底部固定区域 -->
             © layui.com - 底部固定区域
         </div>
     </div>
     <script type="text/javascript">
-       
-        layui.use(['element', 'layer', 'form', 'table'], function () {
+        var user = '@Session["user"]'
+        //$(function () {
+        //    $().parents
+        //    $.ajax({
+              
+
+        //    })
+        //})
+        layui.use(['element', 'layer', 'form'], function () {
             var element = layui.element, form = layui.form, layer = layui.layer, table = layui.table, $ = layui.jquery
+            var index
+            $(document).ajaxStart(function () {
+                 index = layer.msg('加载中...', {
+                    icon: 16
+                     , shade: 0.01
+                     , time: false
+                })
+            })
+           
+            $(document).ajaxStop(function () {
+                layer.close(index)
+                })
+            if (user != undefined && user!="") {
+                $(".userName").text(user)
+            } else {
+                $(".userName").text("未登录")
+            }
+            $(".out").click(function () {
+                layer.confirm('确认退出?', { icon: 3, title: '提示' }, function (index) {
+                    if ($(".userName").text() == "未登录") {
+                        layer.msg("你还没有登陆", { icon:5 })
+                    } else { 
+                    $.get("/Home/OutUser", function (data) {
+                        if (data == "true") { 
+                            $(".userName").text("未登录")
+                            $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>")
+                            element.render();
+                            element.tabChange('docDemoTabBrief',11);
+                            layer.close(index);
+                        }
+                        })
+                    }
+                });
+
+            })
+            $(".UserData").click(function () {
+                if (user != null && user != "") {
+                    $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工信息</li><i>/Home/UserData</i>")
+                    element.render('tab');
+                    element.tabChange('docDemoTabBrief', 11);
+                } else {
+                    $('.data').click()
+                    element.tabChange('docDemoTabBrief', 11);
+                }
+            })
             element.on('nav(test)', function (elem) {
                 switch (elem.text()) {
                     case "WMS操作":
@@ -102,16 +151,19 @@
                         $(".layui-tab-title").append("<li>入库</li><i>/WMS/Enter</i><li>出库</li><i>/WMS/Out</i>")
                         break;
                     case "WMS基础资料":
+                        var stu = "<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>"
+                        if ($(".userName").text()!="未登录") {
+                            stu = "<li lay-id=11 class='log'>WMS-基础资料-员工信息</li><i>/Home/UserData</i>"
+                        }
                         $(".layui-tab-title").empty()
-                        $(".layui-tab-title").append("<li>WMS-基础资料-员工登陆</li><i>/WMS/login</i>" +
+                        $(".layui-tab-title").append(stu+
                             "<li>WMS-基础资料-货位</li><i>/WMS/GoodsArea</i>" +
                             "<li>WMS-基础资料-库区</li><i>/WMS/WarehouseArea</i>" +
                             "<li>WMS-基础资料-库位</li><i>/WMS/WarehousePosition</i>" +
                             "<li>WMS-基础资料-仓库</li><i>/WMS/Warehouse</i>" +
                             "<li>WMS-基础资料-物料信息注册</li><i>/WMS/Material</i>" +
                             "<li>WMS-基础资料-库存限制维护</li><i>/WMS/Inventory</i>" +
-                            "<li>WMS-基础资料-策略</li><i>/WMS/Strategy</i>"
-                        )
+                            "<li>WMS-基础资料-策略</li><i>/WMS/Strategy</i>" )
                         break;
                     case "WCS操作":
                         $(".layui-tab-title").empty()
@@ -125,8 +177,12 @@
             });
             element.on('tab(docDemoTabBrief)', function (data) {
                 var url = data.elem.find("li:eq(" + data.index + ")").next().text();
-                $(".layui-tab-content").loda(url)
+             
+                $(".layui-tab-content").load(url , function () {
+                    form.render()
+                })
             });
+
             });
     </script>
 </body>

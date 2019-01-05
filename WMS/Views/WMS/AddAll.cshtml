@@ -1,0 +1,282 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/layui/css/layui.css">
+    <script type="text/javascript" src="~/layui/layui.js"></script>
+    <title>AddAll</title>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form, $ = layui.jquery;
+            var boo = false;
+            $("[name=name]").css("border-color", "rgba(255,0,0,0.5)")
+            function sub(su, type) {
+                form.on('submit(' + su + ')', function (data) {
+                    if (boo) {
+                        $.post("/WMS/AddWarehouse", { data: data.field, type: type }, function () {
+                            var index = parent.layer.getFrameIndex(window.name)
+                            parent.layer.msg("添加成功")
+                            parent.layer.close(index);
+                        })
+                    } else {
+                        layer.msg('名称重复了',{ icon: 5})
+                    }
+                    return false;
+                });
+         
+                $("[name=name]").keyup(function () {
+                    var t;
+                    if (type == "ca") {
+                        t = "Wo"
+                    } else {
+                        t = type
+                    }
+                    var value = $(this).val().trim()
+                    if (value == "") {
+                        $("[name=name]").css("border-color", "rgba(255,0,0,0.5)")
+                        boo = false
+                    } else { 
+                    $.get("/WMS/check" + t, { value: value }, function (data) {
+                        if (data.length>0) {
+                            $("[name=name]").css("border-color", "rgba(255,0,0,0.5)")
+                            boo = false
+                        } else {
+                            $("[name=name]").css("border-color", "rgba(0,255,0,0.5)")
+                            boo = true;
+                        }
+                        })
+                    }
+                })
+            }
+            $.get("/WMS/checkWo", function (data) {
+                if (data != null) {
+                    $(".wo").empty();
+                    $(".wo").append("<option value='' selected>请选择</option>")
+                    for (var i = 0; i < data.length; i++) {
+                        $(".wo").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
+                    }
+                }
+                form.render()
+            })
+            $.get("/WMS/checkkq", function (data) {
+                if (data != null) {
+                    $(".Arid").empty();
+                    $(".Arid").append("<option value='' selected>请选择</option>")
+                    for (var i = 0; i < data.length; i++) {
+                        $(".Arid").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
+                    }
+                }
+                form.render()
+            })
+            $.get("/WMS/checkkw", function (data) {
+                if (data != null) {
+                    $(".StorageLocationID").empty();
+                    $(".StorageLocationID").append("<option value='' selected>请选择</option>")
+                    for (var i = 0; i < data.length; i++) {
+                        $(".StorageLocationID").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
+                    }
+                }
+                form.render()
+            })
+            $.get("/WMS/checkhuo", function (data) {
+                if (data != null) {
+                    $(".h").empty();
+                    $(".h").append("<option value='' selected>请选择</option>")
+                    for (var i = 0; i < data.length; i++) {
+                        $(".h").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
+                    }
+                }
+                form.render()
+            })
+            switch (Number($(".layui-hide").val())) {
+                case 1:
+                    $(".ca").show()
+                    sub('formDemo',"ca")
+                    break;
+                case 2:
+                    $(".kq").show()
+                    sub('formDemo1',"kq")
+                    break;
+                case 3:
+                    $(".kw").show()
+                    sub('formDemo2',"kw")
+                    break;
+                case 4:
+                    $(".huo").show()
+                    sub('formDemo3',"huo")
+                    break;
+            }
+        });
+    </script>
+    <style type="text/css">
+        .layui-form-pane .layui-form-label {
+            display: inline-block;
+            width: 125px;
+        }
+        .layui-form-pane .layui-input {
+            display: inline-block;
+            width: 98%
+        }
+
+    </style>
+</head>
+<body>
+    <input class="layui-hide" />
+    @*仓库*@
+    <form class="layui-form layui-form-pane ca" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">仓库描述：</label>
+            <div class="layui-input-block">
+                <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    @*库区*@
+    <form class="layui-form layui-form-pane kq" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">库区名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库：</label>
+            <div class="layui-input-block">
+                <select class="wo" name="Whid" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">库区描述：</label>
+            <div class="layui-input-block">
+                <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    @*库位*@
+    <form class="layui-form layui-form-pane kw" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">库位名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库区：</label>
+            <div class="layui-input-block">
+                <select class="Arid" name="Arid" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库：</label>
+            <div class="layui-input-block">
+                <select class="wo" name="Whid" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">库位描述：</label>
+            <div class="layui-input-block">
+                <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo2">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    @*货位*@
+    <form class="layui-form layui-form-pane huo" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">货位名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">货位大小：</label>
+            <div class="layui-input-block">
+                <input type="text" name="Size" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">x坐标（cm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="x" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">y坐标（cm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="y" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">z坐标（cm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="z" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库：</label>
+            <div class="layui-input-block">
+                <select class="wo" name="Whid" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库区：</label>
+            <div class="layui-input-block">
+                <select class="Arid" name="Arid" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库位：</label>
+            <div class="layui-input-block">
+                <select class="StorageLocationID" name="StorageLocationID" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">临时货位：</label>
+            <div class="layui-input-block">
+                <select class="h" name="TempPlate" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">货位描述：</label>
+            <div class="layui-input-block">
+                <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo3">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

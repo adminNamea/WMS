@@ -1,0 +1,106 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/layui/css/layui.css">
+    <script type="text/javascript" src="~/layui/layui.js"></script>
+    <title>Registered</title>
+</head>
+<body>
+    <blockquote class="layui-elem-quote">基本信息填写</blockquote>
+    <form class="layui-form layui-form-pane" id="zc" style="padding-left:100px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="UserName" required lay-verify="required|username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="PWD" required lay-verify="required|pass" placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="EmployeeName" required lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-inline">
+                <input type="text" name="Tel" required lay-verify="required|number|phone" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="padding-left:20px">
+            <div class="layui-input-inline">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+            </div>
+            <div class="layui-input-inline">
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        layui.use(['form','layer'], function () {
+            var form = layui.form, layer = layui.layer;
+            var $ = layui.jquery
+            var bool = false;
+            form.on('switch', function (data) {
+                WCS = data.elem.checked
+            });
+            $("[name=UserName]").css("border-color","rgba(255,0,0,0.5)")
+            $("[name=UserName]").keyup(function () {
+                var value = $(this).val().trim();
+                $.get("/Home/checkUser", { value: value }, function (data) {
+                    if (data.length == 0) {
+                        $("[name=UserName]").css("border-color","rgba(0,255,0,0.5)")
+                        bool = true;
+                    } else {
+                        $("[name=UserName]").css("border-color","rgba(255,0,0,0.5)")
+                        bool = false;
+                    }
+                })
+            })
+            form.on('submit(formDemo)', function (data) {
+                if (bool) {
+                    $.post("/Home/AddUser", { User: data.field }, function (data) {
+                        if (data == "true") {
+                            var index = parent.layer.getFrameIndex(window.name)
+                            parent.layer.msg("注册成功")
+                            parent.layer.close(index)
+                        }
+                    })
+                } else {
+                    layer.msg('用户名重复', { icon: 5 })
+                }
+                return false; 
+            })
+            form.verify({
+                username: function (value, item) {
+                    if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                        return '用户名不能有特殊字符';
+                    }
+                    if (/(^\_)|(\__)|(\_+$)/.test(value)) {
+                        return '用户名首尾不能出现下划线\'_\'';
+                    }
+                    if (/^\d+\d+\d$/.test(value)) {
+                        return '用户名不能全为数字';
+                    }
+                }
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+            });  
+        });
+    </script>
+</body>
+</html>

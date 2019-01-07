@@ -57,12 +57,12 @@
                 WCS = data.elem.checked
             });
             $("[name=UserName]").css("border-color","rgba(255,0,0,0.5)")
-            $("[name=UserName]").keyup(function () {
+            $("[name=UserName]").change(function () {
                 var value = $(this).val().trim();
                 $.get("/Home/checkUser", { value: value }, function (data) {
                     if (data.length == 0) {
-                        $("[name=UserName]").css("border-color","rgba(0,255,0,0.5)")
-                        bool = true;
+                            $("[name=UserName]").css("border-color", "rgba(0,255,0,0.5)")
+                            bool = true;
                     } else {
                         $("[name=UserName]").css("border-color","rgba(255,0,0,0.5)")
                         bool = false;
@@ -71,11 +71,19 @@
             })
             form.on('submit(formDemo)', function (data) {
                 if (bool) {
-                    $.post("/Home/AddUser", { User: data.field }, function (data) {
-                        if (data == "true") {
-                            var index = parent.layer.getFrameIndex(window.name)
-                            parent.layer.msg("注册成功")
-                            parent.layer.close(index)
+                    $.get("/Home/checkUser", { Tel: $("[name=Tel]").val() }, function (data1) {
+                        if (data1.length > 0) {
+                            layer.msg("该电话已经注册", { icon: 5 })
+ 
+                            $("[name=Tel]").focus()
+                        } else {
+                            $.post("/Home/AddUser", { User: data.field,type:"add" }, function (data) {
+                                if (data == "true") {
+                                    var index = parent.layer.getFrameIndex(window.name)
+                                    parent.layer.msg("注册成功")
+                                    parent.layer.close(index)
+                                }
+                            })
                         }
                     })
                 } else {

@@ -85,7 +85,7 @@
                 })
           
             }
-            function Add(name, i) {
+            function Add(name,i) {
                 var index = layer.open({
                     type: 2,
                     title: name,
@@ -97,6 +97,7 @@
                     , success: function () {
                         var body = layer.getChildFrame('body', index);
                         body.find('.layui-hide').val(i)
+                        layer.msg("加载中", { icon: 16, time: 1000 })
                     }
                     , end: function () {
                         ajax();

@@ -7,11 +7,84 @@
 
 <html>
 <head>
+    <meta charset="utf-8" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="0">
     <meta name="viewport" content="width=device-width" />
-    <title>Inventory</title>
+    <title>库存限制</title>
+    <style type="text/css">
+        .layui-form-pane .layui-form-select {
+            display: inline-block;
+            width: 300px
+        }
+
+        .layui-btn {
+            display: inline-block;
+            border: 0px;
+        }
+
+        .layui-table-cell {
+            overflow: initial;
+            height: initial;
+        }
+    </style>
 </head>
 <body>
-    <div> 
+    <div class="layui-form layui-form-pane" style="display:none" id="xian">
+        <div class="layui-form-item">
+            <label class="layui-form-label">货位名：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="xian" class="xian" name="ID"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">限制大小：</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" required lay-verify="required|number" name="Size" />
+            </div>
+        </div>
+        <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
     </div>
+    <blockquote class="layui-elem-quote">库存限制</blockquote>
+    <div class="layui-form layui-form-pane" lay-filter="form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库名：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="ca" class="WHID" name="Warehouse"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 ca"></i></button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库区名：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="kq" class="WHAreaID"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 kq"></i></button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库位名：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="kw" class="StorageLocationID"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 kw"></i></button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">货位名：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="huo" class="TempPlate"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 huo"></i></button>
+            </div>
+        </div>
+    </div>
+    <button class="layui-btn add">新增限制</button>
+    <button class="layui-btn layui-btn-warm up">更新选中</button>
+    <button class="layui-btn layui-btn-danger del">删除选中</button>
+    <table lay-filter="table" id="laytable"></table>
+    <script type="text/javascript" src="~/js/inventory.js"></script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">更新</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
 </body>
 </html>

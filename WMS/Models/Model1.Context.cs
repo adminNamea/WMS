@@ -239,7 +239,7 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkkw_Result>("checkkw", storageLocationIDParameter, wHIDParameter, wHAreaIDParameter);
         }
     
-        public virtual int AddUser(string userName, string employeeName, string pWD, string tel, string type)
+        public virtual int AddUser(string userName, string employeeName, string pWD, string tel, string type, string id)
         {
             var userNameParameter = userName != null ?
                 new ObjectParameter("UserName", userName) :
@@ -261,7 +261,11 @@ namespace WMS.Models
                 new ObjectParameter("type", type) :
                 new ObjectParameter("type", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", userNameParameter, employeeNameParameter, pWDParameter, telParameter, typeParameter);
+            var idParameter = id != null ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", userNameParameter, employeeNameParameter, pWDParameter, telParameter, typeParameter, idParameter);
         }
     }
 }

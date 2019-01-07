@@ -20,7 +20,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">用户名</label>
             <div class="layui-input-inline">
-                <input type="text" name="Name" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                <input type="text" name="Name" required lay-verify="required" placeholder="请输入用户名或手机号" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
@@ -48,7 +48,6 @@
     </div>
 
     <script>
-     
         layui.use(['form', 'layer', 'element'], function () {
             var form = layui.form, layer = layui.layer, element = layui.element;
             var $ = layui.jquery
@@ -58,7 +57,7 @@
                 WCS = data.elem.checked
             });
             $("[name=Name]").css("border-color","rgba(255,0,0,0.5)")
-            $("[name=Name]").keyup(function () {
+            $("[name=Name]").change(function () {
                 var value = $(this).val().trim();
                 $.get("/Home/checkUser", { value: value }, function (data) {
                     if (data.length == 0) {
@@ -74,13 +73,17 @@
                 if (bool) {
                     $.post("/Home/Login", { Name: $("[name=Name]").val(), Pwd: $("[name=password]").val(), WCS: WCS }, function (data) {
                         if (data == "true") {
-                            layer.msg("登陆成功")
-                            $(".userName").text($("[name=Name]").val())
-                            $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工信息</li><i>/Home/UserData</i>")
-                            element.render();
-                            element.tabChange('docDemoTabBrief', 11);
+                            layer.msg("登陆成功", {
+                                icon: 16
+                                , shade: [0.8, '#393D49']
+                                , time: 1000
+
+                            }, function () {
+                                location.reload();
+                            })
+                          
                         } else {
-                            layer.msg("密码错误")
+                            layer.msg("密码错误", { icon:2 })
                         }
                     })
                 } else {

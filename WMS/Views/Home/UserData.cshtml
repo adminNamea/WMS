@@ -12,12 +12,12 @@
 </head>
 <body>
     <blockquote class="layui-elem-quote">用户信息</blockquote>
-    <form class="layui-form layui-form-pane" id="userEditForm" style="padding-left:100px;">
+    <form class="layui-form layui-form-pane" id="userEditForm" lay-filter="form" style="padding-left:100px;">
         <input class="layui-hide" name="id">
         <div class="layui-form-item">
             <label class="layui-form-label">用户名</label>
             <div class="layui-input-inline">
-                <input type="text" name="UserName" required lay-verify="required|username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                <input type="text" name="UserName" required lay-verify="required|username" placeholder="请输入用户名" autocomplete="off" class="layui-input" disabled>
             </div>
         </div>
         <div class="layui-form-item">
@@ -43,7 +43,7 @@
                 <button class="layui-btn" lay-submit lay-filter="formDemo">更新</button>
             </div>
             <div class="layui-input-inline">
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button type="reset" class="layui-btn layui-btn-primary reset">重置</button>
             </div>
         </div>
     </form>
@@ -51,66 +51,67 @@
         layui.use(['form', 'layer','element'], function () {
             var form = layui.form, layer = layui.layer, element = layui.element;
             var $ = layui.jquery
-            var bool = false;
             $.get("/Home/checkUser", { value: '@Session["user"]' }, function (data) {
-                $("[name=id]").val(data[0].ID)
-                $("[name=UserName]").val(data[0].UserName)
-                $("[name=PWD]").val(data[0].PWD)
-                $("[name=EmployeeName]").val(data[0].EmployeeName)
-                $("[name=Tel]").val(data[0].Tel)
+                form.val('form', {
+                    'id': data[0].ID,
+                    'UserName': data[0].UserName,
+                    'EmployeeName': data[0].EmployeeName,
+                    'PWD': data[0].PWD,
+                    'Tel': data[0].Tel
+                })
             })
             form.on('switch', function (data) {
                 WCS = data.elem.checked
             });
-            $("[name=UserName]").keyup(function () {
-                var value = $(this).val().trim();
-                $.get("/Home/checkUser", { value: value }, function (data) {
-                    if (data.length == 0) {
-                        bool = true;
-                    } else {
-                        bool = false;
-                    }
-                })
+            $(":reset").click(function () {
+                $("[name=UserName]").attr("value",'@Session["user"]')
             })
             form.on('submit(formDemo)', function (data) {
-                if (bool) {
-                    layer.confirm('更新将重新登陆确定更新?', { icon: 3, title: '提示' }, function (index) {
-                        $.post("/Home/AddUser", { User: data.field, type: "up" }, function (data) {
-                            if (data == "true") {
-                                $.get("/Home/OutUser", function (data) {
+                $.get("/Home/checkUser", { id: $("[name=id]").val() }, function (data1) {
+                    if (data1.length > 0) {
+                        if (data1[0].Tel != $("[name=Tel]").val()) {
+                            layer.msg("该电话已经注册", { icon: 5 })
+                            $("[name=Tel]").focus()
+                        }
+                        else {
+                            layer.confirm('更新将重新登陆确定更新?', { icon: 3, title: '提示' }, function (index) {
+                                $.post("/Home/AddUser", { User: data.field, type: "up" }, function (data) {
                                     if (data == "true") {
-                                        $(".userName").text("未登录")
-                                        $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>")
-                                        element.render();
-                                        element.tabChange('docDemoTabBrief', 11);
-                                        layer.close(index);
+                                        $.get("/Home/OutUser", function (data) {
+                                            if (data == "true") {
+                                                $(".userName").text("未登录")
+                                                $(".WCS").hide()
+                                                $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>")
+                                                element.render();
+                                                element.tabChange('docDemoTabBrief', 11);
+                                                layer.close(index);
+                                            }
+                                        })
                                     }
                                 })
-                            }
-                        })
-                    });
-                } else {
-                    layer.msg('用户名重复', { icon: 5 })
-                }
+                            });
+                        }
+                    } else {
+                        layer.confirm('更新将重新登陆确定更新?', { icon: 3, title: '提示' }, function (index) {
+                            $.post("/Home/AddUser", { User: data.field, type: "up" }, function (data) {
+                                if (data == "true") {
+                                    $.get("/Home/OutUser", function (data) {
+                                        if (data == "true") {
+                                            $(".userName").text("未登录")
+                                            $(".WCS").hide()
+                                            $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>")
+                                            element.render();
+                                            element.tabChange('docDemoTabBrief', 11);
+                                            layer.close(index);
+                                        }
+                                    })
+                                }
+                            })
+                        });
+                    }
+                })
                 return false;
             })
-            form.verify({
-                username: function (value, item) {
-                    if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
-                        return '用户名不能有特殊字符';
-                    }
-                    if (/(^\_)|(\__)|(\_+$)/.test(value)) {
-                        return '用户名首尾不能出现下划线\'_\'';
-                    }
-                    if (/^\d+\d+\d$/.test(value)) {
-                        return '用户名不能全为数字';
-                    }
-                }
-                , pass: [
-                    /^[\S]{6,12}$/
-                    , '密码必须6到12位，且不能出现空格'
-                ]
-            });
         });
     </script>
 </body>

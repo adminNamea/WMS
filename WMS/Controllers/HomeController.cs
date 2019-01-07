@@ -24,7 +24,8 @@ namespace WMS.Controllers
         public string AddUser(Dictionary<string,string> User,string type) {
             using (WMSEntities ms =new WMSEntities ()) {
                 SqlParameter[] parameters = new SqlParameter[User.Count()];
-                StringBuilder builder = new StringBuilder("exec AddUser @type="+type+",");
+               
+                StringBuilder builder = new StringBuilder("exec AddUser @type='"+type+"',");
                 int i = 0;
                 foreach (var user in User) {
                     parameters[i] = new SqlParameter("@"+user.Key,user.Value);
@@ -42,10 +43,10 @@ namespace WMS.Controllers
                 return "true";
         }
         //登陆
-        public string Login(string Name,string Pwd, bool WCS) {
+        public string Login(string Name, string Pwd, bool WCS) {
             List<Employee> employees;
             using (WMSEntities mSEntities=new WMSEntities()) {
-                employees = mSEntities.Employee.Where(p => p.PWD == Pwd).Where(p => p.UserName == Name).ToList();
+                employees = mSEntities.Employee.Where(p =>p.PWD == Pwd).Where(p => p.UserName == Name || p.Tel == Name).ToList();
                 if (employees.Count() > 0)
                 {
                     Session["user"] = employees[0].UserName;
@@ -64,12 +65,20 @@ namespace WMS.Controllers
             return "true";
         }
         //查询用户
-        public ActionResult checkUser(string value) {
+        public ActionResult checkUser(string value,string id) {
             List<Employee> employees;
-            
+            int ids = 0;
+            if (id != null) {
+                 ids = int.Parse(id);
+            }
             using (WMSEntities wm=new WMSEntities()) {
-
-                    employees = wm.Employee.Where(p => p.UserName == value).ToList();
+                if (id != null && id != "")
+                {
+                    employees = wm.Employee.Where(p => p.ID == ids).ToList();
+                }
+                else { 
+                    employees = wm.Employee.Where(p => p.UserName == value||p.Tel==value).ToList();
+                }
 
             }
             return Json(employees,JsonRequestBehavior.AllowGet);

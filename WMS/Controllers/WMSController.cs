@@ -63,7 +63,7 @@ namespace WMS.Controllers
         //添加仓库等
         public string AddWarehouse(Dictionary<string, string> data, string type)
         {
-            StringBuilder builder = new StringBuilder("exec AddStorage @type=" + type + ",@CreatedBy=11,");
+            StringBuilder builder = new StringBuilder("exec AddStorage @type=" + type + ",@CreatedBy="+Session["user"]+",");
             using (WMSEntities ws = new WMSEntities())
             {
                 int index = 0;
@@ -220,7 +220,7 @@ namespace WMS.Controllers
             }
         }
     //查询货位信息
-    public ActionResult checkhuo(string id, string value, Dictionary<string, string> data)
+    public ActionResult checkhuo(string id, string value, Dictionary<string, string> data,string type)
     {
         List<WH_GoodsAllocation> list;
         List<checkHuo_Result> list1;
@@ -228,9 +228,17 @@ namespace WMS.Controllers
         {
 
             if (id == "1")
-            {
-                StringBuilder builder = new StringBuilder("exec checkHuo ");
-                SqlParameter[] parameter = new SqlParameter[data.Count()];
+                {
+                    StringBuilder builder = new StringBuilder("exec checkHuo ");
+                    if (type != null)
+                    {
+                        builder.Append("@type=" + type);
+                        if (data.Count() > 0) {
+                            builder.Append(",");
+                        }
+                       
+                    }
+                    SqlParameter[] parameter = new SqlParameter[data.Count()];
                 int index = 0;
                 foreach (var da in data)
                 {
@@ -261,9 +269,13 @@ namespace WMS.Controllers
                     return Json(list, JsonRequestBehavior.AllowGet);
                 }
                 else
-                {
-                    list = wMS.WH_GoodsAllocation.ToList();
-                    return Json(list, JsonRequestBehavior.AllowGet);
+                    {
+                        if (type == "add") {
+                         list = wMS.WH_GoodsAllocation.Where(p=>p.Size==0||p.Size==null).ToList();
+                        } else { 
+                         list = wMS.WH_GoodsAllocation.ToList();
+                        }
+                        return Json(list, JsonRequestBehavior.AllowGet);
                 }
 
             }
@@ -295,6 +307,12 @@ namespace WMS.Controllers
                 WH_StorageLocation wga = wMS.WH_StorageLocation.Where(c => c.ID == i).First();
                 wMS.WH_StorageLocation.Remove(wga);
             }
+           if (type =="xian") {
+              var wga = wMS.WH_GoodsAllocation.Where(c => c.ID == i).ToList();
+               foreach (var up in wga) {
+                        up.Size = 0;
+               }
+           }
             int w = wMS.SaveChanges();
             if (w > 0)
             {
@@ -340,10 +358,23 @@ namespace WMS.Controllers
             StringBuilder builder = new StringBuilder("exec UpAll @type=" + type + ",");
             SqlParameter[] parameters = new SqlParameter[data.Count()];
             int i = 0;
-            foreach (var da in data)
-            {
-                parameters[i] = new SqlParameter("@" + da.Key, da.Value);
-                if ((i + 1) == data.Count())
+                foreach (var da in data)
+                {
+                    if (da.Key == "Size")
+                    {
+                        float Size = float.Parse(da.Value.Replace(" PCS", ""));
+                        parameters[i] = new SqlParameter("@" + da.Key, Size);
+                    }
+                    else {
+                    if (da.Key == "CreatedBy") {
+                        parameters[i] = new SqlParameter("@CreatedBy", Session["user"]);
+                    }
+                    else
+                    {
+                        parameters[i] = new SqlParameter("@" + da.Key, da.Value);
+                    }
+                    }
+                    if ((i + 1) == data.Count())
                 {
                     builder.Append("@" + da.Key + "=@" + da.Key);
                 }

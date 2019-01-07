@@ -216,6 +216,7 @@
           <Parameter Name="PWD" Type="varchar" Mode="In" />
           <Parameter Name="Tel" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
+          <Parameter Name="id" Type="varchar" Mode="In" />
         </Function>
         <Function Name="checkHuo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StorageLocationID" Type="varchar" Mode="In" />
@@ -563,6 +564,7 @@
             <Parameter Name="PWD" Mode="In" Type="String" />
             <Parameter Name="Tel" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
+            <Parameter Name="id" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="Employee" EntityType="WMSModel.Employee" />
         </EntityContainer>
@@ -572,7 +574,7 @@
           <Property Type="Double" Name="x_intercept" Nullable="false" />
           <Property Type="Double" Name="y_intercept" Nullable="false" />
           <Property Type="Double" Name="z_intercept" Nullable="false" />
-          <Property Type="Double" Name="Size" Nullable="true" />
+          <Property Type="String" Name="Size" Nullable="true" MaxLength="24" />
           <Property Type="String" Name="Description" Nullable="true" MaxLength="20" />
           <Property Type="Int32" Name="TempPlate" Nullable="false" />
           <Property Type="Int32" Name="StorageLocationID" Nullable="false" />

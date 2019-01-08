@@ -2,16 +2,111 @@
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
-
 <html>
 <head>
+    <meta charset="utf-8" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="0">
     <meta name="viewport" content="width=device-width" />
-    <title>Material</title>
+    <title>原材料注册</title>
+    <style type="text/css">
+        .layui-form-pane .layui-form-select {
+            display: inline-block;
+            width: 300px
+        }
+
+        .layui-btn {
+            display: inline-block;
+            border: 0px;
+        }
+
+        .layui-table-cell {
+            overflow: initial;
+            height: initial;
+        }
+    </style>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">更新</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="selectca">
+        <select lay-search lay-filter="tablewu" class="Category1"></select>
+    </script>
 </head>
 <body>
-    <div> 
+    <div class="layui-form layui-form-pane" lay-filter="lei" id="lei" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">类别名称：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="name" required lay-verify="required"/>
+            </div>
+        </div>
+          <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
     </div>
+    <div class="layui-form layui-form-pane" id="wu"  lay-filter="wu" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">类别名称：</label>
+            <div class="layui-input-block">
+                <select lay-search  class="Category1" name="Category1"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料名称：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="name" required lay-verify="required"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料规格：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="PartSpec" required lay-verify="required"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料材质：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="PartMaterial" required lay-verify="required"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">单位：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="Units" required lay-verify="required"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">数量：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" required lay-verify="required|number" name="QTYperPallet" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo1">立即提交</button>
+            </div>
+        </div>
+    </div>
+    <blockquote class="layui-elem-quote">原材料注册</blockquote>
+    <div class="layui-form layui-form-pane" lay-filter="form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">类别：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="lei" class="Category1" name="Category"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 Category"></i></button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料名称：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="lei" class="ID" name="ID"></select>
+            </div>
+        </div>
+    </div>
+    <button class="layui-btn add">新增物料</button>
+    <button class="layui-btn layui-btn-warm up">更新选中</button>
+    <button class="layui-btn layui-btn-danger del">删除选中</button>
+    <table lay-filter="table" id="laytable"></table>
 </body>
 </html>

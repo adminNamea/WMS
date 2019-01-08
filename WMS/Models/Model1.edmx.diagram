@@ -17,6 +17,7 @@
         <EntityTypeShape EntityType="WMSModel.WH_Applier" Width="1.5" PointX="8.75" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.WH_Defect" Width="1.5" PointX="2.75" PointY="9.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.Employee" Width="1.5" PointX="11.375" PointY="0.75" />
+        <EntityTypeShape EntityType="WMSModel.Category" Width="1.5" PointX="11.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

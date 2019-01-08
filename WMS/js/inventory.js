@@ -61,7 +61,6 @@
             }
             , end: function () {
                 ajax()
-                ta.reload({})
             }
         });
     }
@@ -82,9 +81,6 @@
             , { field: 'Size', title: '货位限制', edit: "text" }
             , { align: 'center', toolbar: '#barDemo' }
         ]]
-        , done: function (res) {
-
-        }
     });
     $("i").click(function () {
         var name = 'layui-icon layui-icon-add-1 '
@@ -103,7 +99,7 @@
                 break;
         }
     })
-    table.on('edit(table)', function (obj) {
+    table.on('edit(table1)', function (obj) {
         if (isNaN(obj.value)) {
             layer.msg("只可以输入数字", { icon: 5 })
             var ind = $("tbody tr").index(obj.tr)
@@ -116,7 +112,7 @@
             table.cache.laytable[ind].Size = obj.value
         }
     });
-    table.on('tool(table)', function (obj) {
+    table.on('tool(table1)', function (obj) {
         var data = obj.data;
         var layEvent = obj.event;
         if (layEvent === 'del') {
@@ -128,11 +124,18 @@
                 })
             });
         } else if (layEvent === 'edit') {
-            $.post("/WMS/UpAll", { data: data, type: "xian" }, function (data) {
-                layer.msg("更新完成")
-                ta.reload({
+            if (data.Size == 0) {
+                layer.confirm('此操作将去除限制，确定么', function (index) {
+                    $.post("/WMS/UpAll",{ data:data, type: "xian" }, function (data) {
+                        obj.del();
+                        layer.close(index);
+                        layer.msg("更新完成")
+                    })
                 })
-            })
+            } else {
+            $.post("/WMS/UpAll", { data: data, type: "xian" }, function (data) {
+                layer.msg("更新完成") })
+            }
         }
     });
     form.on('select', function (data) {
@@ -177,8 +180,7 @@
             area: ['893px', '600px'],
             content: $('#xian')
             , end: function () {
-                ta.reload({
-                })
+                ta.reload({})
             }
         });
         $.get("/WMS/checkhuo", { type: "add" }, function (data) {
@@ -201,16 +203,23 @@
     $(".up").click(function () {
         var checkStatu = table.checkStatus('laytable')
         for (var i = 0; i < checkStatu.data.length; i++) {
-            $.ajax({
-                url: "/WMS/UpAll",
-                data: { data: checkStatu.data[i], type: "xian" },
-                async: false
-            })
-        }
-        ta.reload({
-            done: function () {
-                layer.msg("更新完成")
+            if (checkStatu.data[i] == 0) {
+                layer.confirm('第' + checkStatu.data.length + '限制为零将会去除限制，确定么', function () {
+                    $.ajax({
+                        url: "/WMS/UpAll",
+                        data: { data: checkStatu.data[i], type: "xian" },
+                        async: false
+                    })
+                })
+            } else {
+                $.ajax({
+                    url: "/WMS/UpAll",
+                    data: { data: checkStatu.data[i], type: "xian" },
+                    async: false
+                })
             }
-        })
+        }
+        ta.reload({})
+        layer.msg("更新完成")
     })
 })

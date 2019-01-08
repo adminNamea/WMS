@@ -51,7 +51,7 @@
         layui.use(['form', 'layer','element'], function () {
             var form = layui.form, layer = layui.layer, element = layui.element;
             var $ = layui.jquery
-            $.get("/Home/checkUser", { value: '@Session["user"]' }, function (data) {
+            $.post("/Home/checkUser", { value: '@Session["user"]' }, function (data) {
                 form.val('form', {
                     'id': data[0].ID,
                     'UserName': data[0].UserName,

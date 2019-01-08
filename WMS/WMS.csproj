@@ -140,6 +140,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\checkHuo_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -150,6 +153,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\checkWo_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\checkwu_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Employee.cs">
@@ -203,6 +209,7 @@
     <Compile Include="Models\WH_StorageLocation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="PageList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -214,7 +221,12 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="js\GoodsArea.js" />
     <Content Include="js\inventory.js" />
+    <Content Include="js\Material.js" />
+    <Content Include="js\Warehouse.js" />
+    <Content Include="js\WarehouseArea.js" />
+    <Content Include="js\WarehousePosition.js" />
     <Content Include="laydate\laydate.js" />
     <Content Include="laydate\theme\default\font\iconfont.svg" />
     <Content Include="laydate\theme\default\laydate.css" />

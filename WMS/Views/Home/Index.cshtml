@@ -7,13 +7,19 @@
 <head>
     <meta charset="utf-8" />
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" >
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
     <META HTTP-EQUIV="Expires" CONTENT="0">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>智能立体仓库</title>
     <link rel="stylesheet" href="~/layui/css/layui.css">
     <script type="text/javascript" src="~/laydate/laydate.js"></script>
     <script type="text/javascript" src="~/layui/layui.js"></script>
+    <script type="text/javascript" src="~/js/inventory.js"></script>
+    <script type="text/javascript" src="~/js/Material.js"></script>
+    <script type="text/javascript" src="~/js/Warehouse.js"></script>
+    <script type="text/javascript" src="~/js/WarehouseArea.js"></script>
+    <script type="text/javascript" src="~/js/WarehousePosition.js"></script>
+    <script type="text/javascript" src="~/js/GoodsArea.js"></script>
     <style type="text/css">
         dl dd a {
             margin-left: 20px
@@ -79,7 +85,6 @@
                 <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
                     <ul class="layui-tab-title"></ul>
                     <div class="layui-tab-content">
-                        <iframe src="" class="load"></iframe>
                     </div>
                 </div>
             </div>
@@ -97,22 +102,21 @@
 
 
         //    })
+        
         //})
         layui.use(['element', 'layer', 'form'], function () {
             var element = layui.element, form = layui.form, layer = layui.layer, table = layui.table, $ = layui.jquery
-            var index
+            var indexs
             $(document).ajaxStart(function () {
-                 index = layer.msg('加载中...', {
+                 indexs= layer.msg('加载中...', {
                     icon: 16
                      , shade: 0.01
                      , time: false
                 })
 
             })
-
             $(document).ajaxStop(function () {
-                layer.close(index)
-
+                layer.close(indexs)
                 })
             if ('@Session["user"]' != undefined && '@Session["user"]'!="") {
                 $(".userName").text('@Session["user"]')
@@ -142,6 +146,7 @@
 
             })
             $(".UserData").click(function () {
+
                 if ('@Session["user"]' != null && '@Session["user"]' != "") {
                     $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工信息</li><i>/Home/UserData</i>")
                     element.render('tab');
@@ -183,11 +188,13 @@
                 }
             });
             element.on('tab(docDemoTabBrief)', function (data) {
-               
                 var url = data.elem.find("li:eq(" + data.index + ")").next().text();
+                var js = url.substr(url.lastIndexOf("/") + 1, url.lastIndexOf(""))
                 if (url != "/WMS/login") {
                     if ('@Session["user"]' != null && '@Session["user"]' != "") {
-                        $.ajaxSetup({ cache: false }); 
+                        $.ajaxSetup({
+                            cache: false
+                        })
                      
                         $(".layui-tab-content").load(url, function () {
                             form.render()
@@ -197,7 +204,6 @@
                     }
                 } else {
                     $.ajaxSetup({ cache: false }); 
-                   
                     $(".layui-tab-content").empty()
                     $(".layui-tab-content").load(url, function () {
                         form.render()

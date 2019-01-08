@@ -5,6 +5,13 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="ID" />
@@ -198,6 +205,7 @@
         </EntityType>
         <Function Name="AddStorage" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="name" Type="varchar" Mode="In" />
+          <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="Description" Type="varchar" Mode="In" />
           <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
@@ -209,6 +217,11 @@
           <Parameter Name="z" Type="varchar" Mode="In" />
           <Parameter Name="x" Type="varchar" Mode="In" />
           <Parameter Name="y" Type="varchar" Mode="In" />
+          <Parameter Name="Category1" Type="varchar" Mode="In" />
+          <Parameter Name="PartSpec" Type="varchar" Mode="In" />
+          <Parameter Name="PartMaterial" Type="varchar" Mode="In" />
+          <Parameter Name="QTYperPallet" Type="varchar" Mode="In" />
+          <Parameter Name="Units" Type="varchar" Mode="In" />
         </Function>
         <Function Name="AddUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserName" Type="varchar" Mode="In" />
@@ -223,6 +236,7 @@
           <Parameter Name="WHAreaID" Type="varchar" Mode="In" />
           <Parameter Name="WHID" Type="varchar" Mode="In" />
           <Parameter Name="TempPlate" Type="varchar" Mode="In" />
+          <Parameter Name="type" Type="varchar" Mode="In" />
         </Function>
         <Function Name="checkKq" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WHAreaID" Type="varchar" Mode="In" />
@@ -235,6 +249,10 @@
         </Function>
         <Function Name="checkWo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="checkwu" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Category" Type="varchar" Mode="In" />
+          <Parameter Name="ID" Type="varchar" Mode="In" />
         </Function>
         <Function Name="DelAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="type" Type="varchar" Mode="In" />
@@ -258,8 +276,17 @@
           <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
           <Parameter Name="CreatedTime" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
+          <Parameter Name="Category1" Type="varchar" Mode="In" />
+          <Parameter Name="PartSpec" Type="varchar" Mode="In" />
+          <Parameter Name="PartMaterial" Type="varchar" Mode="In" />
+          <Parameter Name="QTYperPallet" Type="varchar" Mode="In" />
+          <Parameter Name="Units" Type="varchar" Mode="In" />
+          <Parameter Name="PartName" Type="varchar" Mode="In" />
+          <Parameter Name="Category2" Type="varchar" Mode="In" />
+          <Parameter Name="Category3" Type="varchar" Mode="In" />
         </Function>
         <EntityContainer Name="WMSModelStoreContainer">
+          <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WCS_Place" EntityType="Self.WCS_Place" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH" EntityType="Self.WH" Schema="dbo" store:Type="Tables" />
@@ -505,6 +532,7 @@
           <EntitySet Name="WH_Defect" EntityType="Self.WH_Defect" />
           <FunctionImport Name="AddStorage">
             <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="ID" Mode="In" Type="String" />
             <Parameter Name="Description" Mode="In" Type="String" />
             <Parameter Name="CreatedBy" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
@@ -516,12 +544,18 @@
             <Parameter Name="z" Mode="In" Type="String" />
             <Parameter Name="x" Mode="In" Type="String" />
             <Parameter Name="y" Mode="In" Type="String" />
+            <Parameter Name="Category1" Mode="In" Type="String" />
+            <Parameter Name="PartSpec" Mode="In" Type="String" />
+            <Parameter Name="PartMaterial" Mode="In" Type="String" />
+            <Parameter Name="QTYperPallet" Mode="In" Type="String" />
+            <Parameter Name="Units" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="checkHuo" ReturnType="Collection(WMSModel.checkHuo_Result)">
             <Parameter Name="StorageLocationID" Mode="In" Type="String" />
             <Parameter Name="WHAreaID" Mode="In" Type="String" />
             <Parameter Name="WHID" Mode="In" Type="String" />
             <Parameter Name="TempPlate" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="DelAll">
             <Parameter Name="type" Mode="In" Type="String" />
@@ -545,6 +579,14 @@
             <Parameter Name="CreatedBy" Mode="In" Type="String" />
             <Parameter Name="CreatedTime" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
+            <Parameter Name="Category1" Mode="In" Type="String" />
+            <Parameter Name="PartSpec" Mode="In" Type="String" />
+            <Parameter Name="PartMaterial" Mode="In" Type="String" />
+            <Parameter Name="QTYperPallet" Mode="In" Type="String" />
+            <Parameter Name="Units" Mode="In" Type="String" />
+            <Parameter Name="PartName" Mode="In" Type="String" />
+            <Parameter Name="Category2" Mode="In" Type="String" />
+            <Parameter Name="Category3" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="checkWo" ReturnType="Collection(WMSModel.checkWo_Result)">
           <Parameter Name="id" Mode="In" Type="String" />
@@ -567,6 +609,11 @@
             <Parameter Name="id" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="Employee" EntityType="WMSModel.Employee" />
+          <EntitySet Name="Category" EntityType="WMSModel.Category" />
+          <FunctionImport Name="checkwu" ReturnType="Collection(WMSModel.checkwu_Result)">
+            <Parameter Name="Category" Mode="In" Type="String" />
+            <Parameter Name="ID" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="checkHuo_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -630,6 +677,22 @@
           <Property Name="StatusID" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="Tel" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <ComplexType Name="checkwu_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Category1" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="QTYperPallet" Nullable="true" />
+          <Property Type="String" Name="Units" Nullable="true" MaxLength="10" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -902,6 +965,27 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Category">
+            <EntityTypeMapping TypeName="WMSModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="checkwu" FunctionName="WMSModel.Store.checkwu">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.checkwu_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Category1" ColumnName="Category1" />
+                <ScalarProperty Name="PartName" ColumnName="PartName" />
+                <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
+                <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
+                <ScalarProperty Name="QTYperPallet" ColumnName="QTYperPallet" />
+                <ScalarProperty Name="Units" ColumnName="Units" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

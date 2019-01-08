@@ -63,7 +63,8 @@ namespace WMS.Controllers
         //添加仓库等
         public string AddWarehouse(Dictionary<string, string> data, string type)
         {
-            StringBuilder builder = new StringBuilder("exec AddStorage @type=" + type + ",@CreatedBy="+Session["user"]+",");
+            string ses = Session["user"].ToString();
+            StringBuilder builder = new StringBuilder("exec AddStorage @type=" + type + ",@CreatedBy="+Session["user"].ToString() + ",");
             using (WMSEntities ws = new WMSEntities())
             {
                 int index = 0;
@@ -170,7 +171,7 @@ namespace WMS.Controllers
             }
         }
     //查询库位信息
-    public ActionResult checkkw(string id, string value, Dictionary<string, string> data)
+    public ActionResult checkkw(string id, string value, Dictionary<string,string> data)
     {
             List<WH_StorageLocation> list;
             List<checkkw_Result> list1;
@@ -313,7 +314,12 @@ namespace WMS.Controllers
                         up.Size = 0;
                }
            }
-            int w = wMS.SaveChanges();
+           if (type == "wu")
+           {
+              WH_Material wga = wMS.WH_Material.Where(c => c.ID == i).First();
+            wMS.WH_Material.Remove(wga);
+           }
+             int w = wMS.SaveChanges();
             if (w > 0)
             {
                 return "true";
@@ -355,7 +361,10 @@ namespace WMS.Controllers
     {
         using (WMSEntities wMS = new WMSEntities())
         {
-            StringBuilder builder = new StringBuilder("exec UpAll @type=" + type + ",");
+            StringBuilder builder = new StringBuilder("exec UpAll ");
+                if (type!=null) {
+                    builder.Append("@type=" + type+",");
+                }
             SqlParameter[] parameters = new SqlParameter[data.Count()];
             int i = 0;
                 foreach (var da in data)
@@ -393,6 +402,54 @@ namespace WMS.Controllers
     public ActionResult Material()
     {
         return View();
+    }
+        //查询物料
+    public ActionResult checkwu(string id,Dictionary<string,string> data,int page,int limit,string type) {
+            List<checkwu_Result> list;
+            List<WH_Material> list1;
+            StringBuilder builder = new StringBuilder("exec checkwu ");
+            using (WMSEntities mSEntities=new WMSEntities ()) {
+                if (id == "1")
+                {
+                    Dictionary<string, object> map = new Dictionary<string, object>();
+                    SqlParameter[] parameters = new SqlParameter[data.Count()];
+                    int i = 0;
+                    foreach (var da in data)
+                    {
+                        parameters[i] = new SqlParameter("@" + da.Key, da.Value);
+                        if (i + 1 == data.Count())
+                        {
+                            builder.Append("@" + da.Key + "=@" + da.Key);
+                        }
+                        else
+                        {
+                            builder.Append("@" + da.Key + "=@" + da.Key + ",");
+                        }
+                        i++;
+                    }
+                    list = mSEntities.Database.SqlQuery<checkwu_Result>(builder.ToString(), parameters).ToList();
+                    PageList<checkwu_Result> pageList = new PageList<checkwu_Result>(list, page, limit);
+                    int count = list.Count();
+                    map.Add("code", 0);
+                    map.Add("msg", "");
+                    map.Add("count", count);
+                    map.Add("data", pageList);
+                    return Json(map, JsonRequestBehavior.AllowGet);
+                }
+                else {
+                    if (type != null)
+                    {
+                        List<Category> list2 = mSEntities.Category.ToList();
+                        return Json(list2, JsonRequestBehavior.AllowGet);
+                    }
+                    else { 
+                    list1 = mSEntities.WH_Material.ToList();
+                    return Json(list1,JsonRequestBehavior.AllowGet);
+                    }
+                }
+
+            }
+
     }
     #endregion
     #region 库存限制维护

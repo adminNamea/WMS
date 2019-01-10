@@ -152,6 +152,12 @@
     <Compile Include="Models\checkkw_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\checkMachine_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\checkPlace_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\checkWo_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -179,10 +185,28 @@
     <Compile Include="Models\PurchaseOrder.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Tactic.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WCS_DecomposedCommand.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\WCS_Machine.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WCS_MachinType.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WCS_Place.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WCS_PlaceType.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WCS_Task.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WCS_Task_setup.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WH.cs">
@@ -222,8 +246,10 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="js\GoodsArea.js" />
-    <Content Include="js\inventory.js" />
+    <Content Include="js\Inventory.js" />
+    <Content Include="js\Machine.js" />
     <Content Include="js\Material.js" />
+    <Content Include="js\Strategy.js" />
     <Content Include="js\Warehouse.js" />
     <Content Include="js\WarehouseArea.js" />
     <Content Include="js\WarehousePosition.js" />

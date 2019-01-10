@@ -190,7 +190,6 @@
                     }
                     return false;
                 });
-
                 $("[name=name]").keyup(function () {
                     var t;
                     if (type == "ca") {
@@ -255,26 +254,24 @@
                 }
                 form.render()
             })
-            $(document).ajaxStop(function () {
             switch (Number($(".layui-hide").val())) {
                 case 1:
                     $(".ca").show()
-                    sub('formDemo', "ca")
+                    sub('formDemo',"ca")
                     break;
                 case 2:
                     $(".kq").show()
-                    sub('formDemo1', "kq")
+                    sub('formDemo1',"kq")
                     break;
                 case 3:
                     $(".kw").show()
-                    sub('formDemo2', "kw")
+                    sub('formDemo2',"kw")
                     break;
                 case 4:
                     $(".huo").show()
-                    sub('formDemo3', "huo")
+                    sub('formDemo3',"huo")
                     break;
                 }
-            })
         });
     </script>
 </body>

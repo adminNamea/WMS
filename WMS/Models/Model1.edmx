@@ -23,8 +23,6 @@
           <Property Name="StatusID" Type="varchar" MaxLength="2" Nullable="false" />
           <Property Name="Tel" Type="varchar" MaxLength="40" />
         </EntityType>
-        <!--生成过程中发现错误:
-警告 6002: 表/视图“WMS.dbo.PurchaseOrder”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
         <EntityType Name="PurchaseOrder">
           <Key>
             <PropertyRef Name="ID" />
@@ -37,8 +35,14 @@
           <Property Name="ApplierID" Type="int" />
           <Property Name="StatusID" Type="int" />
         </EntityType>
-        <!--生成过程中发现错误:
-警告 6002: 表/视图“WMS.dbo.WCS_DecomposedCommand”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
+        <EntityType Name="Tactics">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="TacticsName" Type="varchar" MaxLength="50" />
+          <Property Name="StatusID" Type="int" />
+        </EntityType>
         <EntityType Name="WCS_DecomposedCommand">
           <Key>
             <PropertyRef Name="ID" />
@@ -48,6 +52,32 @@
           <Property Name="Description" Type="varchar" MaxLength="50" />
           <Property Name="Sort" Type="int" />
           <Property Name="MachineTypeID" Type="int" />
+          <Property Name="Status" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="WCS_Machine">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="MachineTypeID" Type="int" />
+          <Property Name="x-intercept" Type="float" />
+          <Property Name="y-intercept" Type="float" />
+          <Property Name="z-intercept" Type="float" />
+          <Property Name="RuningSpeed" Type="float" />
+          <Property Name="Description" Type="varchar" MaxLength="50" />
+          <Property Name="CreatedTime" Type="varchar" MaxLength="20" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="20" />
+          <Property Name="UpdatedTime" Type="varchar" MaxLength="20" />
+          <Property Name="UpdatedBy" Type="varchar" MaxLength="20" />
+          <Property Name="Status" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="WCS_MachinType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
           <Property Name="Status" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="WCS_Place">
@@ -66,6 +96,41 @@
           <Property Name="UpdatedTime" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="20" />
           <Property Name="Status" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="WCS_PlaceType">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="WCS_Task">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MachineID" Type="int" />
+          <Property Name="QTY" Type="int" />
+          <Property Name="LocationFrom" Type="varchar" MaxLength="50" />
+          <Property Name="LocationTo" Type="varchar" MaxLength="50" />
+          <Property Name="OrderStartTime" Type="datetime" />
+          <Property Name="LenghtOfTime_ALL" Type="int" />
+          <Property Name="BeReadyToTakePlaceTime" Type="datetime" />
+          <Property Name="LenghtOfTime_BeReadyToTakePlace" Type="int" />
+          <Property Name="WorkTime" Type="datetime" />
+          <Property Name="LenghtOfTime_Work" Type="int" />
+          <Property Name="LenghtOfTime_WaitingForOthers" Type="int" />
+          <Property Name="Status" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="WCS_Task_setup">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskID" Type="int" />
+          <Property Name="ActionID" Type="int" />
+          <Property Name="StatusID" Type="int" />
         </EntityType>
         <EntityType Name="WH">
           <Key>
@@ -247,6 +312,14 @@
           <Parameter Name="WHID" Type="varchar" Mode="In" />
           <Parameter Name="WHAreaID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="checkMachine" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="MachineTypeID" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="checkPlace" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="PlaceTypeID" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="checkWo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="varchar" Mode="In" />
         </Function>
@@ -285,37 +358,56 @@
           <Parameter Name="Category2" Type="varchar" Mode="In" />
           <Parameter Name="Category3" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="WcsAddAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="MachineTypeID" Type="varchar" Mode="In" />
+          <Parameter Name="x_intercept" Type="varchar" Mode="In" />
+          <Parameter Name="y_intercept" Type="varchar" Mode="In" />
+          <Parameter Name="z_intercept" Type="varchar" Mode="In" />
+          <Parameter Name="RuningSpeed" Type="varchar" Mode="In" />
+          <Parameter Name="Description" Type="varchar" Mode="In" />
+          <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
+          <Parameter Name="Status" Type="varchar" Mode="In" />
+          <Parameter Name="type" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="WcsDelAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="type" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="WcsUpAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="MachineTypeID" Type="varchar" Mode="In" />
+          <Parameter Name="x_intercept" Type="varchar" Mode="In" />
+          <Parameter Name="y_intercept" Type="varchar" Mode="In" />
+          <Parameter Name="z_intercept" Type="varchar" Mode="In" />
+          <Parameter Name="RuningSpeed" Type="varchar" Mode="In" />
+          <Parameter Name="Description" Type="varchar" Mode="In" />
+          <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
+          <Parameter Name="Status" Type="varchar" Mode="In" />
+          <Parameter Name="UpdatedTime" Type="varchar" Mode="In" />
+          <Parameter Name="UpdatedBy" Type="varchar" Mode="In" />
+          <Parameter Name="type" Type="varchar" Mode="In" />
+        </Function>
         <EntityContainer Name="WMSModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseOrder" EntityType="Self.PurchaseOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tactics" EntityType="Self.Tactics" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WCS_DecomposedCommand" EntityType="Self.WCS_DecomposedCommand" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WCS_Machine" EntityType="Self.WCS_Machine" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WCS_MachinType" EntityType="Self.WCS_MachinType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WCS_Place" EntityType="Self.WCS_Place" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WCS_PlaceType" EntityType="Self.WCS_PlaceType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WCS_Task" EntityType="Self.WCS_Task" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WCS_Task_setup" EntityType="Self.WCS_Task_setup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH" EntityType="Self.WH" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH_Area" EntityType="Self.WH_Area" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH_GoodsAllocation" EntityType="Self.WH_GoodsAllocation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH_Material" EntityType="Self.WH_Material" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH_MaterialList" EntityType="Self.WH_MaterialList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WH_StorageLocation" EntityType="Self.WH_StorageLocation" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PurchaseOrder" EntityType="Self.PurchaseOrder" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [PurchaseOrder].[ID] AS [ID], 
-    [PurchaseOrder].[PO] AS [PO], 
-    [PurchaseOrder].[MaterialID] AS [MaterialID], 
-    [PurchaseOrder].[QTY] AS [QTY], 
-    [PurchaseOrder].[Units] AS [Units], 
-    [PurchaseOrder].[ApplierID] AS [ApplierID], 
-    [PurchaseOrder].[StatusID] AS [StatusID]
-    FROM [dbo].[PurchaseOrder] AS [PurchaseOrder]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="WCS_DecomposedCommand" EntityType="Self.WCS_DecomposedCommand" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [WCS_DecomposedCommand].[ID] AS [ID], 
-    [WCS_DecomposedCommand].[Name] AS [Name], 
-    [WCS_DecomposedCommand].[Description] AS [Description], 
-    [WCS_DecomposedCommand].[Sort] AS [Sort], 
-    [WCS_DecomposedCommand].[MachineTypeID] AS [MachineTypeID], 
-    [WCS_DecomposedCommand].[Status] AS [Status]
-    FROM [dbo].[WCS_DecomposedCommand] AS [WCS_DecomposedCommand]</DefiningQuery>
-          </EntitySet>
           <EntitySet Name="WH_Applier" EntityType="Self.WH_Applier" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [WH_Applier].[ID] AS [ID], 
@@ -346,6 +438,24 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="WMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EmployeeName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PWD" Type="String" MaxLength="80" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="StatusID" Type="String" MaxLength="2" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Tel" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+        </EntityType>
         <EntityType Name="WCS_Place">
           <Key>
             <PropertyRef Name="Name" />
@@ -519,6 +629,8 @@
           <Property Name="StatusID" Type="Int32" />
         </EntityType>
         <EntityContainer Name="WMSEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Category" EntityType="Self.Category" />
+          <EntitySet Name="Employee" EntityType="Self.Employee" />
           <EntitySet Name="WCS_Place" EntityType="Self.WCS_Place" />
           <EntitySet Name="WH" EntityType="Self.WH" />
           <EntitySet Name="WH_Area" EntityType="Self.WH_Area" />
@@ -550,12 +662,44 @@
             <Parameter Name="QTYperPallet" Mode="In" Type="String" />
             <Parameter Name="Units" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="AddUser">
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="EmployeeName" Mode="In" Type="String" />
+            <Parameter Name="PWD" Mode="In" Type="String" />
+            <Parameter Name="Tel" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="String" />
+            <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
           <FunctionImport Name="checkHuo" ReturnType="Collection(WMSModel.checkHuo_Result)">
             <Parameter Name="StorageLocationID" Mode="In" Type="String" />
             <Parameter Name="WHAreaID" Mode="In" Type="String" />
             <Parameter Name="WHID" Mode="In" Type="String" />
             <Parameter Name="TempPlate" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="checkKq" ReturnType="Collection(WMSModel.checkKq_Result)">
+            <Parameter Name="WHAreaID" Mode="In" Type="String" />
+            <Parameter Name="WHID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="checkkw" ReturnType="Collection(WMSModel.checkkw_Result)">
+            <Parameter Name="StorageLocationID" Mode="In" Type="String" />
+            <Parameter Name="WHID" Mode="In" Type="String" />
+            <Parameter Name="WHAreaID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="checkMachine" ReturnType="Collection(WMSModel.checkMachine_Result)">
+            <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="MachineTypeID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="checkPlace" ReturnType="Collection(WMSModel.checkPlace_Result)">
+            <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="PlaceTypeID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="checkWo" ReturnType="Collection(WMSModel.checkWo_Result)">
+          <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="checkwu" ReturnType="Collection(WMSModel.checkwu_Result)">
+            <Parameter Name="Category" Mode="In" Type="String" />
+            <Parameter Name="ID" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="DelAll">
             <Parameter Name="type" Mode="In" Type="String" />
@@ -588,32 +732,44 @@
             <Parameter Name="Category2" Mode="In" Type="String" />
             <Parameter Name="Category3" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="checkWo" ReturnType="Collection(WMSModel.checkWo_Result)">
-          <Parameter Name="id" Mode="In" Type="String" />
-          </FunctionImport>
-          <FunctionImport Name="checkKq" ReturnType="Collection(WMSModel.checkKq_Result)">
-            <Parameter Name="WHAreaID" Mode="In" Type="String" />
-            <Parameter Name="WHID" Mode="In" Type="String" />
-          </FunctionImport>
-          <FunctionImport Name="checkkw" ReturnType="Collection(WMSModel.checkkw_Result)">
-            <Parameter Name="StorageLocationID" Mode="In" Type="String" />
-            <Parameter Name="WHID" Mode="In" Type="String" />
-            <Parameter Name="WHAreaID" Mode="In" Type="String" />
-          </FunctionImport>
-          <FunctionImport Name="AddUser">
-            <Parameter Name="UserName" Mode="In" Type="String" />
-            <Parameter Name="EmployeeName" Mode="In" Type="String" />
-            <Parameter Name="PWD" Mode="In" Type="String" />
-            <Parameter Name="Tel" Mode="In" Type="String" />
-            <Parameter Name="type" Mode="In" Type="String" />
-            <Parameter Name="id" Mode="In" Type="String" />
-          </FunctionImport>
-          <EntitySet Name="Employee" EntityType="WMSModel.Employee" />
-          <EntitySet Name="Category" EntityType="WMSModel.Category" />
-          <FunctionImport Name="checkwu" ReturnType="Collection(WMSModel.checkwu_Result)">
-            <Parameter Name="Category" Mode="In" Type="String" />
+          <FunctionImport Name="WcsAddAll">
+            <Parameter Name="Name" Mode="In" Type="String" />
             <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="MachineTypeID" Mode="In" Type="String" />
+            <Parameter Name="x_intercept" Mode="In" Type="String" />
+            <Parameter Name="y_intercept" Mode="In" Type="String" />
+            <Parameter Name="z_intercept" Mode="In" Type="String" />
+            <Parameter Name="RuningSpeed" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="CreatedBy" Mode="In" Type="String" />
+            <Parameter Name="Status" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="WcsDelAll">
+            <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="WcsUpAll">
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="MachineTypeID" Mode="In" Type="String" />
+            <Parameter Name="x_intercept" Mode="In" Type="String" />
+            <Parameter Name="y_intercept" Mode="In" Type="String" />
+            <Parameter Name="z_intercept" Mode="In" Type="String" />
+            <Parameter Name="RuningSpeed" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="CreatedBy" Mode="In" Type="String" />
+            <Parameter Name="Status" Mode="In" Type="String" />
+            <Parameter Name="UpdatedTime" Mode="In" Type="String" />
+            <Parameter Name="UpdatedBy" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Tactics" EntityType="WMSModel.Tactic" />
+          <EntitySet Name="WCS_Machine" EntityType="WMSModel.WCS_Machine" />
+          <EntitySet Name="WCS_MachinType" EntityType="WMSModel.WCS_MachinType" />
+          <EntitySet Name="WCS_PlaceType" EntityType="WMSModel.WCS_PlaceType" />
+          <EntitySet Name="WCS_Task" EntityType="WMSModel.WCS_Task" />
+          <EntitySet Name="WCS_Task_setup" EntityType="WMSModel.WCS_Task_setup" />
         </EntityContainer>
         <ComplexType Name="checkHuo_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -632,16 +788,6 @@
           <Property Type="String" Name="UpdatedBy" Nullable="true" MaxLength="20" />
           <Property Type="String" Name="StatusID" Nullable="true" MaxLength="20" />
           <Property Type="String" Name="CreatedTime" Nullable="true" MaxLength="20" />
-        </ComplexType>
-        <ComplexType Name="checkWo_Result">
-          <Property Type="Int32" Name="ID" Nullable="false" />
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
-          <Property Type="String" Name="Description" Nullable="true" MaxLength="20" />
-          <Property Type="String" Name="CreatedTime" Nullable="true" MaxLength="20" />
-          <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="20" />
-          <Property Type="String" Name="UpdatedTime" Nullable="true" MaxLength="20" />
-          <Property Type="String" Name="UpdatedBy" Nullable="true" MaxLength="20" />
-          <Property Type="Int32" Name="StatusID" Nullable="true" />
         </ComplexType>
         <ComplexType Name="checkKq_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -666,24 +812,35 @@
           <Property Type="String" Name="UpdatedBy" Nullable="true" MaxLength="20" />
           <Property Type="Int32" Name="StatusID" Nullable="true" />
         </ComplexType>
-        <EntityType Name="Employee">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="EmployeeName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PWD" Type="String" Nullable="false" MaxLength="80" FixedLength="false" Unicode="false" />
-          <Property Name="StatusID" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
-          <Property Name="Tel" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Category">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-        </EntityType>
+        <ComplexType Name="checkMachine_Result">
+          <Property Type="Int32" Name="ID" Nullable="true" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="MachineTypeID" Nullable="true" />
+          <Property Type="Double" Name="x_intercept" Nullable="true" />
+          <Property Type="Double" Name="y_intercept" Nullable="true" />
+          <Property Type="Double" Name="z_intercept" Nullable="true" />
+          <Property Type="Double" Name="RuningSpeed" Nullable="true" />
+          <Property Type="String" Name="Status" Nullable="true" MaxLength="20" />
+        </ComplexType>
+        <ComplexType Name="checkPlace_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="Int32" Name="PlaceTypeID" Nullable="true" />
+          <Property Type="Double" Name="x_intercept" Nullable="true" />
+          <Property Type="Double" Name="y_intercept" Nullable="true" />
+          <Property Type="Double" Name="z_intercept" Nullable="true" />
+          <Property Type="String" Name="Status" Nullable="true" MaxLength="20" />
+        </ComplexType>
+        <ComplexType Name="checkWo_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="CreatedTime" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="UpdatedTime" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="UpdatedBy" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="StatusID" Nullable="true" />
+        </ComplexType>
         <ComplexType Name="checkwu_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
           <Property Type="String" Name="Category1" Nullable="true" MaxLength="20" />
@@ -693,12 +850,101 @@
           <Property Type="Int32" Name="QTYperPallet" Nullable="true" />
           <Property Type="String" Name="Units" Nullable="true" MaxLength="10" />
         </ComplexType>
+        <EntityType Name="Tactic">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="TacticsName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StatusID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="WCS_Machine">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MachineTypeID" Type="Int32" />
+          <Property Name="x_intercept" Type="Double" />
+          <Property Name="y_intercept" Type="Double" />
+          <Property Name="z_intercept" Type="Double" />
+          <Property Name="RuningSpeed" Type="Double" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedTime" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedTime" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="WCS_MachinType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="WCS_PlaceType">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="WCS_Task">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MachineID" Type="Int32" />
+          <Property Name="QTY" Type="Int32" />
+          <Property Name="LocationFrom" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LocationTo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OrderStartTime" Type="DateTime" Precision="3" />
+          <Property Name="LenghtOfTime_ALL" Type="Int32" />
+          <Property Name="BeReadyToTakePlaceTime" Type="DateTime" Precision="3" />
+          <Property Name="LenghtOfTime_BeReadyToTakePlace" Type="Int32" />
+          <Property Name="WorkTime" Type="DateTime" Precision="3" />
+          <Property Name="LenghtOfTime_Work" Type="Int32" />
+          <Property Name="LenghtOfTime_WaitingForOthers" Type="Int32" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="WCS_Task_setup">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskID" Type="Int32" />
+          <Property Name="ActionID" Type="Int32" />
+          <Property Name="StatusID" Type="Int32" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="WMSModelStoreContainer" CdmEntityContainer="WMSEntities">
+          <EntitySetMapping Name="Category">
+            <EntityTypeMapping TypeName="WMSModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Employee">
+            <EntityTypeMapping TypeName="WMSModel.Employee">
+              <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="EmployeeName" ColumnName="EmployeeName" />
+                <ScalarProperty Name="PWD" ColumnName="PWD" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="Tel" ColumnName="Tel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="WCS_Place">
             <EntityTypeMapping TypeName="WMSModel.WCS_Place">
               <MappingFragment StoreEntitySet="WCS_Place">
@@ -883,7 +1129,8 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="AddStorage" FunctionName="WMSModel.Store.AddStorage" />
-          <FunctionImportMapping FunctionImportName="checkHuo" FunctionName="WMSModel.Store.checkHuo" >
+          <FunctionImportMapping FunctionImportName="AddUser" FunctionName="WMSModel.Store.AddUser" />
+          <FunctionImportMapping FunctionImportName="checkHuo" FunctionName="WMSModel.Store.checkHuo">
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.checkHuo_Result">
                 <ScalarProperty Name="ID" ColumnName="ID" />
@@ -902,22 +1149,6 @@
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="StatusID" ColumnName="StatusID" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="DelAll" FunctionName="WMSModel.Store.DelAll" />
-          <FunctionImportMapping FunctionImportName="UpAll" FunctionName="WMSModel.Store.UpAll" />
-          <FunctionImportMapping FunctionImportName="checkWo" FunctionName="WMSModel.Store.checkWo">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="WMSModel.checkWo_Result">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -952,27 +1183,47 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="AddUser" FunctionName="WMSModel.Store.AddUser" />
-          <EntitySetMapping Name="Employee">
-            <EntityTypeMapping TypeName="WMSModel.Employee">
-              <MappingFragment StoreEntitySet="Employee">
-                <ScalarProperty Name="Tel" ColumnName="Tel" />
-                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
-                <ScalarProperty Name="PWD" ColumnName="PWD" />
-                <ScalarProperty Name="EmployeeName" ColumnName="EmployeeName" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Category">
-            <EntityTypeMapping TypeName="WMSModel.Category">
-              <MappingFragment StoreEntitySet="Category">
+          <FunctionImportMapping FunctionImportName="checkMachine" FunctionName="WMSModel.Store.checkMachine">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.checkMachine_Result">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
+                <ScalarProperty Name="MachineTypeID" ColumnName="MachineTypeID" />
+                <ScalarProperty Name="x_intercept" ColumnName="x-intercept" />
+                <ScalarProperty Name="y_intercept" ColumnName="y-intercept" />
+                <ScalarProperty Name="z_intercept" ColumnName="z-intercept" />
+                <ScalarProperty Name="RuningSpeed" ColumnName="RuningSpeed" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="checkPlace" FunctionName="WMSModel.Store.checkPlace">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.checkPlace_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="PlaceTypeID" ColumnName="PlaceTypeID" />
+                <ScalarProperty Name="x_intercept" ColumnName="x-intercept" />
+                <ScalarProperty Name="y_intercept" ColumnName="y-intercept" />
+                <ScalarProperty Name="z_intercept" ColumnName="z-intercept" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="checkWo" FunctionName="WMSModel.Store.checkWo">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.checkWo_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="checkwu" FunctionName="WMSModel.Store.checkwu">
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.checkwu_Result">
@@ -986,6 +1237,86 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="DelAll" FunctionName="WMSModel.Store.DelAll" />
+          <FunctionImportMapping FunctionImportName="UpAll" FunctionName="WMSModel.Store.UpAll" />
+          <FunctionImportMapping FunctionImportName="WcsAddAll" FunctionName="WMSModel.Store.WcsAddAll" />
+          <FunctionImportMapping FunctionImportName="WcsDelAll" FunctionName="WMSModel.Store.WcsDelAll" />
+          <FunctionImportMapping FunctionImportName="WcsUpAll" FunctionName="WMSModel.Store.WcsUpAll" />
+          <EntitySetMapping Name="Tactics">
+            <EntityTypeMapping TypeName="WMSModel.Tactic">
+              <MappingFragment StoreEntitySet="Tactics">
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="TacticsName" ColumnName="TacticsName" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WCS_Machine">
+            <EntityTypeMapping TypeName="WMSModel.WCS_Machine">
+              <MappingFragment StoreEntitySet="WCS_Machine">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RuningSpeed" ColumnName="RuningSpeed" />
+                <ScalarProperty Name="z_intercept" ColumnName="z-intercept" />
+                <ScalarProperty Name="y_intercept" ColumnName="y-intercept" />
+                <ScalarProperty Name="x_intercept" ColumnName="x-intercept" />
+                <ScalarProperty Name="MachineTypeID" ColumnName="MachineTypeID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WCS_MachinType">
+            <EntityTypeMapping TypeName="WMSModel.WCS_MachinType">
+              <MappingFragment StoreEntitySet="WCS_MachinType">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WCS_PlaceType">
+            <EntityTypeMapping TypeName="WMSModel.WCS_PlaceType">
+              <MappingFragment StoreEntitySet="WCS_PlaceType">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WCS_Task">
+            <EntityTypeMapping TypeName="WMSModel.WCS_Task">
+              <MappingFragment StoreEntitySet="WCS_Task">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="LenghtOfTime_WaitingForOthers" ColumnName="LenghtOfTime_WaitingForOthers" />
+                <ScalarProperty Name="LenghtOfTime_Work" ColumnName="LenghtOfTime_Work" />
+                <ScalarProperty Name="WorkTime" ColumnName="WorkTime" />
+                <ScalarProperty Name="LenghtOfTime_BeReadyToTakePlace" ColumnName="LenghtOfTime_BeReadyToTakePlace" />
+                <ScalarProperty Name="BeReadyToTakePlaceTime" ColumnName="BeReadyToTakePlaceTime" />
+                <ScalarProperty Name="LenghtOfTime_ALL" ColumnName="LenghtOfTime_ALL" />
+                <ScalarProperty Name="OrderStartTime" ColumnName="OrderStartTime" />
+                <ScalarProperty Name="LocationTo" ColumnName="LocationTo" />
+                <ScalarProperty Name="LocationFrom" ColumnName="LocationFrom" />
+                <ScalarProperty Name="QTY" ColumnName="QTY" />
+                <ScalarProperty Name="MachineID" ColumnName="MachineID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WCS_Task_setup">
+            <EntityTypeMapping TypeName="WMSModel.WCS_Task_setup">
+              <MappingFragment StoreEntitySet="WCS_Task_setup">
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="ActionID" ColumnName="ActionID" />
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1000,7 +1331,7 @@
     <Options>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
-        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="无" />

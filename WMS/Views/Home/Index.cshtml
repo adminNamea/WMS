@@ -14,12 +14,6 @@
     <link rel="stylesheet" href="~/layui/css/layui.css">
     <script type="text/javascript" src="~/laydate/laydate.js"></script>
     <script type="text/javascript" src="~/layui/layui.js"></script>
-    <script type="text/javascript" src="~/js/inventory.js"></script>
-    <script type="text/javascript" src="~/js/Material.js"></script>
-    <script type="text/javascript" src="~/js/Warehouse.js"></script>
-    <script type="text/javascript" src="~/js/WarehouseArea.js"></script>
-    <script type="text/javascript" src="~/js/WarehousePosition.js"></script>
-    <script type="text/javascript" src="~/js/GoodsArea.js"></script>
     <style type="text/css">
         dl dd a {
             margin-left: 20px
@@ -102,21 +96,29 @@
 
 
         //    })
+        //    $()
         
         //})
         layui.use(['element', 'layer', 'form'], function () {
-            var element = layui.element, form = layui.form, layer = layui.layer, table = layui.table, $ = layui.jquery
+            var element = layui.element, form = layui.form, layer = layui.layer, $ = layui.jquery
             var indexs
+            datas = new Array()
             $(document).ajaxStart(function () {
                  indexs= layer.msg('加载中...', {
                     icon: 16
                      , shade: 0.01
                      , time: false
                 })
-
             })
             $(document).ajaxStop(function () {
                 layer.close(indexs)
+                for (var i = 0; i < datas.length; i++) {
+                    $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
+                    $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID)
+                    $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
+                    $("tbody tr:eq(" + i + ")").find(".PlaceTypeID").val(datas[i].PlaceTypeID)
+                    form.render()
+                }
                 })
             if ('@Session["user"]' != undefined && '@Session["user"]'!="") {
                 $(".userName").text('@Session["user"]')
@@ -133,28 +135,15 @@
                     } else {
                     $.get("/Home/OutUser", function (data) {
                         if (data == "true") {
-                            $(".userName").text("未登录")
-                            $(".WCS").hide()
-                            $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>")
-                            element.render();
-                            element.tabChange('docDemoTabBrief',11);
-                            layer.close(index);
+                            location.reload()
                         }
                         })
                     }
                 });
-
             })
             $(".UserData").click(function () {
-
-                if ('@Session["user"]' != null && '@Session["user"]' != "") {
-                    $('.log').replaceWith("<li lay-id=11 class='log'>WMS-基础资料-员工信息</li><i>/Home/UserData</i>")
-                    element.render('tab');
-                    element.tabChange('docDemoTabBrief', 11);
-                } else {
                     $('.data').click()
                     element.tabChange('docDemoTabBrief', 11);
-                }
             })
             element.on('nav(test)', function (elem) {
                 switch (elem.text()) {
@@ -189,13 +178,21 @@
             });
             element.on('tab(docDemoTabBrief)', function (data) {
                 var url = data.elem.find("li:eq(" + data.index + ")").next().text();
-                var js = url.substr(url.lastIndexOf("/") + 1, url.lastIndexOf(""))
                 if (url != "/WMS/login") {
                     if ('@Session["user"]' != null && '@Session["user"]' != "") {
                         $.ajaxSetup({
                             cache: false
                         })
-                     
+                            for (var la in layui.cache.event) {
+                                if (la != "element.nav" && la != "element.tab") { 
+                                    layui.cache.event["" + la + ""] = null
+                                }
+                        }
+                        $(".layui-btn").off()
+                        $(".layui-btn").unbind
+                        $(".layui-icon-add-1").off()
+                        $(".layui-icon-add-1").unbind
+                        $(".layui-tab-content").empty()
                         $(".layui-tab-content").load(url, function () {
                             form.render()
                         })
@@ -212,7 +209,6 @@
             });
             $('.data').click()
             element.tabChange('docDemoTabBrief', 11)
-
         });
     </script>
 </body>

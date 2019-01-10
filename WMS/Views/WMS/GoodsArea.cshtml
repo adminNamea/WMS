@@ -8,6 +8,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="~/js/GoodsArea.js"></script>
     <title>货位</title>
     <style type="text/css">
         .layui-form-pane .layui-form-select {
@@ -19,9 +20,10 @@
             display: inline-block;
             border: 0px;
         }
+
         .layui-table-cell {
-            overflow:initial;
-            height:initial;
+            overflow: initial;
+            height: initial;
         }
     </style>
     <script type="text/html" id="barDemo">
@@ -29,7 +31,7 @@
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
     <script type="text/html" id="selectca">
-        <select lay-search lay-filter="tableca" class="WHID" ></select>
+        <select lay-search lay-filter="tableca" class="WHID"></select>
     </script>
     <script type="text/html" id="selectkq">
         <select lay-search lay-filter="tablekq" class="WHAreaID"></select>

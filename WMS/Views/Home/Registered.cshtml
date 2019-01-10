@@ -49,66 +49,69 @@
         </div>
     </form>
     <script>
-        layui.use(['form','layer'], function () {
-            var form = layui.form, layer = layui.layer;
-            var $ = layui.jquery
-            var bool = false;
-            form.on('switch', function (data) {
-                WCS = data.elem.checked
-            });
-            $("[name=UserName]").css("border-color","rgba(255,0,0,0.5)")
-            $("[name=UserName]").change(function () {
-                var value = $(this).val().trim();
-                $.get("/Home/checkUser", { value: value }, function (data) {
-                    if (data.length == 0) {
+        !function () {
+            "use strict";
+            layui.use(['form', 'layer'], function () {
+                var form = layui.form, layer = layui.layer;
+                var $ = layui.jquery
+                var bool = false;
+                form.on('switch', function (data) {
+                    WCS = data.elem.checked
+                });
+                $("[name=UserName]").css("border-color", "rgba(255,0,0,0.5)")
+                $("[name=UserName]").change(function () {
+                    var value = $(this).val().trim();
+                    $.get("/Home/checkUser", { value: value }, function (data) {
+                        if (data.length == 0) {
                             $("[name=UserName]").css("border-color", "rgba(0,255,0,0.5)")
                             bool = true;
-                    } else {
-                        $("[name=UserName]").css("border-color","rgba(255,0,0,0.5)")
-                        bool = false;
-                    }
-                })
-            })
-            form.on('submit(formDemo)', function (data) {
-                if (bool) {
-                    $.get("/Home/checkUser", { Tel: $("[name=Tel]").val() }, function (data1) {
-                        if (data1.length > 0) {
-                            layer.msg("该电话已经注册", { icon: 5 })
- 
-                            $("[name=Tel]").focus()
                         } else {
-                            $.post("/Home/AddUser", { User: data.field,type:"add" }, function (data) {
-                                if (data == "true") {
-                                    var index = parent.layer.getFrameIndex(window.name)
-                                    parent.layer.msg("注册成功")
-                                    parent.layer.close(index)
-                                }
-                            })
+                            $("[name=UserName]").css("border-color", "rgba(255,0,0,0.5)")
+                            bool = false;
                         }
                     })
-                } else {
-                    layer.msg('用户名重复', { icon: 5 })
-                }
-                return false; 
-            })
-            form.verify({
-                username: function (value, item) {
-                    if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
-                        return '用户名不能有特殊字符';
+                })
+                form.on('submit(formDemo)', function (data) {
+                    if (bool) {
+                        $.get("/Home/checkUser", { Tel: $("[name=Tel]").val() }, function (data1) {
+                            if (data1.length > 0) {
+                                layer.msg("该电话已经注册", { icon: 5 })
+
+                                $("[name=Tel]").focus()
+                            } else {
+                                $.post("/Home/AddUser", { User: data.field, type: "add" }, function (data) {
+                                    if (data == "true") {
+                                        var index = parent.layer.getFrameIndex(window.name)
+                                        parent.layer.msg("注册成功")
+                                        parent.layer.close(index)
+                                    }
+                                })
+                            }
+                        })
+                    } else {
+                        layer.msg('用户名重复', { icon: 5 })
                     }
-                    if (/(^\_)|(\__)|(\_+$)/.test(value)) {
-                        return '用户名首尾不能出现下划线\'_\'';
+                    return false;
+                })
+                form.verify({
+                    username: function (value, item) {
+                        if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                            return '用户名不能有特殊字符';
+                        }
+                        if (/(^\_)|(\__)|(\_+$)/.test(value)) {
+                            return '用户名首尾不能出现下划线\'_\'';
+                        }
+                        if (/^\d+\d+\d$/.test(value)) {
+                            return '用户名不能全为数字';
+                        }
                     }
-                    if (/^\d+\d+\d$/.test(value)) {
-                        return '用户名不能全为数字';
-                    }
-                }
-                , pass: [
-                    /^[\S]{6,12}$/
-                    , '密码必须6到12位，且不能出现空格'
-                ]
-            });  
-        });
+                    , pass: [
+                        /^[\S]{6,12}$/
+                        , '密码必须6到12位，且不能出现空格'
+                    ]
+                });
+            });
+        }();
     </script>
 </body>
 </html>

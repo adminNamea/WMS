@@ -1,4 +1,9 @@
-﻿
+﻿newFunction();
+
+function newFunction() {
+    ;
+    !function (e) {
+        "use strict";
 layui.use(['table', 'form', 'layer'], function () {
     var table = layui.table, $ = layui.jquery, form = layui.form, layer = layui.layer;
     var datas, tableIns1;
@@ -167,4 +172,6 @@ layui.use(['table', 'form', 'layer'], function () {
         layer.msg("更新完成")
         tableIns1.reload({})
     })
-})
+            })
+    }(window);
+}

@@ -63,7 +63,6 @@ namespace WMS.Controllers
         //添加仓库等
         public string AddWarehouse(Dictionary<string, string> data, string type)
         {
-            string ses = Session["user"].ToString();
             StringBuilder builder = new StringBuilder("exec AddStorage @type=" + type + ",@CreatedBy="+Session["user"].ToString() + ",");
             using (WMSEntities ws = new WMSEntities())
             {
@@ -287,50 +286,14 @@ namespace WMS.Controllers
     {
         using (WMSEntities wMS = new WMSEntities())
         {
-            int i = int.Parse(id);
-            if (type == "huo")
-            {
-                WH_GoodsAllocation wga = wMS.WH_GoodsAllocation.Where(c => c.ID == i).First();
-                wMS.WH_GoodsAllocation.Remove(wga);
-            }
-            if (type == "kq")
-            {
-                WH_Area wga = wMS.WH_Area.Where(c => c.ID == i).First();
-                wMS.WH_Area.Remove(wga);
-            }
-            if (type == "ca")
-            {
-                WH wga = wMS.WH.Where(c => c.ID == i).First();
-                wMS.WH.Remove(wga);
-            }
-            if (type == "kw")
-            {
-                WH_StorageLocation wga = wMS.WH_StorageLocation.Where(c => c.ID == i).First();
-                wMS.WH_StorageLocation.Remove(wga);
-            }
-           if (type =="xian") {
-              var wga = wMS.WH_GoodsAllocation.Where(c => c.ID == i).ToList();
-               foreach (var up in wga) {
-                        up.Size = 0;
-               }
-           }
-           if (type == "wu")
-           {
-              WH_Material wga = wMS.WH_Material.Where(c => c.ID == i).First();
-            wMS.WH_Material.Remove(wga);
-           }
-             int w = wMS.SaveChanges();
-            if (w > 0)
-            {
-                return "true";
-            }
-            else
-            {
-                return "false";
-            }
+                    SqlParameter[] parameters = new SqlParameter[2];
+                    parameters[0] = new SqlParameter("@type",type);
+                    parameters[0] = new SqlParameter("@id",id);
+                    wMS.Database.ExecuteSqlCommand("exec DelAll @type=@type,@ID=@id",parameters);
         }
+            return "true";
 
-    }
+        }
     //删除多个
     public string DelAll(List<string> id, string type)
     {

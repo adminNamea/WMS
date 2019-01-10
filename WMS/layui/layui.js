@@ -5,7 +5,11 @@ function newFunction() {
     ;
     !function(e) {
         "use strict";
-        var t = document, o = { modules: {}, status: {}, timeout: 10, event: {} }, n = function() { this.v = "2.4.3"; }, r = function() {
+        var t = document, o = {
+            modules: {}, status: {}, timeout: 10, event: {
+
+            }
+        }, n = function () { this.v = "2.4.3"; }, r = function () {
         var e = t.currentScript ? t.currentScript.src : function() {
         for (var e, o = t.scripts, n = o.length - 1, r = n; r > 0; r--)
             if ("interactive" === o[r].readyState) {

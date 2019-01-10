@@ -27,6 +27,8 @@ namespace WMS.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Employee> Employee { get; set; }
         public virtual DbSet<WCS_Place> WCS_Place { get; set; }
         public virtual DbSet<WH> WH { get; set; }
         public virtual DbSet<WH_Area> WH_Area { get; set; }
@@ -38,8 +40,12 @@ namespace WMS.Models
         public virtual DbSet<WCS_DecomposedCommand> WCS_DecomposedCommand { get; set; }
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
-        public virtual DbSet<Employee> Employee { get; set; }
-        public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Tactic> Tactics { get; set; }
+        public virtual DbSet<WCS_Machine> WCS_Machine { get; set; }
+        public virtual DbSet<WCS_MachinType> WCS_MachinType { get; set; }
+        public virtual DbSet<WCS_PlaceType> WCS_PlaceType { get; set; }
+        public virtual DbSet<WCS_Task> WCS_Task { get; set; }
+        public virtual DbSet<WCS_Task_setup> WCS_Task_setup { get; set; }
     
         public virtual int AddStorage(string name, string iD, string description, string createdBy, string type, string whid, string arid, string storageLocationID, string size, string tempPlate, string z, string x, string y, string category1, string partSpec, string partMaterial, string qTYperPallet, string units)
         {
@@ -118,6 +124,35 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddStorage", nameParameter, iDParameter, descriptionParameter, createdByParameter, typeParameter, whidParameter, aridParameter, storageLocationIDParameter, sizeParameter, tempPlateParameter, zParameter, xParameter, yParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter);
         }
     
+        public virtual int AddUser(string userName, string employeeName, string pWD, string tel, string type, string id)
+        {
+            var userNameParameter = userName != null ?
+                new ObjectParameter("UserName", userName) :
+                new ObjectParameter("UserName", typeof(string));
+    
+            var employeeNameParameter = employeeName != null ?
+                new ObjectParameter("EmployeeName", employeeName) :
+                new ObjectParameter("EmployeeName", typeof(string));
+    
+            var pWDParameter = pWD != null ?
+                new ObjectParameter("PWD", pWD) :
+                new ObjectParameter("PWD", typeof(string));
+    
+            var telParameter = tel != null ?
+                new ObjectParameter("Tel", tel) :
+                new ObjectParameter("Tel", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(string));
+    
+            var idParameter = id != null ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", userNameParameter, employeeNameParameter, pWDParameter, telParameter, typeParameter, idParameter);
+        }
+    
         public virtual ObjectResult<checkHuo_Result> checkHuo(string storageLocationID, string wHAreaID, string wHID, string tempPlate, string type)
         {
             var storageLocationIDParameter = storageLocationID != null ?
@@ -141,6 +176,84 @@ namespace WMS.Models
                 new ObjectParameter("type", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkHuo_Result>("checkHuo", storageLocationIDParameter, wHAreaIDParameter, wHIDParameter, tempPlateParameter, typeParameter);
+        }
+    
+        public virtual ObjectResult<checkKq_Result> checkKq(string wHAreaID, string wHID)
+        {
+            var wHAreaIDParameter = wHAreaID != null ?
+                new ObjectParameter("WHAreaID", wHAreaID) :
+                new ObjectParameter("WHAreaID", typeof(string));
+    
+            var wHIDParameter = wHID != null ?
+                new ObjectParameter("WHID", wHID) :
+                new ObjectParameter("WHID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkKq_Result>("checkKq", wHAreaIDParameter, wHIDParameter);
+        }
+    
+        public virtual ObjectResult<checkkw_Result> checkkw(string storageLocationID, string wHID, string wHAreaID)
+        {
+            var storageLocationIDParameter = storageLocationID != null ?
+                new ObjectParameter("StorageLocationID", storageLocationID) :
+                new ObjectParameter("StorageLocationID", typeof(string));
+    
+            var wHIDParameter = wHID != null ?
+                new ObjectParameter("WHID", wHID) :
+                new ObjectParameter("WHID", typeof(string));
+    
+            var wHAreaIDParameter = wHAreaID != null ?
+                new ObjectParameter("WHAreaID", wHAreaID) :
+                new ObjectParameter("WHAreaID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkkw_Result>("checkkw", storageLocationIDParameter, wHIDParameter, wHAreaIDParameter);
+        }
+    
+        public virtual ObjectResult<checkMachine_Result> checkMachine(string iD, string machineTypeID)
+        {
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var machineTypeIDParameter = machineTypeID != null ?
+                new ObjectParameter("MachineTypeID", machineTypeID) :
+                new ObjectParameter("MachineTypeID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkMachine_Result>("checkMachine", iDParameter, machineTypeIDParameter);
+        }
+    
+        public virtual ObjectResult<checkPlace_Result> checkPlace(string iD, string placeTypeID)
+        {
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var placeTypeIDParameter = placeTypeID != null ?
+                new ObjectParameter("PlaceTypeID", placeTypeID) :
+                new ObjectParameter("PlaceTypeID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkPlace_Result>("checkPlace", iDParameter, placeTypeIDParameter);
+        }
+    
+        public virtual ObjectResult<checkWo_Result> checkWo(string id)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkWo_Result>("checkWo", idParameter);
+        }
+    
+        public virtual ObjectResult<checkwu_Result> checkwu(string category, string iD)
+        {
+            var categoryParameter = category != null ?
+                new ObjectParameter("Category", category) :
+                new ObjectParameter("Category", typeof(string));
+    
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkwu_Result>("checkwu", categoryParameter, iDParameter);
         }
     
         public virtual int DelAll(string type, string id)
@@ -261,85 +374,123 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpAll", iDParameter, nameParameter, x_interceptParameter, updatedByParameter, updatedTimeParameter, statusIDParameter, y_interceptParameter, z_interceptParameter, sizeParameter, descriptionParameter, tempPlateParameter, storageLocationIDParameter, wHAreaIDParameter, wHIDParameter, createdByParameter, createdTimeParameter, typeParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter, partNameParameter, category2Parameter, category3Parameter);
         }
     
-        public virtual ObjectResult<checkWo_Result> checkWo(string id)
+        public virtual int WcsAddAll(string name, string iD, string machineTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string type)
         {
-            var idParameter = id != null ?
-                new ObjectParameter("id", id) :
-                new ObjectParameter("id", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkWo_Result>("checkWo", idParameter);
-        }
-    
-        public virtual ObjectResult<checkKq_Result> checkKq(string wHAreaID, string wHID)
-        {
-            var wHAreaIDParameter = wHAreaID != null ?
-                new ObjectParameter("WHAreaID", wHAreaID) :
-                new ObjectParameter("WHAreaID", typeof(string));
-    
-            var wHIDParameter = wHID != null ?
-                new ObjectParameter("WHID", wHID) :
-                new ObjectParameter("WHID", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkKq_Result>("checkKq", wHAreaIDParameter, wHIDParameter);
-        }
-    
-        public virtual ObjectResult<checkkw_Result> checkkw(string storageLocationID, string wHID, string wHAreaID)
-        {
-            var storageLocationIDParameter = storageLocationID != null ?
-                new ObjectParameter("StorageLocationID", storageLocationID) :
-                new ObjectParameter("StorageLocationID", typeof(string));
-    
-            var wHIDParameter = wHID != null ?
-                new ObjectParameter("WHID", wHID) :
-                new ObjectParameter("WHID", typeof(string));
-    
-            var wHAreaIDParameter = wHAreaID != null ?
-                new ObjectParameter("WHAreaID", wHAreaID) :
-                new ObjectParameter("WHAreaID", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkkw_Result>("checkkw", storageLocationIDParameter, wHIDParameter, wHAreaIDParameter);
-        }
-    
-        public virtual int AddUser(string userName, string employeeName, string pWD, string tel, string type, string id)
-        {
-            var userNameParameter = userName != null ?
-                new ObjectParameter("UserName", userName) :
-                new ObjectParameter("UserName", typeof(string));
-    
-            var employeeNameParameter = employeeName != null ?
-                new ObjectParameter("EmployeeName", employeeName) :
-                new ObjectParameter("EmployeeName", typeof(string));
-    
-            var pWDParameter = pWD != null ?
-                new ObjectParameter("PWD", pWD) :
-                new ObjectParameter("PWD", typeof(string));
-    
-            var telParameter = tel != null ?
-                new ObjectParameter("Tel", tel) :
-                new ObjectParameter("Tel", typeof(string));
-    
-            var typeParameter = type != null ?
-                new ObjectParameter("type", type) :
-                new ObjectParameter("type", typeof(string));
-    
-            var idParameter = id != null ?
-                new ObjectParameter("id", id) :
-                new ObjectParameter("id", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", userNameParameter, employeeNameParameter, pWDParameter, telParameter, typeParameter, idParameter);
-        }
-    
-        public virtual ObjectResult<checkwu_Result> checkwu(string category, string iD)
-        {
-            var categoryParameter = category != null ?
-                new ObjectParameter("Category", category) :
-                new ObjectParameter("Category", typeof(string));
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
     
             var iDParameter = iD != null ?
                 new ObjectParameter("ID", iD) :
                 new ObjectParameter("ID", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkwu_Result>("checkwu", categoryParameter, iDParameter);
+            var machineTypeIDParameter = machineTypeID != null ?
+                new ObjectParameter("MachineTypeID", machineTypeID) :
+                new ObjectParameter("MachineTypeID", typeof(string));
+    
+            var x_interceptParameter = x_intercept != null ?
+                new ObjectParameter("x_intercept", x_intercept) :
+                new ObjectParameter("x_intercept", typeof(string));
+    
+            var y_interceptParameter = y_intercept != null ?
+                new ObjectParameter("y_intercept", y_intercept) :
+                new ObjectParameter("y_intercept", typeof(string));
+    
+            var z_interceptParameter = z_intercept != null ?
+                new ObjectParameter("z_intercept", z_intercept) :
+                new ObjectParameter("z_intercept", typeof(string));
+    
+            var runingSpeedParameter = runingSpeed != null ?
+                new ObjectParameter("RuningSpeed", runingSpeed) :
+                new ObjectParameter("RuningSpeed", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var createdByParameter = createdBy != null ?
+                new ObjectParameter("CreatedBy", createdBy) :
+                new ObjectParameter("CreatedBy", typeof(string));
+    
+            var statusParameter = status != null ?
+                new ObjectParameter("Status", status) :
+                new ObjectParameter("Status", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsAddAll", nameParameter, iDParameter, machineTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, typeParameter);
+        }
+    
+        public virtual int WcsDelAll(string iD, string type)
+        {
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsDelAll", iDParameter, typeParameter);
+        }
+    
+        public virtual int WcsUpAll(string name, string iD, string machineTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string updatedTime, string updatedBy, string type)
+        {
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var machineTypeIDParameter = machineTypeID != null ?
+                new ObjectParameter("MachineTypeID", machineTypeID) :
+                new ObjectParameter("MachineTypeID", typeof(string));
+    
+            var x_interceptParameter = x_intercept != null ?
+                new ObjectParameter("x_intercept", x_intercept) :
+                new ObjectParameter("x_intercept", typeof(string));
+    
+            var y_interceptParameter = y_intercept != null ?
+                new ObjectParameter("y_intercept", y_intercept) :
+                new ObjectParameter("y_intercept", typeof(string));
+    
+            var z_interceptParameter = z_intercept != null ?
+                new ObjectParameter("z_intercept", z_intercept) :
+                new ObjectParameter("z_intercept", typeof(string));
+    
+            var runingSpeedParameter = runingSpeed != null ?
+                new ObjectParameter("RuningSpeed", runingSpeed) :
+                new ObjectParameter("RuningSpeed", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var createdByParameter = createdBy != null ?
+                new ObjectParameter("CreatedBy", createdBy) :
+                new ObjectParameter("CreatedBy", typeof(string));
+    
+            var statusParameter = status != null ?
+                new ObjectParameter("Status", status) :
+                new ObjectParameter("Status", typeof(string));
+    
+            var updatedTimeParameter = updatedTime != null ?
+                new ObjectParameter("UpdatedTime", updatedTime) :
+                new ObjectParameter("UpdatedTime", typeof(string));
+    
+            var updatedByParameter = updatedBy != null ?
+                new ObjectParameter("UpdatedBy", updatedBy) :
+                new ObjectParameter("UpdatedBy", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter);
         }
     }
 }

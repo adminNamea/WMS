@@ -55,7 +55,7 @@ layui.use(['table', 'form', 'layer'], function () {
             , { field: 'PartName', title: '物料名称', edit: "text" }
             , { field: 'Category1', title: '物料类别', toolbar: '#selectca', width: 200 }
             , { field: 'PartSpec', title: '物料规格', edit: "text" }
-            , { field: 'PartMaterial', title: '物料材质' }
+            , { field: 'PartMaterial', title: '物料材质' ,edit: "text" }
             , { align: 'center', toolbar: '#barDemo' }
         ]]
         , done: function (res) {

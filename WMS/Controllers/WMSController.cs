@@ -97,11 +97,13 @@ namespace WMS.Controllers
                     SqlParameter[] parameters = new SqlParameter[1];
                     parameters[0] = new SqlParameter("@id", data);
                     List<checkWo_Result> list1 = wMS.Database.SqlQuery<checkWo_Result>("exec checkWo @id", parameters).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>();
-                    map.Add("code", 0);
-                    map.Add("msg", "");
-                    map.Add("count", "");
-                    map.Add("data", list1);
+                    Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", "" },
+                        { "data", list1 }
+                    };
                     return Json(map, JsonRequestBehavior.AllowGet);
                 }
                 else
@@ -146,11 +148,13 @@ namespace WMS.Controllers
                         }
                     }
                     list1 = wMS.Database.SqlQuery<checkKq_Result>(builder.ToString(), parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>();
-                    map.Add("code", 0);
-                    map.Add("msg", "");
-                    map.Add("count", "");
-                    map.Add("data", list1);
+                    Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", "" },
+                        { "data", list1 }
+                    };
                     return Json(map, JsonRequestBehavior.AllowGet);
                 }
                 else
@@ -196,11 +200,13 @@ namespace WMS.Controllers
                         }
                     }
                     list1 = wMS.Database.SqlQuery<checkkw_Result>(builder.ToString(), parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>();
-                    map.Add("code", 0);
-                    map.Add("msg", "");
-                    map.Add("count", "");
-                    map.Add("data", list1);
+                    Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", "" },
+                        { "data", list1 }
+                    };
                     return Json(map, JsonRequestBehavior.AllowGet);
                 }
                 else
@@ -254,12 +260,14 @@ namespace WMS.Controllers
                     }
                 }
                 list1 = wMS.Database.SqlQuery<checkHuo_Result>(builder.ToString(), parameter).ToList();
-                Dictionary<string, object> map = new Dictionary<string, object>();
-                map.Add("code", 0);
-                map.Add("msg", "");
-                map.Add("count", "");
-                map.Add("data", list1);
-                return Json(map, JsonRequestBehavior.AllowGet);
+                    Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", "" },
+                        { "data", list1 }
+                    };
+                    return Json(map, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -288,7 +296,7 @@ namespace WMS.Controllers
         {
                     SqlParameter[] parameters = new SqlParameter[2];
                     parameters[0] = new SqlParameter("@type",type);
-                    parameters[0] = new SqlParameter("@id",id);
+                    parameters[1] = new SqlParameter("@id",id);
                     wMS.Database.ExecuteSqlCommand("exec DelAll @type=@type,@ID=@id",parameters);
         }
             return "true";

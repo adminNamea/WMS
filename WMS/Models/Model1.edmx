@@ -76,7 +76,7 @@
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" />
           <Property Name="Status" Type="varchar" MaxLength="20" />
         </EntityType>
@@ -296,6 +296,9 @@
           <Parameter Name="type" Type="varchar" Mode="In" />
           <Parameter Name="id" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="checkComm" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="checkHuo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StorageLocationID" Type="varchar" Mode="In" />
           <Parameter Name="WHAreaID" Type="varchar" Mode="In" />
@@ -362,6 +365,7 @@
           <Parameter Name="Name" Type="varchar" Mode="In" />
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="MachineTypeID" Type="varchar" Mode="In" />
+          <Parameter Name="PlaceTypeID" Type="varchar" Mode="In" />
           <Parameter Name="x_intercept" Type="varchar" Mode="In" />
           <Parameter Name="y_intercept" Type="varchar" Mode="In" />
           <Parameter Name="z_intercept" Type="varchar" Mode="In" />
@@ -370,6 +374,7 @@
           <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
           <Parameter Name="Status" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
+          <Parameter Name="Sort" Type="varchar" Mode="In" />
         </Function>
         <Function Name="WcsDelAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ID" Type="varchar" Mode="In" />
@@ -379,6 +384,7 @@
           <Parameter Name="Name" Type="varchar" Mode="In" />
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="MachineTypeID" Type="varchar" Mode="In" />
+          <Parameter Name="PlaceTypeID" Type="varchar" Mode="In" />
           <Parameter Name="x_intercept" Type="varchar" Mode="In" />
           <Parameter Name="y_intercept" Type="varchar" Mode="In" />
           <Parameter Name="z_intercept" Type="varchar" Mode="In" />
@@ -389,6 +395,7 @@
           <Parameter Name="UpdatedTime" Type="varchar" Mode="In" />
           <Parameter Name="UpdatedBy" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
+          <Parameter Name="Sort" Type="varchar" Mode="In" />
         </Function>
         <EntityContainer Name="WMSModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
@@ -736,6 +743,7 @@
             <Parameter Name="Name" Mode="In" Type="String" />
             <Parameter Name="ID" Mode="In" Type="String" />
             <Parameter Name="MachineTypeID" Mode="In" Type="String" />
+            <Parameter Name="PlaceTypeID" Mode="In" Type="String" />
             <Parameter Name="x_intercept" Mode="In" Type="String" />
             <Parameter Name="y_intercept" Mode="In" Type="String" />
             <Parameter Name="z_intercept" Mode="In" Type="String" />
@@ -744,6 +752,7 @@
             <Parameter Name="CreatedBy" Mode="In" Type="String" />
             <Parameter Name="Status" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
+            <Parameter Name="Sort" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="WcsDelAll">
             <Parameter Name="ID" Mode="In" Type="String" />
@@ -753,6 +762,7 @@
             <Parameter Name="Name" Mode="In" Type="String" />
             <Parameter Name="ID" Mode="In" Type="String" />
             <Parameter Name="MachineTypeID" Mode="In" Type="String" />
+            <Parameter Name="PlaceTypeID" Mode="In" Type="String" />
             <Parameter Name="x_intercept" Mode="In" Type="String" />
             <Parameter Name="y_intercept" Mode="In" Type="String" />
             <Parameter Name="z_intercept" Mode="In" Type="String" />
@@ -763,6 +773,7 @@
             <Parameter Name="UpdatedTime" Mode="In" Type="String" />
             <Parameter Name="UpdatedBy" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
+            <Parameter Name="Sort" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="Tactics" EntityType="WMSModel.Tactic" />
           <EntitySet Name="WCS_Machine" EntityType="WMSModel.WCS_Machine" />
@@ -770,6 +781,9 @@
           <EntitySet Name="WCS_PlaceType" EntityType="WMSModel.WCS_PlaceType" />
           <EntitySet Name="WCS_Task" EntityType="WMSModel.WCS_Task" />
           <EntitySet Name="WCS_Task_setup" EntityType="WMSModel.WCS_Task_setup" />
+          <FunctionImport Name="checkComm" ReturnType="Collection(WMSModel.checkComm_Result)">
+            <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="checkHuo_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -813,14 +827,14 @@
           <Property Type="Int32" Name="StatusID" Nullable="true" />
         </ComplexType>
         <ComplexType Name="checkMachine_Result">
-          <Property Type="Int32" Name="ID" Nullable="true" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
           <Property Type="String" Name="Name" Nullable="true" MaxLength="50" />
           <Property Type="Int32" Name="MachineTypeID" Nullable="true" />
+          <Property Type="Double" Name="RuningSpeed" Nullable="true" />
+          <Property Type="String" Name="Status" Nullable="true" MaxLength="20" />
           <Property Type="Double" Name="x_intercept" Nullable="true" />
           <Property Type="Double" Name="y_intercept" Nullable="true" />
           <Property Type="Double" Name="z_intercept" Nullable="true" />
-          <Property Type="Double" Name="RuningSpeed" Nullable="true" />
-          <Property Type="String" Name="Status" Nullable="true" MaxLength="20" />
         </ComplexType>
         <ComplexType Name="checkPlace_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -919,6 +933,13 @@
           <Property Name="ActionID" Type="Int32" />
           <Property Name="StatusID" Type="Int32" />
         </EntityType>
+        <ComplexType Name="checkComm_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="Sort" Nullable="true" />
+          <Property Type="Int32" Name="MachineTypeID" Nullable="true" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1189,11 +1210,11 @@
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="MachineTypeID" ColumnName="MachineTypeID" />
-                <ScalarProperty Name="x_intercept" ColumnName="x-intercept" />
-                <ScalarProperty Name="y_intercept" ColumnName="y-intercept" />
-                <ScalarProperty Name="z_intercept" ColumnName="z-intercept" />
                 <ScalarProperty Name="RuningSpeed" ColumnName="RuningSpeed" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="x_intercept" ColumnName="x_intercept" />
+                <ScalarProperty Name="y_intercept" ColumnName="y_intercept" />
+                <ScalarProperty Name="z_intercept" ColumnName="z_intercept" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -1317,6 +1338,17 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="checkComm" FunctionName="WMSModel.Store.checkComm">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.checkComm_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="MachineTypeID" ColumnName="MachineTypeID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

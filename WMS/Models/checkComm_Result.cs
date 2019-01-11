@@ -11,15 +11,12 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class checkMachine_Result
+    public partial class checkComm_Result
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public Nullable<int> Sort { get; set; }
         public Nullable<int> MachineTypeID { get; set; }
-        public Nullable<double> RuningSpeed { get; set; }
-        public string Status { get; set; }
-        public Nullable<double> x_intercept { get; set; }
-        public Nullable<double> y_intercept { get; set; }
-        public Nullable<double> z_intercept { get; set; }
     }
 }

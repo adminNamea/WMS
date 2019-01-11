@@ -9,28 +9,28 @@ function newFunction() {
             var map = new Map();
             var statu = 0;
             var indexs
-          
+
             function ajax() {
                 var tp = "";
                 if (statu == 1) {
                     tp = "tbody";
                 }
-                $.get("/WCS/checkMachine", function (data) {
+                $.get("/WCS/checkPlace", function (data) {
                     if (data != null) {
-                        $(tp +" .ID").empty();
-                        $(tp +" .ID").append("<option value='' selected>请选择</option>")
+                        $(tp + " .ID").empty();
+                        $(tp + " .ID").append("<option value='' selected>请选择</option>")
                         for (var i = 0; i < data.length; i++) {
-                            $(tp +" .ID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
+                            $(tp + " .ID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
                         }
                     }
                     form.render()
                 })
-                $.get("/WCS/checkMachinType", function (data) {
+                $.get("/WCS/checkPlaceType", function (data) {
                     if (data != null) {
-                        $(tp +" .MachineTypeID").empty();
-                        $(tp + " .MachineTypeID").append("<option value='' selected>请选择</option>")
+                        $(tp + " .PlaceTypeID").empty();
+                        $(tp + " .PlaceTypeID").append("<option value='' selected>请选择</option>")
                         for (var i = 0; i < data.length; i++) {
-                            $(tp +" .MachineTypeID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
+                            $(tp + " .PlaceTypeID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
                         }
                     }
                     form.render()
@@ -38,39 +38,34 @@ function newFunction() {
 
             }
             var boo = false;
-            var boo1 = false;
-            
             function Add(name, i) {
-                 indexs = layer.open({
+                indexs = layer.open({
                     type: 1,
                     title: name,
                     shadeClose: true,
                     shade: false,
                     area: ['893px', '600px'],
-                     content: $("" + i + "")
-                     , success: function () {
-                      
-                         if (i == "#ji") {
-                             sub("formDemo1","ji");
-                         } else {
-                             sub("formDemo","lei");
-                         }
-                     }
-                     , end: function () {
-                         statu=0
-                        tableIns3.reload({})
+                    content: $("" + i + "")
+                    , success: function () {
+                        if (i == "#go") {
+                            sub("formDemo1", "go");
+                        } else {
+                            sub("formDemo","golei");
+                        }
+                    }
+                    
+                    , end: function () {
+                        statu = 0
+                        tableIns3.reload({
+                            url: "/WCS/checkPlace?id=1&data=" + null
+                        })
                         $(":reset").click()
                     }
                 });
             }
-            function sub(su,type) {
+            function sub(su, type) {
                 $("[name=Name]").css("border-color", "rgba(255,0,0,0.5)")
-                $("[name=ID]").css("border-color", "rgba(255,0,0,0.5)")
                 form.on('submit(' + su + ')', function (data) {
-                    if (type == "lei") {
-                        boo1 = true;
-                    }
-                    if (boo1) {
                         if (boo) {
                             $.post("/WCS/WcsAddAll", { data: data.field, type: type }, function () {
                                 layer.msg("添加成功")
@@ -79,9 +74,6 @@ function newFunction() {
                         } else {
                             layer.msg('名称重复了', { icon: 5 })
                         }
-                    } else {
-                        layer.msg('编号重复了', { icon: 5 })
-                    }
                     return false
                 });
                 //table.cache.id[table.cache.id.length] = table.cache.id[table.cache.id.length - 1]
@@ -92,40 +84,22 @@ function newFunction() {
                 $("[name=Name]").change(function () {
                     var value = $(this).val().trim()
                     var t = "";
-                    if (type == "ji") {
-                        t ="Machine"
+                    if (type == "go") {
+                        t = "Place"
                     } else {
-                        t ="MachinType"
+                        t = "PlaceType"
                     }
                     if (value == "") {
-                        $("[name=Name]").css("border-color","rgba(255,0,0,0.5)")
-                        $("[name=ID]").css("border-color","rgba(255,0,0,0.5)")
+                        $("[name=Name]").css("border-color", "rgba(255,0,0,0.5)")
                         boo = false
                     } else {
                         $.get("/WCS/check" + t, { value: value }, function (data) {
                             if (data.length > 0) {
-                                $("[name=Name]").css("border-color","rgba(255,0,0,0.5)")
+                                $("[name=Name]").css("border-color", "rgba(255,0,0,0.5)")
                                 boo = false
                             } else {
-                                $("[name=Name]").css("border-color","rgba(0,255,0,0.5)")
+                                $("[name=Name]").css("border-color", "rgba(0,255,0,0.5)")
                                 boo = true;
-                            }
-                        })
-                    }
-                })
-                $("[name=ID]").change(function () {
-                    var value = $(this).val().trim()
-                    if (value == "") {
-                        $("[name=ID]").css("border-color", "rgba(255,0,0,0.5)")
-                        boo1 = false
-                    } else {
-                        $.get("/WCS/CheckNumber", { value: value }, function (data) {
-                            if (data.length > 0) {
-                                $("[name=ID]").css("border-color","rgba(255,0,0,0.5)")
-                                boo1 = false
-                            } else {
-                                $("[name=ID]").css("border-color","rgba(0,255,0,0.5)")
-                                boo1 = true;
                             }
                         })
                     }
@@ -133,17 +107,16 @@ function newFunction() {
             }
             tableIns3 = table.render({
                 elem: '#laytable'
-                , url: "/WCS/checkMachine?id=1&data=" + null
+                , url: "/WCS/checkPlace?id=1&data=" + null
                 , height: 'full-20'
                 , cols: [[
                     { type: "checkbox" }
-                    , { field: 'ID', title: '机器编码' }
-                    , { field: 'Name', title: '机器名称', edit: "text" }
-                    , { field: 'MachineTypeID', title: '机器类型', toolbar: '#MachineTypeID', width: 200 }
+                    , { field: 'ID', hide: true }
+                    , { field: 'Name', title: '位置名称', edit: "text" }
+                    , { field: 'PlaceTypeID', title: '位置类型', toolbar: '#PlaceTypeID', width: 200 }
                     , { field: 'x_intercept', title: 'X坐标（cm）', edit: "text" }
                     , { field: 'y_intercept', title: 'Y坐标（cm）', edit: "text" }
                     , { field: 'z_intercept', title: 'Z坐标（cm）', edit: "text" }
-                    , { field: 'RuningSpeed', title: '速度（米/分钟）', edit: "text" }
                     , { field: 'Status', title: '状态', edit: "text" }
                     , { align: 'center', toolbar: '#barDemo' }
                 ]]
@@ -153,56 +126,55 @@ function newFunction() {
                 }
             });
             $("i").click(function () {
-                Add("添加机器类型","#lei");
+                Add("添加位置类型","#golei");
 
             })
-            form.on('select(MachineTypeID)', function (data) {
-                if ($(data.elem).parents('table').attr("class") == "layui-table") { 
-                    var index = $("tbody .MachineTypeID").index(data.elem)
-                    table.cache.laytable[index].MachineTypeID = data.value
+            form.on('select(PlaceTypeID)', function (data) {
+                if ($(data.elem).parents('table').attr("class") == "layui-table") {
+                    var index = $("tbody .PlaceTypeID").index(data.elem)
+                    table.cache.laytable[index].PlaceTypeID = data.value
                 }
             })
-            table.on('edit(table)', function (obj) {
-                if (obj.field != "Name" && obj.field != "Status") {
-                if (isNaN(obj.value)) {
-                    layer.msg("只可以输入数字", { icon: 5 })
-                    var ind = $("tbody tr").index(obj.tr)
-                    table.cache.laytable[ind]["" + obj.field + ""] = 0;
-                   
-                } else {
-                    table.cache.laytable[ind]["" + obj.field + ""] = obj.value
-                    }
-                }
-            });
             table.on('tool(table)', function (obj) {
                 var data = obj.data;
                 var layEvent = obj.event;
                 if (layEvent === 'del') {
                     layer.confirm('确定删除么', function (index) {
-                        $.post("/WCS/WcsDelSingle", { id: data.ID, type: "ji" }, function (data) {
+                        $.post("/WCS/WcsDelSingle", { id: data.ID, type: "go" }, function (data) {
                             obj.del();
                             layer.close(index);
                             layer.msg("删除成功")
                         })
                     });
                 } else if (layEvent === 'edit') {
-                    $.post("/WCS/WcsUpAll", { data: data, type: "ji" }, function (data) {
+                    $.post("/WCS/WcsUpAll", { data: data, type: "go" }, function (data) {
                         layer.msg("更新完成")
                     })
                 }
             });
+            table.on('edit(table)', function (obj) {
+                if (obj.field != "Name" && obj.field != "Status") {
+                    if (isNaN(obj.value)) {
+                        layer.msg("只可以输入数字", { icon: 5 })
+                        var ind = $("tbody tr").index(obj.tr)
+                        table.cache.laytable[ind]["" + obj.field + ""] = 0;
+                    } else {
+                        table.cache.laytable[ind]["" + obj.field + ""] = obj.value
+                    }
+                }
+            });
             form.on('select', function (data) {
                 if ($(data.elem).parents("table").attr("class") == undefined) {
-                    if ($(data.elem).parents(".layui-form").attr("id") == undefined) { 
-                    map.set(data.elem, data.value)
-                    var ce = new Object()
-                    statu = 1;
-                    map.forEach(function (value, key) {
-                        ce[$(key).attr("class")] = value
-                    })
-                    tableIns3.reload({
-                        url: "/WCS/checkMachine",
-                        where: { id: "1", data: ce }
+                    if ($(data.elem).parents(".layui-form").attr("id") == undefined) {
+                        map.set(data.elem, data.value)
+                        var ce = new Object()
+                        statu = 1;
+                        map.forEach(function (value, key) {
+                            ce[$(key).attr("class")] = value
+                        })
+                        tableIns3.reload({
+                            url: "/WCS/checkPlace",
+                            where: { id: "1", data: ce }
                         })
                     }
                 }
@@ -216,7 +188,7 @@ function newFunction() {
                         for (var i = 0; i < checkStatu.data.length; i++) {
                             arr[i] = checkStatu.data[i].ID
                         }
-                        $.post("/WCS/WcsDelAll", { id: arr, type: "ji" }, function () {
+                        $.post("/WCS/WcsDelAll", { id: arr, type: "go" }, function () {
                             layer.msg("删除成功")
                             tableIns3.reload({
                             })
@@ -227,7 +199,7 @@ function newFunction() {
                 }
             })
             $(".add").click(function () {
-                Add('添加机器信息', "#ji")
+                Add('添加功能位置', "#go")
 
             })
             $(".up").click(function () {
@@ -235,7 +207,7 @@ function newFunction() {
                 for (var i = 0; i < checkStatu.data.length; i++) {
                     $.ajax({
                         url: "/WCS/WcsUpAll",
-                        data: { data: checkStatu.data[i], type: "ji" },
+                        data: { data: checkStatu.data[i], type: "go" },
                         async: false
                     })
                 }

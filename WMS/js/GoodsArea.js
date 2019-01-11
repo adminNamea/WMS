@@ -98,9 +98,10 @@ function newFunction() {
                         , { align: 'center', toolbar: '#barDemo' }
                     ]]
                     , done: function (res) {
-                        ajax()
-                        datas = res.data
-
+            
+                            ajax()
+                            datas = res.data
+                       
                     }
                 });
                 $("i").click(function () {
@@ -121,6 +122,17 @@ function newFunction() {
                     }
 
                 })
+                table.on('edit(table)', function (obj) {
+                    if (obj.field != "Name" && obj.field != "Description") {
+                        if (isNaN(obj.value)) {
+                            var ind = $("tbody tr").index(obj.tr)
+                            table.cache.laytable[ind]["" + obj.field + ""] = 0;
+                            layer.msg("只可以输入数字", { icon: 5 })
+                        } else {
+                            table.cache.laytable[ind]["" + obj.field + ""] = obj.value
+                        }
+                    }
+                });
                 form.on('select(tableca)', function (data) {
                     var index = $("tbody .WHID").index(data.elem)
                     table.cache.laytable[index].WHID = data.value

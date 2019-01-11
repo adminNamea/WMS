@@ -15,8 +15,8 @@
     <script type="text/javascript" src="~/laydate/laydate.js"></script>
     <script type="text/javascript" src="~/layui/layui.js"></script>
     <style type="text/css">
-        dl dd a {
-            margin-left: 20px
+        .layui-nav .layui-nav-item .layui-nav-child a {
+            padding-left: 40px
         }
     </style>
 </head>
@@ -109,13 +109,16 @@
                      , shade: 0.01
                      , time: false
                 })
+                datas = {}
             })
             $(document).ajaxStop(function () {
+               
                 layer.close(indexs)
                 for (var i = 0; i < datas.length; i++) {
                     $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
                     $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID)
                     $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
+                    $("tbody tr:eq(" + i + ")").find(".MachineTypeID").val(datas[i].MachineTypeID)
                     $("tbody tr:eq(" + i + ")").find(".PlaceTypeID").val(datas[i].PlaceTypeID)
                     form.render()
                 }
@@ -168,11 +171,11 @@
                         break;
                     case "WCS操作":
                         $(".layui-tab-title").empty()
-                        $(".layui-tab-title").append("<li>仓库实时运行状况</li><i>/WCS/WarehouseState</i><li>监控台</li><i>/WMS/Console</i>")
+                        $(".layui-tab-title").append("<li>仓库实时运行状况</li><i>/WCS/WarehouseState</i><li>监控台</li><i>/WCS/Console</i>")
                         break;
                     case "WCS基础资料":
                         $(".layui-tab-title").empty()
-                        $(".layui-tab-title").append("<li>命令分解</li><i>/WCS/Command</i><li>机器信息注册</li><i>/WMS/Machine</i><li>功能位置信息注册</li><i>/WMS/Functional</i>")
+                        $(".layui-tab-title").append("<li>命令分解</li><i>/WCS/Command</i><li>机器信息注册</li><i>/WCS/Machine</i><li>功能位置信息注册</li><i>/WCS/Functional</i>")
                         break;
                 }
             });

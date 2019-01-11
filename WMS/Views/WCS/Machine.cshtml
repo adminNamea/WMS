@@ -8,6 +8,9 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="~/js/Machine.js">
+
+    </script>
     <title>机器注册</title>
     <style type="text/css">
         .layui-form-pane .layui-form-select {
@@ -29,26 +32,22 @@
         <a class="layui-btn layui-btn-xs" lay-event="edit">更新</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
-    <script type="text/html" id="PlaceType">
-        <select lay-search lay-filter="PlaceTypeID" class="PlaceTypeID" name="PlaceTypeID"></select>
+    <script type="text/html" id="MachineTypeID">
+        <select lay-search lay-filter="MachineTypeID" class="MachineTypeID" name="MachineTypeID"></select>
     </script>
 </head>
 <body>
-    <div class="layui-form layui-form-pane" id="lei" style="display:none">
+    <form class="layui-form layui-form-pane" id="lei" style="display:none">
         <div class="layui-form-item">
             <label class="layui-form-label">机器类别：</label>
             <div class="layui-input-block">
                 <input class="layui-input" name="Name" required lay-verify="required" />
             </div>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
                 <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-    </div>
-    <div class="layui-form layui-form-pane" id="ji" style="display:none">
+    </form>
+    <form class="layui-form layui-form-pane" id="ji" style="display:none">
         <div class="layui-form-item">
             <label class="layui-form-label">机器编码：</label>
             <div class="layui-input-block">
@@ -94,7 +93,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">机器类型：</label>
             <div class="layui-input-block">
-                <select lay-search lay-filter="PlaceTypeID" class="PlaceTypeID" name="PlaceTypeID"></select>
+                <select lay-search lay-filter="MachineTypeID" class="MachineTypeID" name="MachineTypeID"></select>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
@@ -103,26 +102,22 @@
                 <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
             </div>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
                 <button class="layui-btn" lay-submit lay-filter="formDemo1">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-    </div>
+    </form>
     <blockquote class="layui-elem-quote">机器信息注册</blockquote>
     <div class="layui-form layui-form-pane" lay-filter="form">
         <div class="layui-form-item">
             <label class="layui-form-label">机器类别：</label>
             <div class="layui-input-block">
-                <select lay-search lay-filter="PlaceTypeID" class="PlaceTypeID" name="PlaceTypeID"></select>
-                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1 PlaceType"></i></button>
+                <select lay-search lay-filter="MachineTypeID" class="MachineTypeID"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1"></i></button>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">机器名称：</label>
             <div class="layui-input-block">
-                <select lay-search lay-filter="Machine" class="Machine" name="Machine"></select>
+                <select lay-search lay-filter="ID" class="ID"></select>
             </div>
         </div>
     </div>

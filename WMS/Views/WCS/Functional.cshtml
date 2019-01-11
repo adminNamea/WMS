@@ -8,10 +8,108 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Functional</title>
+    <script type="text/javascript" src="~/js/Functional.js"></script>
+    <title>功能位置注册</title>
+    <style type="text/css">
+        .layui-form-pane .layui-form-select {
+            display: inline-block;
+            width: 300px
+        }
+
+        .layui-btn {
+            display: inline-block;
+            border: 0px;
+        }
+
+        .layui-table-cell {
+            overflow: initial;
+            height: initial;
+        }
+    </style>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">更新</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="PlaceTypeID">
+        <select lay-search lay-filter="PlaceTypeID" class="PlaceTypeID" name="PlaceTypeID"></select>
+    </script>
 </head>
 <body>
-    <div> 
+    <form class="layui-form layui-form-pane" id="golei" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">位置类型：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="Name" required lay-verify="required" />
+            </div>
+        </div>
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </form>
+    <form class="layui-form layui-form-pane" id="go" style="display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">位置名称：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="Name" required lay-verify="required" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">x坐标（cm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="x_intercept" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">y坐标（cm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="y_intercept" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">z坐标（cm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="z_intercept" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="Status" required lay-verify="required" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">位置类型：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="PlaceTypeID" class="PlaceTypeID" name="PlaceTypeID"></select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">描述：</label>
+            <div class="layui-input-block">
+                <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
+            </div>
+        </div>
+                <button class="layui-btn" lay-submit lay-filter="formDemo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </form>
+    <blockquote class="layui-elem-quote">功能位置注册</blockquote>
+    <div class="layui-form layui-form-pane" lay-filter="form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">位置类型：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="PlaceTypeID" class="PlaceTypeID"></select>
+                <button class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-add-1"></i></button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">位置名称：</label>
+            <div class="layui-input-block">
+                <select lay-search lay-filter="ID" class="ID"></select>
+            </div>
+        </div>
     </div>
+    <button class="layui-btn add">新增功能位置</button>
+    <button class="layui-btn layui-btn-warm up">更新选中</button>
+    <button class="layui-btn layui-btn-danger del">删除选中</button>
+    <table lay-filter="table" id="laytable"></table>
 </body>
 </html>

@@ -109,10 +109,6 @@ function newFunction() {
                             layer.msg("只可以输入数字", { icon: 5 })
                             var ind = $("tbody tr").index(obj.tr)
                             table.cache.laytable[ind].Size = 0;
-                            ta.reload({
-                                url: "",
-                                data: table.cache.laytable
-                            })
                         } else {
                             table.cache.laytable[ind].Size = obj.value
                         }
@@ -208,25 +204,29 @@ function newFunction() {
                     })
                     $(".up").click(function () {
                         var checkStatu = table.checkStatus('laytable')
-                        for (var i = 0; i < checkStatu.data.length; i++) {
-                            if (checkStatu.data[i] == 0) {
-                                layer.confirm('第' + checkStatu.data.length + '限制为零将会去除限制，确定么', function () {
+                        if (checkStatu.data.length > 0) {
+                            for (var i = 0; i < checkStatu.data.length; i++) {
+                                if (checkStatu.data[i] == 0) {
+                                    layer.confirm('第' + checkStatu.data.length + '限制为零将会去除限制，确定么', function () {
+                                        $.ajax({
+                                            url: "/WMS/UpAll",
+                                            data: { data: checkStatu.data[i], type: "xian" },
+                                            async: false
+                                        })
+                                    })
+                                } else {
                                     $.ajax({
                                         url: "/WMS/UpAll",
                                         data: { data: checkStatu.data[i], type: "xian" },
                                         async: false
                                     })
-                                })
-                            } else {
-                                $.ajax({
-                                    url: "/WMS/UpAll",
-                                    data: { data: checkStatu.data[i], type: "xian" },
-                                    async: false
-                                })
+                                }
                             }
-                        }
-                        ta.reload({})
+                            ta.reload({})
                         layer.msg("更新完成")
+                        } else {
+                            layer.msg("请选择一项", { icon: 9 })
+                        }
                     })
                 })
     }(window);

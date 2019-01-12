@@ -9,9 +9,108 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>入库</title>
+    <style type="text/css">
+        .layui-input {
+            width:500px
+        }
+        .layui-form-select {
+            width: 500px
+        }
+    </style>
 </head>
 <body>
-    <div> 
-    </div>
+    <form class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料类别</label>
+            <div class="layui-input-block">
+                <select lay-search name="Category1" class="Category1" lay-filter="Category1"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料名称</label>
+            <div class="layui-input-block">
+                <select lay-search name="PartName" class="PartName"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料规格</label>
+            <div class="layui-input-block">
+                <select lay-search name="PartSpec" class="PartSpec"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">物料材质</label>
+            <div class="layui-input-block">
+                <select lay-search name="PartMaterial" class="PartMaterial"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">入库数量</label>
+            <div class="layui-input-inline">
+                <input type="text" name="Sort" required lay-verify="required|number" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux" style="margin-left:250px">PCS</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">托盘数量</label>
+            <div class="layui-input-block">
+                <input type="text" name="QTYperPallet" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">入货口</label>
+            <div class="layui-input-block">
+                <select lay-search name="PartMaterial" class="PartMaterial"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    <table id="laytable" lay-filter="table"></table>
+    <script>
+        layui.use(['form', 'table'], function () {
+            var form = layui.form, table = layui.table;
+            var tableIns3 = table.render({
+                elem: '#laytable'
+                , url: '/WCS/checkComm'
+                , where: { Name: "" }
+                , height: 'full-20'
+                , cols: [[
+                    { type: "checkbox" }
+                    , { field: 'ID', hide: true }
+                    , { field: 'Name', title: '命令类型', edit: "text" }
+                    , { field: 'MachineTypeID', title: '机器类型', toolbar: '#MachineTypeID', width: 200 }
+                    , { field: 'Sort', title: '优先级别', edit: "text" }
+                    , { field: 'Description', title: '描述', edit: "text" }
+                    , { align: 'center', toolbar: '#barDemo' }
+                ]]
+                , done: function (res) {
+                    ajax()
+                    datas = res.data
+                }
+            });
+            form.on('select(Category1)', function (data) {
+                var value = { Category: data.value }
+                $.get("/WMS/checkwu", { id: "1", data: value }, function (data) {
+                    if (data != null) {
+                        for (var i = 0; i < data.length; i++) {
+                            $(".PartName").empty()
+                            $(".PartName").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>");
+                        }
+                        form.render();
+                    }
+                })
+            })
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    layer.msg(JSON.stringify(data.field));
+    return false;
+  });
+});
+    </script>
 </body>
 </html>

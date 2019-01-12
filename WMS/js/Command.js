@@ -77,12 +77,14 @@ function newFunction() {
                     if (isNaN(obj.value)) {
                         var ind = $("tbody tr").index(obj.tr)
                         table.cache.laytable[ind]["" + obj.field + ""] = 0;
-                        console.log(layui.cache)
                         tableIns3.reload({
                             url: "",
                             data: table.cache.laytable,
                             done: function (res) {
-                                layer.msg("只可以输入数字", { icon: 5 ,time:500})
+                                layer.msg("只可以输入数字", { icon: 5, time: 500 }, function () {
+                                    ajax()
+                                    datas = res.data
+                                })
                             }
                         })
                     } else {

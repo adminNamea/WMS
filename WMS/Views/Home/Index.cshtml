@@ -97,11 +97,13 @@
 
         //    })
         //    $()
-        
+        //    var a = new Map
+        //    a
         //})
         layui.use(['element', 'layer', 'form'], function () {
             var element = layui.element, form = layui.form, layer = layui.layer, $ = layui.jquery
             var indexs
+            //datamap = new Map();
             datas = new Array()
             $(document).ajaxStart(function () {
                  indexs= layer.msg('加载中...', {
@@ -109,10 +111,17 @@
                      , shade: 0.01
                      , time: false
                 })
-                datas = {}
+                datas = new Array()
             })
+            //$(document).ajaxSuccess(function (event, xhr, options) {
+            //    if (options.type != "POST") { 
+            //        var key = options.url.substring(options.url.lastIndexOf("/") + 1, options.url.indexOf("?"))
+            //        if (key.substring(0,5) == "check") {
+            //            datamap.set(key, xhr.responseJSON)
+            //        }
+            //    }
+            //})
             $(document).ajaxStop(function () {
-               
                 layer.close(indexs)
                 for (var i = 0; i < datas.length; i++) {
                     $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
@@ -120,8 +129,8 @@
                     $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
                     $("tbody tr:eq(" + i + ")").find(".MachineTypeID").val(datas[i].MachineTypeID)
                     $("tbody tr:eq(" + i + ")").find(".PlaceTypeID").val(datas[i].PlaceTypeID)
-                    form.render()
                 }
+                form.render()
                 })
             if ('@Session["user"]' != undefined && '@Session["user"]'!="") {
                 $(".userName").text('@Session["user"]')

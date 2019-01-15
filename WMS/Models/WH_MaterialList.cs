@@ -31,6 +31,8 @@ namespace WMS.Models
         public Nullable<int> GoodsAllocationID { get; set; }
         public Nullable<int> FromID { get; set; }
         public string ToID { get; set; }
-        public string StatusID { get; set; }
+        public string Status { get; set; }
+        public string CreatedTime { get; set; }
+        public string PlaceID { get; set; }
     }
 }

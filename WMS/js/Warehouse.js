@@ -7,17 +7,9 @@ function newFunction() {
             layui.use(['table', 'form', 'layer'], function () {
                 var table = layui.table, $ = layui.jquery, form = layui.form, layer = layui.layer, tableIns4;
                 function ajax() {
-                    $.get("/WMS/checkWo", function (data) {
-                        if (data != null) {
-                            $(".WHID").empty();
-                            $(".WHID").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
+                    SELECT.render({
+                        ".WHID": { data: "/WMS/checkWo" }
                     })
-
                 }
                 function Add(name, i) {
                     var index = layer.open({
@@ -79,6 +71,7 @@ function newFunction() {
                     }
                 });
                 form.on('select', function (data) {
+                    alert(data.value)
                     tableIns4.reload({
                         url: "/WMS/checkWo",
                         where: { id: "1", data: data.value }

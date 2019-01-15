@@ -12,7 +12,7 @@ namespace WMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Tactic
+    public partial class Tactics
     {
         public int ID { get; set; }
         public string TacticsName { get; set; }

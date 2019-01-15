@@ -8,10 +8,22 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Console</title>
+    <script type="text/javascript" src="~/js/Console.js"></script>
+    <title>监控台</title>
 </head>
 <body>
-    <div> 
-    </div>
+    <blockquote class="layui-elem-quote">WCS监控台</blockquote>
+    <fieldset class="layui-elem-field">
+        <legend>WMS命令</legend>
+        <div class="layui-field-box">
+            <table id="laytable" lay-filter="table"></table>
+        </div>
+    </fieldset>
+    <fieldset class="layui-elem-field">
+        <legend>WCS命令</legend>
+        <div class="layui-field-box">
+            <table id="laytable1" lay-filter="table"></table>
+        </div>
+    </fieldset>
 </body>
 </html>

@@ -14,46 +14,16 @@ function newFunction() {
                     if (statu == 1) {
                         tp = "tbody ";
                     }
-                    $.get("/WMS/checkWo", function (data) {
-                        if (data != null) {
-                            $(tp + ".WHID").empty();
-                            $(tp + ".WHID").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(tp + ".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
-                    })
-                    $.get("/WMS/checkkq", function (data) {
-                        if (data != null) {
-                            $(tp + ".WHAreaID").empty();
-                            $(tp + ".WHAreaID").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(tp + ".WHAreaID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
-                    })
-                    $.get("/WMS/checkkw", function (data) {
-                        if (data != null) {
-                            $(tp + ".StorageLocationID").empty();
-                            $(tp + ".StorageLocationID").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(tp + ".StorageLocationID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
-                    })
-                    $.get("/WMS/checkhuo", function (data) {
-                        if (data != null) {
-                            $(tp + ".TempPlate").empty();
-                            $(tp + ".TempPlate").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(tp + ".TempPlate").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
-                    })
+                    var key = tp + ".WHID"
+                    var key1 = tp + ".WHAreaID"
+                    var key2 = tp + ".StorageLocationID"
+                    var key3 = tp + ".TempPlate"
+                    var obj = {}
+                    obj[key] = { data: "/WMS/checkWo"}
+                    obj[key1] = { data: "/WMS/checkkq"}
+                    obj[key2] = { data: "/WMS/checkkw"}
+                    obj[key3] = { data: "/WMS/checkhuo"}
+                    SELECT.render(obj)
                 }
                 function Add(name, i) {
                     var index = layer.open({
@@ -98,10 +68,8 @@ function newFunction() {
                         , { align: 'center', toolbar: '#barDemo' }
                     ]]
                     , done: function (res) {
-            
                             ajax()
                             datas = res.data
-                       
                     }
                 });
                 $("i").click(function () {
@@ -128,6 +96,13 @@ function newFunction() {
                             var ind = $("tbody tr").index(obj.tr)
                             table.cache.laytable[ind]["" + obj.field + ""] = 0;
                             layer.msg("只可以输入数字", { icon: 5 })
+                            tableIns.reload({
+                                url: "",
+                                data: table.cache.laytable,
+                                done: function (res) {
+                                    SELECT.reload(res.data)
+                                }
+                            })
                         } else {
                             table.cache.laytable[ind]["" + obj.field + ""] = obj.value
                         }

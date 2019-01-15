@@ -375,14 +375,14 @@ namespace WMS.Controllers
         return View();
     }
         //查询物料
-    public ActionResult checkwu(string id,Dictionary<string,string> data,int page,int limit,string type) {
+    public ActionResult checkwu(string id,Dictionary<string,string> data,int page,int limit,string type,string value) {
             List<checkwu_Result> list;
             List<WH_Material> list1;
             StringBuilder builder = new StringBuilder("exec checkwu ");
             using (WMSEntities mSEntities=new WMSEntities ()) {
                 if (id == "1")
                 {
-                    Dictionary<string, object> map = new Dictionary<string, object>();
+                   
                     SqlParameter[] parameters = new SqlParameter[data.Count()];
                     int i = 0;
                     foreach (var da in data)
@@ -401,10 +401,13 @@ namespace WMS.Controllers
                     list = mSEntities.Database.SqlQuery<checkwu_Result>(builder.ToString(), parameters).ToList();
                     PageList<checkwu_Result> pageList = new PageList<checkwu_Result>(list, page, limit);
                     int count = list.Count();
-                    map.Add("code", 0);
-                    map.Add("msg", "");
-                    map.Add("count", count);
-                    map.Add("data", pageList);
+                    Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", count },
+                        { "data", pageList }
+                    };
                     return Json(map, JsonRequestBehavior.AllowGet);
                 }
                 else {
@@ -413,8 +416,15 @@ namespace WMS.Controllers
                         List<Category> list2 = mSEntities.Category.ToList();
                         return Json(list2, JsonRequestBehavior.AllowGet);
                     }
-                    else { 
-                    list1 = mSEntities.WH_Material.ToList();
+                    else {
+                        if (value != null)
+                        {
+                            list1 = mSEntities.WH_Material.Where(p => p.Category1 == value).GroupBy(p => p.PartName).Select(g=>g.FirstOrDefault()).ToList();
+                        }
+                        else {
+                            list1 = mSEntities.WH_Material.ToList();
+                        }
+                   
                     return Json(list1,JsonRequestBehavior.AllowGet);
                     }
                 }
@@ -422,9 +432,86 @@ namespace WMS.Controllers
             }
 
     }
-    #endregion
-    #region 库存限制维护
-    public ActionResult Inventory()
+     
+        //查询入库详情
+        public ActionResult CheckIn() {
+            List<InOutMaterial_Result> list;
+            using (WMSEntities wMS=new WMSEntities ()) {
+                list = wMS.Database.SqlQuery<InOutMaterial_Result>("exec InOutMaterial @type='sel'").ToList();
+                int count = list.Count();
+                Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", count },
+                        { "data", list }
+                    };
+                return Json(map, JsonRequestBehavior.AllowGet);
+            }
+        }
+        //入库
+        public string InMaterial(Dictionary<string, string> data) {
+            using (WMSEntities mSEntities=new WMSEntities ()) {
+                StringBuilder builder = new StringBuilder("exec InOutMaterial @type='in',");
+                SqlParameter[] parameters = new SqlParameter[data.Count()];
+                int i = 0;
+                foreach (var da in data) {
+                    parameters[i] = new SqlParameter("@" + da.Key, da.Value);
+                    if (i + 1 == data.Count())
+                    {
+                        builder.Append("@" + da.Key + "=@" + da.Key);
+                    }
+                    else {
+                        builder.Append("@" + da.Key + "=@" + da.Key + ",");
+                    }
+                    i++;
+                }
+                mSEntities.Database.ExecuteSqlCommand(builder.ToString(),parameters);
+            }
+                return "true";
+        }
+        //出库
+        public string OutMaterial(Dictionary<string,string> data)
+        {
+
+
+            return "true";
+        }
+        //查询物料规格材质
+        public ActionResult CheckPartSpec(string Name)
+        {
+
+            List<WH_Material> list;
+            using (WMSEntities mSEntities = new WMSEntities())
+            {
+                list = mSEntities.WH_Material.Where(p => p.PartName == Name).ToList();
+            }
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+        //查询物料材质
+        public ActionResult CheckPartMaterial(string Name, string PartSpec)
+        {
+            
+            List<WH_Material> list;
+            using (WMSEntities mSEntities = new WMSEntities())
+            {
+                list = mSEntities.WH_Material.Where(p => p.PartName == Name && p.PartSpec == PartSpec).ToList();
+            }
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+        //查询物料托盘数
+        public ActionResult CheckQTYperPallet(string Name, string PartSpec,string PartMaterial)
+        {
+            List<WH_Material> list;
+            using (WMSEntities mSEntities = new WMSEntities())
+            {
+                list = mSEntities.WH_Material.Where(p => p.PartName == Name && p.PartSpec == PartSpec&&p.PartMaterial== PartMaterial).ToList();
+            }
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+        #region 库存限制维护
+        public ActionResult Inventory()
     {
         return View();
     }

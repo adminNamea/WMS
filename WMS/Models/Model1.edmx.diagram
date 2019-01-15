@@ -4,26 +4,26 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="dee0248add4a4b40a9372777b91cebe9" Name="Diagram1">
+      <Diagram DiagramId="f49074d3bd814cc088042bd5b99b44d5" Name="Diagram1">
         <EntityTypeShape EntityType="WMSModel.Category" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.Employee" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WCS_Place" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_Area" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_GoodsAllocation" Width="1.5" PointX="4.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_Material" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_MaterialList" Width="1.5" PointX="6.75" PointY="5.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_StorageLocation" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.PurchaseOrder" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WCS_DecomposedCommand" Width="1.5" PointX="8.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_Applier" Width="1.5" PointX="8.75" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_Defect" Width="1.5" PointX="2.75" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.Tactic" Width="1.5" PointX="11.375" PointY="0.75" />
-        <EntityTypeShape EntityType="WMSModel.WCS_Machine" Width="1.5" PointX="11.375" PointY="3.75" />
-        <EntityTypeShape EntityType="WMSModel.WCS_MachinType" Width="1.5" PointX="5.375" PointY="11.75" />
-        <EntityTypeShape EntityType="WMSModel.WCS_PlaceType" Width="1.5" PointX="7.375" PointY="11.75" />
-        <EntityTypeShape EntityType="WMSModel.WCS_Task" Width="1.5" PointX="11.375" PointY="8.75" />
-        <EntityTypeShape EntityType="WMSModel.WCS_Task_setup" Width="1.5" PointX="13.375" PointY="0.75" />
+        <EntityTypeShape EntityType="WMSModel.PurchaseOrder" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.Tactics" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_DecomposedCommand" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_Machine" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_MachinType" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_Place" Width="1.5" PointX="6.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_PlaceType" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_Task" Width="1.5" PointX="6.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WCS_Task_setup" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH" Width="1.5" PointX="2.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_Area" Width="1.5" PointX="8.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_GoodsAllocation" Width="1.5" PointX="8.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_Material" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_MaterialList" Width="1.5" PointX="10.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_StorageLocation" Width="1.5" PointX="10.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_Applier" Width="1.5" PointX="12.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_Defect" Width="1.5" PointX="0.75" PointY="12.75" IsExpanded="true" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

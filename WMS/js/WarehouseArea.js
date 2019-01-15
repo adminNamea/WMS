@@ -14,27 +14,12 @@ function newFunction() {
                     if (statu == 1) {
                         tp = "tbody ";
                     }
-                    $.get("/WMS/checkWo", function (data) {
-                        if (data != null) {
-                            $(tp + ".WHID").empty();
-                            $(tp + ".WHID").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(tp + ".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
-                    })
-                    $.get("/WMS/checkkq", function (data) {
-                        if (data != null) {
-                            $(tp + ".WHAreaID").empty();
-                            $(tp + ".WHAreaID").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(tp + ".WHAreaID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
-                    })
-
+                    var key = tp + ".WHID"
+                    var key1 = tp + ".WHAreaID"
+                    var obj = {}
+                    obj[key] = { data: "/WMS/checkWo"}
+                    obj[key1] = { data: "/WMS/checkkq"}
+                    SELECT.render(obj)
                 }
                 function Add(name, i) {
                     var index = layer.open({

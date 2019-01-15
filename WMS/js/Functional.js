@@ -13,29 +13,14 @@ function newFunction() {
             function ajax() {
                 var tp = "";
                 if (statu == 1) {
-                    tp = "tbody";
+                    tp = "tbody ";
                 }
-                $.get("/WCS/checkPlace", function (data) {
-                    if (data != null) {
-                        $(tp + " .ID").empty();
-                        $(tp + " .ID").append("<option value='' selected>请选择</option>")
-                        for (var i = 0; i < data.length; i++) {
-                            $(tp + " .ID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                        }
-                    }
-                    form.render()
-                })
-                $.get("/WCS/checkPlaceType", function (data) {
-                    if (data != null) {
-                        $(tp + " .PlaceTypeID").empty();
-                        $(tp + " .PlaceTypeID").append("<option value='' selected>请选择</option>")
-                        for (var i = 0; i < data.length; i++) {
-                            $(tp + " .PlaceTypeID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                        }
-                    }
-                    form.render()
-                })
-
+                var key = tp + ".ID"
+                var key1 = tp + ".PlaceTypeID"
+                var obj = {}
+                obj[key] = { data: "/WCS/checkPlace" }
+                obj[key1] = { data: "/WCS/checkPlaceType" }
+                SELECT.render(obj)
             }
             var boo = false;
             function Add(name, i) {
@@ -158,6 +143,13 @@ function newFunction() {
                         layer.msg("只可以输入数字", { icon: 5 })
                         var ind = $("tbody tr").index(obj.tr)
                         table.cache.laytable[ind]["" + obj.field + ""] = 0;
+                        tableIns3.reload({
+                            url: "",
+                            data: table.cache.laytable,
+                            done: function (res) {
+                                SELECT.reload(res.data)
+                            }
+                        })
                     } else {
                         table.cache.laytable[ind]["" + obj.field + ""] = obj.value
                     }

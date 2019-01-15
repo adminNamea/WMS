@@ -8,29 +8,12 @@ function newFunction() {
             var tableIns3;
             var indexs,statu = 1;
             function ajax() {
-
                 if (statu == 1) {
-                    $.get("/WCS/checkComm", function (data) {
-                        if (data != null) {
-                            $(" .Comm").empty();
-                            $(" .Comm").append("<option value='' selected>请选择</option>")
-                            for (var i = 0; i < data.length; i++) {
-                                $(" .Comm").append("<option value=" + data[i].Name + ">" + data[i].Name + "</option>")
-                            }
-                        }
-                        form.render()
+                    SELECT.render({
+                        ".Comm": { data: "/WCS/checkComm" },
+                        ".MachineTypeID": { data: "/WCS/checkMachinType" }
                     })
                 }
-                $.get("/WCS/checkMachinType", function (data) {
-                    if (data != null) {
-                        $(" .MachineTypeID").empty();
-                        $(" .MachineTypeID").append("<option value='' selected>请选择</option>")
-                        for (var i = 0; i < data.length; i++) {
-                            $(" .MachineTypeID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                        }
-                    }
-                    form.render()
-                })
             }
             tableIns3 = table.render({
                 elem: '#laytable'
@@ -81,10 +64,8 @@ function newFunction() {
                             url: "",
                             data: table.cache.laytable,
                             done: function (res) {
-                                layer.msg("只可以输入数字", { icon: 5, time: 500 }, function () {
-                                    ajax()
-                                    datas = res.data
-                                })
+                                layer.msg("只可以输入数字", { icon: 5, time: 500 })
+                                SELECT.reload(res.data)
                             }
                         })
                     } else {

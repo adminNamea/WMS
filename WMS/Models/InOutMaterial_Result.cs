@@ -11,15 +11,18 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class checkMachine_Result
+    public partial class InOutMaterial_Result
     {
-        public int ID { get; set; }
+        public int aid { get; set; }
+        public int mid { get; set; }
+        public string PartName { get; set; }
+        public string PartSpec { get; set; }
+        public string PartMaterial { get; set; }
+        public Nullable<double> InQTY { get; set; }
+        public string Units { get; set; }
         public string Name { get; set; }
-        public Nullable<int> MachineTypeID { get; set; }
-        public Nullable<double> x_intercept { get; set; }
-        public Nullable<double> y_intercept { get; set; }
-        public Nullable<double> z_intercept { get; set; }
-        public Nullable<double> RuningSpeed { get; set; }
+        public string type { get; set; }
         public string Status { get; set; }
+        public int PalletQTY { get; set; }
     }
 }

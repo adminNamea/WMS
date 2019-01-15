@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="~/layui/css/layui.css">
     <script type="text/javascript" src="~/laydate/laydate.js"></script>
     <script type="text/javascript" src="~/layui/layui.js"></script>
+    <script type="text/javascript" src="~/js/SELECT.js">></script>
     <style type="text/css">
         .layui-nav .layui-nav-item .layui-nav-child a {
             padding-left: 40px
@@ -21,7 +22,7 @@
     </style>
 </head>
 <body class="layui-layout-body">
-   
+
     <div class="layui-layout layui-layout-admin">
         <div class="layui-header">
             <div class="layui-logo">智能立体仓库</div>
@@ -90,20 +91,23 @@
 
     </div>
     <script type="text/javascript">
-        //$(function () {
-        //    $().parents
-        //    $.ajax({
+//    $(function () {
+//    $.ajax({
+        
+//    })
+    
+//})
+            layui.config({
+                base: '/js/'
+            }).extend({ 
+                SELECT: 'SELECT'  
+            });
 
-
-        //    })
-        //    $()
-        //    var a = new Map
-        //    a
-        //})
-        layui.use(['element', 'layer', 'form'], function () {
+        layui.use(['element', 'layer', 'form', 'SELECT'], function () {
             var element = layui.element, form = layui.form, layer = layui.layer, $ = layui.jquery
             var indexs
-            //datamap = new Map();
+            SELECT = layui.SELECT
+            datamap = new Map();
             datas = new Array()
             $(document).ajaxStart(function () {
                  indexs= layer.msg('加载中...', {
@@ -114,12 +118,19 @@
                 datas = new Array()
             })
             //$(document).ajaxSuccess(function (event, xhr, options) {
-            //    if (options.type != "POST") { 
+            //    if (options.type != "POST") {
             //        var key = options.url.substring(options.url.lastIndexOf("/") + 1, options.url.indexOf("?"))
             //        if (key.substring(0,5) == "check") {
             //            datamap.set(key, xhr.responseJSON)
+                        
             //        }
             //    }
+            //})
+            //$(document).ajaxSend(function (event, xhr, options) {
+            //    console.log(event)
+            //    console.log(xhr)
+            //    console.log(options)
+
             //})
             $(document).ajaxStop(function () {
                 layer.close(indexs)
@@ -129,6 +140,7 @@
                     $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
                     $("tbody tr:eq(" + i + ")").find(".MachineTypeID").val(datas[i].MachineTypeID)
                     $("tbody tr:eq(" + i + ")").find(".PlaceTypeID").val(datas[i].PlaceTypeID)
+                    $("tbody tr:eq(" + i + ")").find(".Category1").val(datas[i].Category1)
                 }
                 form.render()
                 })
@@ -196,7 +208,7 @@
                             cache: false
                         })
                             for (var la in layui.cache.event) {
-                                if (la != "element.nav" && la != "element.tab") { 
+                                if (la != "element.nav" && la != "element.tab") {
                                     layui.cache.event["" + la + ""] = null
                                 }
                         }
@@ -212,7 +224,7 @@
                         layer.msg("请先登陆", { icon: 5 })
                     }
                 } else {
-                    $.ajaxSetup({ cache: false }); 
+                    $.ajaxSetup({ cache: false });
                     $(".layui-tab-content").empty()
                     $(".layui-tab-content").load(url, function () {
                         form.render()

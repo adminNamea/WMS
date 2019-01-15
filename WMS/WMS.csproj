@@ -170,6 +170,9 @@
     <Compile Include="Models\Employee.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\InOutMaterial_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Model1.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -188,7 +191,7 @@
     <Compile Include="Models\PurchaseOrder.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Tactic.cs">
+    <Compile Include="Models\Tactics.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WCS_DecomposedCommand.cs">
@@ -249,11 +252,14 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="js\Command.js" />
+    <Content Include="js\Console.js" />
+    <Content Include="js\Enter.js" />
     <Content Include="js\Functional.js" />
     <Content Include="js\GoodsArea.js" />
     <Content Include="js\Inventory.js" />
     <Content Include="js\Machine.js" />
     <Content Include="js\Material.js" />
+    <Content Include="js\SELECT.js" />
     <Content Include="js\Strategy.js" />
     <Content Include="js\Warehouse.js" />
     <Content Include="js\WarehouseArea.js" />

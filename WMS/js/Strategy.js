@@ -6,63 +6,24 @@ function newFunction() {
         "use strict";
        layui.use(['table', 'form', 'layer'], function () {
     var table = layui.table, $ = layui.jquery, form = layui.form, layer = layui.layer;
-    var datas, tableIns;
+    var tableIns;
     var map = new Map();
     var statu = 0;
-    $(document).ajaxStop(function () {
-        for (var i = 0; i < datas.length; i++) {
-            $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
-            $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID)
-            $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
-            form.render()
-        }
-    })
     function ajax() {
         var tp = "";
         if (statu == 1) {
             tp = "tbody ";
         }
-        $.get("/WMS/checkWo", function (data) {
-            if (data != null) {
-                $(tp + ".WHID").empty();
-                $(tp + ".WHID").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(tp + ".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                }
-            }
-            form.render()
-        })
-        $.get("/WMS/checkkq", function (data) {
-            if (data != null) {
-                $(tp + ".WHAreaID").empty();
-                $(tp + ".WHAreaID").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(tp + ".WHAreaID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                }
-            }
-            form.render()
-        })
-        $.get("/WMS/checkkw", function (data) {
-            if (data != null) {
-                $(tp + ".StorageLocationID").empty();
-                $(tp + ".StorageLocationID").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(tp + ".StorageLocationID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                }
-            }
-            form.render()
-        })
-        $.get("/WMS/checkhuo", function (data) {
-            if (data != null) {
-                $(tp + ".TempPlate").empty();
-                $(tp + ".TempPlate").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(tp + ".TempPlate").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                }
-            }
-            form.render()
-        })
-
+        var key = tp + ".WHID"
+        var key1 = tp + ".WHAreaID"
+        var key2 = tp + ".StorageLocationID"
+        var key3 = tp + ".TempPlate"
+        var obj = {}
+        obj[key] = { data: "/WMS/checkWo" }
+        obj[key1] = { data: "/WMS/checkkq" }
+        obj[key2] = { data: "/WMS/checkkw" }
+        obj[key3] = { data: "/WMS/checkhuo" }
+        SELECT.render(obj)
     }
     function Add(name, i) {
         var index = layer.open({

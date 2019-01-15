@@ -29,23 +29,23 @@ namespace WMS.Models
     
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Employee> Employee { get; set; }
+        public virtual DbSet<PurchaseOrder> PurchaseOrder { get; set; }
+        public virtual DbSet<Tactics> Tactics { get; set; }
+        public virtual DbSet<WCS_DecomposedCommand> WCS_DecomposedCommand { get; set; }
+        public virtual DbSet<WCS_Machine> WCS_Machine { get; set; }
+        public virtual DbSet<WCS_MachinType> WCS_MachinType { get; set; }
         public virtual DbSet<WCS_Place> WCS_Place { get; set; }
+        public virtual DbSet<WCS_PlaceType> WCS_PlaceType { get; set; }
+        public virtual DbSet<WCS_Task> WCS_Task { get; set; }
+        public virtual DbSet<WCS_Task_setup> WCS_Task_setup { get; set; }
         public virtual DbSet<WH> WH { get; set; }
         public virtual DbSet<WH_Area> WH_Area { get; set; }
         public virtual DbSet<WH_GoodsAllocation> WH_GoodsAllocation { get; set; }
         public virtual DbSet<WH_Material> WH_Material { get; set; }
         public virtual DbSet<WH_MaterialList> WH_MaterialList { get; set; }
         public virtual DbSet<WH_StorageLocation> WH_StorageLocation { get; set; }
-        public virtual DbSet<PurchaseOrder> PurchaseOrder { get; set; }
-        public virtual DbSet<WCS_DecomposedCommand> WCS_DecomposedCommand { get; set; }
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
-        public virtual DbSet<Tactic> Tactics { get; set; }
-        public virtual DbSet<WCS_Machine> WCS_Machine { get; set; }
-        public virtual DbSet<WCS_MachinType> WCS_MachinType { get; set; }
-        public virtual DbSet<WCS_PlaceType> WCS_PlaceType { get; set; }
-        public virtual DbSet<WCS_Task> WCS_Task { get; set; }
-        public virtual DbSet<WCS_Task_setup> WCS_Task_setup { get; set; }
     
         public virtual int AddStorage(string name, string iD, string description, string createdBy, string type, string whid, string arid, string storageLocationID, string size, string tempPlate, string z, string x, string y, string category1, string partSpec, string partMaterial, string qTYperPallet, string units)
         {
@@ -151,6 +151,15 @@ namespace WMS.Models
                 new ObjectParameter("id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", userNameParameter, employeeNameParameter, pWDParameter, telParameter, typeParameter, idParameter);
+        }
+    
+        public virtual ObjectResult<checkComm_Result> checkComm(string name)
+        {
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkComm_Result>("checkComm", nameParameter);
         }
     
         public virtual ObjectResult<checkHuo_Result> checkHuo(string storageLocationID, string wHAreaID, string wHID, string tempPlate, string type)
@@ -267,6 +276,59 @@ namespace WMS.Models
                 new ObjectParameter("id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DelAll", typeParameter, idParameter);
+        }
+    
+        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string iD, string partName, string partSpec, string partMaterial, string inQTY, string outQTY, string qTYperPallet, string sort, string units, string placeID, string type, string goodsAllocationID)
+        {
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var partNameParameter = partName != null ?
+                new ObjectParameter("PartName", partName) :
+                new ObjectParameter("PartName", typeof(string));
+    
+            var partSpecParameter = partSpec != null ?
+                new ObjectParameter("PartSpec", partSpec) :
+                new ObjectParameter("PartSpec", typeof(string));
+    
+            var partMaterialParameter = partMaterial != null ?
+                new ObjectParameter("PartMaterial", partMaterial) :
+                new ObjectParameter("PartMaterial", typeof(string));
+    
+            var inQTYParameter = inQTY != null ?
+                new ObjectParameter("InQTY", inQTY) :
+                new ObjectParameter("InQTY", typeof(string));
+    
+            var outQTYParameter = outQTY != null ?
+                new ObjectParameter("OutQTY", outQTY) :
+                new ObjectParameter("OutQTY", typeof(string));
+    
+            var qTYperPalletParameter = qTYperPallet != null ?
+                new ObjectParameter("QTYperPallet", qTYperPallet) :
+                new ObjectParameter("QTYperPallet", typeof(string));
+    
+            var sortParameter = sort != null ?
+                new ObjectParameter("Sort", sort) :
+                new ObjectParameter("Sort", typeof(string));
+    
+            var unitsParameter = units != null ?
+                new ObjectParameter("Units", units) :
+                new ObjectParameter("Units", typeof(string));
+    
+            var placeIDParameter = placeID != null ?
+                new ObjectParameter("PlaceID", placeID) :
+                new ObjectParameter("PlaceID", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(string));
+    
+            var goodsAllocationIDParameter = goodsAllocationID != null ?
+                new ObjectParameter("GoodsAllocationID", goodsAllocationID) :
+                new ObjectParameter("GoodsAllocationID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", iDParameter, partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, outQTYParameter, qTYperPalletParameter, sortParameter, unitsParameter, placeIDParameter, typeParameter, goodsAllocationIDParameter);
         }
     
         public virtual int UpAll(string iD, string name, string x_intercept, string updatedBy, string updatedTime, string statusID, string y_intercept, string z_intercept, string size, string description, string tempPlate, string storageLocationID, string wHAreaID, string wHID, string createdBy, string createdTime, string type, string category1, string partSpec, string partMaterial, string qTYperPallet, string units, string partName, string category2, string category3)
@@ -507,15 +569,6 @@ namespace WMS.Models
                 new ObjectParameter("Sort", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter, sortParameter);
-        }
-    
-        public virtual ObjectResult<checkComm_Result> checkComm(string id)
-        {
-            var idParameter = id != null ?
-                new ObjectParameter("id", id) :
-                new ObjectParameter("id", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkComm_Result>("checkComm", idParameter);
         }
     }
 }

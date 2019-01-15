@@ -9,46 +9,12 @@ function newFunction() {
                     var ta;
                     var map = new Map();
                     function ajax() {
-                        $.get("/WMS/checkWo", function (data) {
-                            if (data != null) {
-                                $(".WHID").empty();
-                                $(".WHID").append("<option value='' selected>请选择</option>")
-                                for (var i = 0; i < data.length; i++) {
-                                    $(".WHID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                                }
-                            }
-                            form.render()
-                        })
-                        $.get("/WMS/checkkq", function (data) {
-                            if (data != null) {
-                                $(".WHAreaID").empty();
-                                $(".WHAreaID").append("<option value='' selected>请选择</option>")
-                                for (var i = 0; i < data.length; i++) {
-                                    $(".WHAreaID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                                }
-                            }
-                            form.render()
-                        })
-                        $.get("/WMS/checkkw", function (data) {
-                            if (data != null) {
-                                $(".StorageLocationID").empty();
-                                $(".StorageLocationID").append("<option value='' selected>请选择</option>")
-                                for (var i = 0; i < data.length; i++) {
-                                    $(".StorageLocationID").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                                }
-                            }
-                            form.render()
-                        })
-                        $.get("/WMS/checkhuo", function (data) {
-                            if (data != null) {
-                                $(".TempPlate").empty();
-                                $(".TempPlate").append("<option value='' selected>请选择</option>")
-                                for (var i = 0; i < data.length; i++) {
-                                    $(".TempPlate").append("<option value=" + data[i].ID + ">" + data[i].Name + "</option>")
-                                }
-                            }
-                            form.render()
-                        })
+                        var obj = {}
+                        obj[".WHID"] = { data: "/WMS/checkWo" }
+                        obj[".WHAreaID"] = { data: "/WMS/checkkq" }
+                        obj[".StorageLocationID"] = { data: "/WMS/checkkw" }
+                        obj[".TempPlate"] = { data: "/WMS/checkhuo" }
+                        SELECT.render(obj)
                     }
                     ajax()
                     function Add(name, i) {
@@ -109,6 +75,10 @@ function newFunction() {
                             layer.msg("只可以输入数字", { icon: 5 })
                             var ind = $("tbody tr").index(obj.tr)
                             table.cache.laytable[ind].Size = 0;
+                            ta.reload({
+                                url: "",
+                                data: table.cache.laytable
+                            })
                         } else {
                             table.cache.laytable[ind].Size = obj.value
                         }

@@ -11,10 +11,9 @@
     <META HTTP-EQUIV="Expires" CONTENT="0">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>智能立体仓库</title>
-    <link rel="stylesheet" href="~/layui/css/layui.css">
+    <link rel="stylesheet" href="~/layui/css/layui.css" media="all">
     <script type="text/javascript" src="~/laydate/laydate.js"></script>
     <script type="text/javascript" src="~/layui/layui.js"></script>
-    <script type="text/javascript" src="~/js/SELECT.js">></script>
     <style type="text/css">
         .layui-nav .layui-nav-item .layui-nav-child a {
             padding-left: 40px
@@ -91,19 +90,14 @@
 
     </div>
     <script type="text/javascript">
-//    $(function () {
-//    $.ajax({
-        
-//    })
-    
-//})
-            layui.config({
-                base: '/js/'
-            }).extend({ 
-                SELECT: 'SELECT'  
-            });
+        //$(function () {
+        //    var d = "ds"
+        //    d
 
-        layui.use(['element', 'layer', 'form', 'SELECT'], function () {
+        //})
+    layui.config({
+        base: '/js/'
+        }).use(['element','layer','form','SELECT'], function () {
             var element = layui.element, form = layui.form, layer = layui.layer, $ = layui.jquery
             var indexs
             SELECT = layui.SELECT
@@ -122,7 +116,7 @@
             //        var key = options.url.substring(options.url.lastIndexOf("/") + 1, options.url.indexOf("?"))
             //        if (key.substring(0,5) == "check") {
             //            datamap.set(key, xhr.responseJSON)
-                        
+
             //        }
             //    }
             //})
@@ -130,7 +124,6 @@
             //    console.log(event)
             //    console.log(xhr)
             //    console.log(options)
-
             //})
             $(document).ajaxStop(function () {
                 layer.close(indexs)
@@ -173,7 +166,7 @@
                 switch (elem.text()) {
                     case "WMS操作":
                         $(".layui-tab-title").empty()
-                        $(".layui-tab-title").append("<li>入库</li><i>/WMS/Enter</i><li>出库</li><i>/WMS/Out</i>")
+                        $(".layui-tab-title").append("<li>出库入库</li><i>/WMS/Enter</i>")
                         break;
                     case "WMS基础资料":
                         var stu = "<li lay-id=11 class='log'>WMS-基础资料-员工登陆</li><i>/WMS/login</i>"

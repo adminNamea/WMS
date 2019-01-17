@@ -432,19 +432,20 @@ namespace WMS.Controllers
             }
 
     }
-     
+
         //查询入库详情
-        public ActionResult CheckIn() {
+        public ActionResult CheckIn(int page, int limit) {
             List<InOutMaterial_Result> list;
             using (WMSEntities wMS=new WMSEntities ()) {
                 list = wMS.Database.SqlQuery<InOutMaterial_Result>("exec InOutMaterial @type='sel'").ToList();
                 int count = list.Count();
+                PageList<InOutMaterial_Result> pageList = new PageList<InOutMaterial_Result>(list, page, limit);
                 Dictionary<string, object> map = new Dictionary<string, object>
                     {
                         { "code", 0 },
                         { "msg", "" },
                         { "count", count },
-                        { "data", list }
+                        { "data", pageList }
                     };
                 return Json(map, JsonRequestBehavior.AllowGet);
             }

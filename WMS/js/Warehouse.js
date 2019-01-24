@@ -25,10 +25,9 @@ function newFunction() {
                             body.find('.layui-hide').val(i)
                         }
                         , end: function () {
-                            ajax();
-                            if (i == 1) {
+                          
                                 tableIns4.reload({})
-                            }
+
                         }
                     });
                 }
@@ -40,12 +39,16 @@ function newFunction() {
                     , cols: [[
                         { type: "checkbox" }
                         , { field: 'ID', title: '仓库编码' }
+                       
                         , { field: 'Name', title: '仓库名称', edit: "text" }
                         , { field: 'Description', title: '描述', edit: "text" }
                         , { field: 'CreatedTime', title: '创建时间' }
                         , { field: 'CreatedBy', title: '创建人' }
                         , { align: 'center', toolbar: '#barDemo' }
                     ]]
+                    , done: function () {
+                        ajax()
+                    }
                 });
                 $("i").click(function () {
 
@@ -71,7 +74,6 @@ function newFunction() {
                     }
                 });
                 form.on('select', function (data) {
-                    alert(data.value)
                     tableIns4.reload({
                         url: "/WMS/checkWo",
                         where: { id: "1", data: data.value }
@@ -80,16 +82,21 @@ function newFunction() {
                 $(".del").click(function () {
                     var checkStatu = table.checkStatus('laytable')
                     var arr = new Array();
-                    layer.confirm('确定删除' + checkStatu.data.length + '项么', function () {
-                        for (var i = 0; i < checkStatu.data.length; i++) {
-                            arr[i] = checkStatu.data[i].ID
-                        }
-                        $.post("/WMS/DelAll", { id: arr, type: "ca" }, function () {
-                            layer.msg("删除成功")
-                            tableIns4.reload({
+                    if (checkStatu.data.length > 0) {
+                        layer.confirm('确定删除' + checkStatu.data.length + '项么', function () {
+                            for (var i = 0; i < checkStatu.data.length; i++) {
+                                arr[i] = checkStatu.data[i].ID
+                            }
+                            console.log(arr)
+                            $.post("/WMS/DelAll", { id: arr, type: "ca" }, function () {
+                                layer.msg("删除成功")
+                                tableIns4.reload({
+                                })
                             })
                         })
-                    })
+                    } else {
+                        layer.msg("请选择一项", {icon:5})
+                    }
                 })
                 $(".add").click(function () {
                     Add('添加仓库', 1)
@@ -103,8 +110,7 @@ function newFunction() {
                             async: false
                         })
                     }
-                    tableIns4.reload({
-                    })
+                    tableIns4.reload({ })
                     ajax()
                     layer.msg("更新完成")
                 })

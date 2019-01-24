@@ -20,9 +20,9 @@ namespace WMS.Models
         public string PartMaterial { get; set; }
         public Nullable<double> InQTY { get; set; }
         public string Units { get; set; }
+        public int PalletQTY { get; set; }
         public string Name { get; set; }
         public string type { get; set; }
         public string Status { get; set; }
-        public int PalletQTY { get; set; }
     }
 }

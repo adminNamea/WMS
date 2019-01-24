@@ -73,7 +73,7 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">y坐标（cm）</label>
+            <label class="layui-form-label" >y坐标（cm）</label>
             <div class="layui-input-block">
                 <input type="text" name="y_intercept" required lay-verify="required|number" class="layui-input">
             </div>
@@ -82,6 +82,12 @@
             <label class="layui-form-label">z坐标（cm）</label>
             <div class="layui-input-block">
                 <input type="text" name="z_intercept" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">IP地址：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" required lay-verify="required" name="IP" />
             </div>
         </div>
         <div class="layui-form-item">
@@ -102,8 +108,8 @@
                 <textarea name="Description" placeholder="简单描述一下" class="layui-textarea"></textarea>
             </div>
         </div>
-                <button class="layui-btn" lay-submit lay-filter="formDemo1">立即提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        <button class="layui-btn" lay-submit lay-filter="formDemo1">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
     </form>
     <blockquote class="layui-elem-quote">机器信息注册</blockquote>
     <div class="layui-form layui-form-pane" lay-filter="form">

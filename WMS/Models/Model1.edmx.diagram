@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="f49074d3bd814cc088042bd5b99b44d5" Name="Diagram1">
+      <Diagram DiagramId="7baa41a6a3ed4edda1330afe895251a5" Name="Diagram1">
         <EntityTypeShape EntityType="WMSModel.Category" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.Employee" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.PurchaseOrder" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
@@ -22,8 +22,9 @@
         <EntityTypeShape EntityType="WMSModel.WH_Material" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.WH_MaterialList" Width="1.5" PointX="10.75" PointY="5.75" IsExpanded="true" />
         <EntityTypeShape EntityType="WMSModel.WH_StorageLocation" Width="1.5" PointX="10.75" PointY="11.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_Applier" Width="1.5" PointX="12.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="WMSModel.WH_Defect" Width="1.5" PointX="0.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.ControlPlc" Width="1.5" PointX="12.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_Applier" Width="1.5" PointX="0.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.WH_Defect" Width="1.5" PointX="2.75" PointY="12.75" IsExpanded="true" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -10,17 +10,17 @@
 namespace WMS.Models
 {
     using System;
+    using System.Collections.Generic;
     
-    public partial class checkMachine_Result
+    public partial class ControlPlc
     {
+        public Nullable<int> TakeMaterialX { get; set; }
+        public Nullable<int> TakeMaterialY { get; set; }
+        public Nullable<int> PutMaterialX { get; set; }
+        public Nullable<int> PutMaterialY { get; set; }
+        public Nullable<int> LoadHeight { get; set; }
+        public Nullable<int> note { get; set; }
+        public Nullable<int> Array { get; set; }
         public int ID { get; set; }
-        public string Name { get; set; }
-        public Nullable<int> MachineTypeID { get; set; }
-        public Nullable<double> x_intercept { get; set; }
-        public Nullable<double> y_intercept { get; set; }
-        public Nullable<double> z_intercept { get; set; }
-        public Nullable<double> RuningSpeed { get; set; }
-        public string Status { get; set; }
-        public string IP { get; set; }
     }
 }

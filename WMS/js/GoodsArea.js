@@ -2,7 +2,7 @@
 
 function newFunction() {
     ;
-    !function (e) {
+    !function () {
         "use strict";
             layui.use(['table', 'form', 'layer'], function () {
                 var table = layui.table, $ = layui.jquery, form = layui.form, layer = layui.layer;
@@ -26,7 +26,7 @@ function newFunction() {
                     SELECT.render(obj)
                 }
                 function Add(name, i) {
-                    var index = layer.open({
+                     layer.open({
                         type: 2,
                         title: name,
                         shadeClose: true,
@@ -34,15 +34,14 @@ function newFunction() {
                         maxmin: true,
                         area: ['893px', '600px'],
                         content: '/WMS/AddAll'
-                        , success: function () {
+                        , success: function (layero,index) {
                             var body = layer.getChildFrame('body', index);
                             body.find('.layui-hide').val(i)
+                            
                         }
                         , end: function () {
-                            ajax();
-                            if (i == 4) {
+                          
                                 tableIns.reload({})
-                            }
                         }
                     });
                 }
@@ -54,9 +53,9 @@ function newFunction() {
                         { type: "checkbox" }
                         , { field: 'ID', hide: true }
                         , { field: 'Name', title: '货位名称', edit: "text" }
-                        , { field: 'x_intercept', title: 'X坐标（cm）', edit: "text" }
-                        , { field: 'y_intercept', title: 'Y坐标（cm）', edit: "text" }
-                        , { field: 'z_intercept', title: 'Z坐标（cm）', edit: "text" }
+                        , { field: 'x_intercept', title: 'X坐标（mm）', edit: "text" }
+                        , { field: 'y_intercept', title: 'Y坐标（mm）', edit: "text" }
+                        , { field: 'z_intercept', title: 'Z坐标（mm）', edit: "text" }
                         , { field: 'StorageLocationID', title: '库位名称', toolbar: '#selectkw', width: 200 }
                         , { field: 'WHAreaID', title: '库区名称', toolbar: '#selectkq', width: 200 }
                         , { field: 'WHID', title: '仓库名称', toolbar: '#selectca', width: 200 }

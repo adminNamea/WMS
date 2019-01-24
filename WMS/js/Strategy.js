@@ -52,9 +52,9 @@ function newFunction() {
             { type: "checkbox" }
             , { field: 'ID', hide: true }
             , { field: 'Name', title: '货位名称', edit: "text" }
-            , { field: 'x_intercept', title: 'X坐标（cm）', edit: "text" }
-            , { field: 'y_intercept', title: 'Y坐标（cm）', edit: "text" }
-            , { field: 'z_intercept', title: 'Z坐标（cm）', edit: "text" }
+            , { field: 'x_intercept', title: 'X坐标（mm）', edit: "text" }
+            , { field: 'y_intercept', title: 'Y坐标（mm）', edit: "text" }
+            , { field: 'z_intercept', title: 'Z坐标（mm）', edit: "text" }
             , { field: 'StorageLocationID', title: '库位名称', toolbar: '#selectkw', width: 200 }
             , { field: 'WHAreaID', title: '库区名称', toolbar: '#selectkq', width: 200 }
             , { field: 'WHID', title: '仓库名称', toolbar: '#selectca', width: 200 }

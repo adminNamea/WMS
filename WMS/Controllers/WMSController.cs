@@ -23,6 +23,13 @@ namespace WMS.Controllers
 
             return View();
         }
+        //PLC交互
+        public ActionResult PlcIn(Dictionary<string, string> data)
+        {
+            StringBuilder builder = new StringBuilder("exec PlcIn");
+            return Json(Builder.SqlAll(builder, data, "select"),JsonRequestBehavior.AllowGet);
+          
+        }
         #endregion
         #region 出库
         public ActionResult Out()

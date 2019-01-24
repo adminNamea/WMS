@@ -124,6 +124,7 @@ function newFunction() {
                     { type: "checkbox" }
                     , { field: 'ID', title: '机器编码' }
                     , { field: 'Name', title: '机器名称', edit: "text" }
+                    , { field: 'IP', title: 'IP地址' }
                     , { field: 'MachineTypeID', title: '机器类型', toolbar: '#MachineTypeID', width: 200 }
                     , { field: 'x_intercept', title: 'X坐标（cm）', edit: "text" }
                     , { field: 'y_intercept', title: 'Y坐标（cm）', edit: "text" }
@@ -134,6 +135,7 @@ function newFunction() {
                 ]]
                 , done: function (res) {
                     ajax()
+                    console.log(layui.cache)
                     datas = res.data
                 }
             });

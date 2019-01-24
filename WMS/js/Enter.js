@@ -2,10 +2,12 @@
 
 function newFunction() {
     ;
-    !function (e) {
+    !function () {
+        "use strict";
         layui.use(['form', 'table','element'], function () {
             var form = layui.form, table = layui.table, $ = layui.jquery, util = layui.util;
             var element = layui.element;
+            $(function () { 
             var namem, PartSpecs, boo = true
             var tableIns3
                 tableIns3 = table.render({
@@ -27,34 +29,56 @@ function newFunction() {
                     ]]
                     , url: "/WMS/CheckIn"
                     , done: function (res) {
-                        if (res.data[0].Status == "正在执行") {
-                            $("tbody tr:eq(0)").css("color", "red")
-                        }
-                        var endTime = new Date().getTime()+15251
-                            , serverTime = new Date().getTime();
-                        var countTime =(endTime - serverTime)/1000
-                        util.countdown(endTime, serverTime, function (date) {
-                            var str = date[1] + '时' + date[2] + '分' + date[3] + '秒';
-                            element.progress('demo0', '100%');
-                            layui.$('#time').html(str);
-                        });
-                        $(".layui-timeline").empty()
-                        for (var i = 0; i < res.data.length; i++) {
-                            var pro = '<div class="layui-progress" lay-showpercent="true" lay-filter="demo' + i + '"><div class="layui-progress-bar"></div></div>'
-                            var li = '<li class="layui-timeline-item">'
-                            var icon = '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>'
-                            if (res.data[i].Status == "正在执行") {
-                                icon ='<i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis"></i>'
+                        var obj = {}
+                        layui.each(res.data, function (index, value) {
+                            if (value.Status == "正在执行") {
+                                $("tbody tr:eq(" + index + ")").css("color", "red")
+                                obj[value.aid] = value.mid
                             }
-                            var div = ' <div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">' + res.data[i].Status + '</h3>'
-                            var p = '<p>命令编号：<em>' + res.data[i].aid + '</em></p><p> 预计时间：<em id="time"></em></p><p>进度：<em>' + pro + '</em></p></div></li >'
-                            if ($(".layui-timeline:eq(0)").find("li").length == 4) {
-                                $(".layui-timeline:eq(1)").append(li + icon + div + p)
-                            } else {
-                                $(".layui-timeline:eq(0)").append(li + icon + div + p)
-                            }
-                        }
-                        $(".layui-progress-bar").css('-webkit-transition', countTime + "s linear");
+                        })
+                        //$.ajax({
+                        //    url: "/WMS/PlcIn",
+                        //    type: "post",
+                        //    data: { data: obj },
+                        //    datatype: "json",
+                        //}).done(function (data) {
+                        //    if (data) {
+
+                        //    }
+                        //})
+                        //var endTime = new Date().getTime()+55555
+                        //    , serverTime = new Date().getTime();
+                        //var countTime = (endTime - serverTime) / 1000
+                        //var s = (100 / countTime)
+                        //var b = -(100 / countTime);
+                        //$(".layui-timeline").empty()
+                        //util.countdown(endTime, serverTime, function (date) {
+                        //    var str = date[1] + '时' + date[2] + '分' + date[3] + '秒';
+                        //    $('#time').html(str);
+                        //    b = s + b
+                        //    if (b > 100) {
+                        //        b=100
+                        //    }
+                        //    $("#b").html(b.toFixed(4) + "%")
+                        //    element.progress('demo0', '100%');
+                        //});
+                        //for (var i = 0; i < res.data.length; i++) {
+                        //    var pro = '<div class="layui-progress" lay-showpercent="true" lay-filter="demo' + i + '"><div class="layui-progress-bar"></div></div>'
+                         
+                        //    var li = '<li class="layui-timeline-item">'
+                        //    var icon = '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>'
+                        //    if (res.data[i].Status == "正在执行") {
+                        //        icon ='<i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis"></i>'
+                        //    }
+                        //    var div = ' <div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">' + res.data[i].Status + '</h3>'
+                        //    var p = '<p>命令编号：<em>' + res.data[i].aid + '</em></p><p> 预计时间：<em id="time"></em></p><p>进度：<em id="b"><em><em>' + pro + '</em></p></div></li >'
+                        //    if ($(".layui-timeline:eq(0)").find("li").length == 4) {
+                        //        $(".layui-timeline:eq(1)").append(li + icon + div + p)
+                        //    } else {
+                        //        $(".layui-timeline:eq(0)").append(li + icon + div + p)
+                        //    }
+                        //}
+                        //$(".layui-progress-bar").css('-webkit-transition', countTime + "s linear");
                         
                     }
                 });
@@ -141,7 +165,8 @@ function newFunction() {
                     $(".InQTY:eq("+index+")").focus()
                 }
                 return false;
-            });
+                });
+            })
         });
     }(window);
 }

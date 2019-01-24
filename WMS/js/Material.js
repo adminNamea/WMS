@@ -38,6 +38,7 @@ function newFunction() {
                     , { align: 'center', toolbar: '#barDemo' }
                 ]]
                 , done: function (res) {
+                    console.log(table)
                     ajax()
                     datas = res.data
                 }

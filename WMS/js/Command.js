@@ -6,14 +6,17 @@ function newFunction() {
         layui.use(['table', 'form'], function () {
             var table = layui.table, $ = layui.jquery, form = layui.form, layer = layui.layer;
             var tableIns3;
-            var indexs,statu = 1;
+            var indexs,statu =0;
             function ajax() {
+                var tp = "";
                 if (statu == 1) {
-                    SELECT.render({
-                        ".Comm": { data: "/WCS/checkComm" },
-                        ".MachineTypeID": { data: "/WCS/checkMachinType" }
-                    })
-                }
+                    tp = "tbody ";
+                } var key = tp + ".Comm"
+                var key1 = tp + ".MachineTypeID"
+                var obj = {}
+                obj[key] = { data: "/WCS/checkComm", value: "Name", text: "Name" }
+                obj[key1] = { data: "/WCS/checkMachinType" }
+                SELECT.render(obj)
             }
             tableIns3 = table.render({
                 elem: '#laytable'
@@ -74,10 +77,12 @@ function newFunction() {
                 }
             });
             form.on('select(Comm)', function (data) {
-                statu = 0
+                statu=1
                         tableIns3.reload({
                             url: "/WCS/checkComm",
-                            where: { Name: data.value } })
+                            where: { Name: data.value }
+                            
+                        })
             })
             $(".del").click(function () {
                 var checkStatu = table.checkStatus('laytable')
@@ -110,6 +115,7 @@ function newFunction() {
                         form.on('submit(formDemo)', function (data) {
                              $.post("/WCS/WcsAddAll", { data: data.field, type:"comm" }, function () {
                                  layer.msg("添加成功")
+                                 statu=0
                                  layer.close(indexs);
                              })
                              return false

@@ -99,9 +99,9 @@ function newFunction() {
                     , { field: 'ID', hide: true }
                     , { field: 'Name', title: '位置名称', edit: "text" }
                     , { field: 'PlaceTypeID', title: '位置类型', toolbar: '#PlaceTypeID', width: 200 }
-                    , { field: 'x_intercept', title: 'X坐标（cm）', edit: "text" }
-                    , { field: 'y_intercept', title: 'Y坐标（cm）', edit: "text" }
-                    , { field: 'z_intercept', title: 'Z坐标（cm）', edit: "text" }
+                    , { field: 'x_intercept', title: 'X坐标（mm）', edit: "text" }
+                    , { field: 'y_intercept', title: 'Y坐标（mm）', edit: "text" }
+                    , { field: 'z_intercept', title: 'Z坐标（mm）', edit: "text" }
                     , { field: 'Status', title: '状态', edit: "text" }
                     , { align: 'center', toolbar: '#barDemo' }
                 ]]

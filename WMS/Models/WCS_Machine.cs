@@ -27,5 +27,6 @@ namespace WMS.Models
         public string UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public string Status { get; set; }
+        public string IP { get; set; }
     }
 }

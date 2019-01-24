@@ -44,6 +44,7 @@ namespace WMS.Models
         public virtual DbSet<WH_Material> WH_Material { get; set; }
         public virtual DbSet<WH_MaterialList> WH_MaterialList { get; set; }
         public virtual DbSet<WH_StorageLocation> WH_StorageLocation { get; set; }
+        public virtual DbSet<ControlPlc> ControlPlc { get; set; }
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
     
@@ -436,7 +437,7 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpAll", iDParameter, nameParameter, x_interceptParameter, updatedByParameter, updatedTimeParameter, statusIDParameter, y_interceptParameter, z_interceptParameter, sizeParameter, descriptionParameter, tempPlateParameter, storageLocationIDParameter, wHAreaIDParameter, wHIDParameter, createdByParameter, createdTimeParameter, typeParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter, partNameParameter, category2Parameter, category3Parameter);
         }
     
-        public virtual int WcsAddAll(string name, string iD, string machineTypeID, string placeTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string type, string sort)
+        public virtual int WcsAddAll(string name, string iD, string machineTypeID, string placeTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string type, string sort, string iP)
         {
             var nameParameter = name != null ?
                 new ObjectParameter("Name", name) :
@@ -490,7 +491,11 @@ namespace WMS.Models
                 new ObjectParameter("Sort", sort) :
                 new ObjectParameter("Sort", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsAddAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, typeParameter, sortParameter);
+            var iPParameter = iP != null ?
+                new ObjectParameter("IP", iP) :
+                new ObjectParameter("IP", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsAddAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, typeParameter, sortParameter, iPParameter);
         }
     
         public virtual int WcsDelAll(string iD, string type)
@@ -506,7 +511,7 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsDelAll", iDParameter, typeParameter);
         }
     
-        public virtual int WcsUpAll(string name, string iD, string machineTypeID, string placeTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string updatedTime, string updatedBy, string type, string sort)
+        public virtual int WcsUpAll(string name, string iD, string machineTypeID, string placeTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string updatedTime, string updatedBy, string type, string sort, string iP)
         {
             var nameParameter = name != null ?
                 new ObjectParameter("Name", name) :
@@ -568,7 +573,11 @@ namespace WMS.Models
                 new ObjectParameter("Sort", sort) :
                 new ObjectParameter("Sort", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter, sortParameter);
+            var iPParameter = iP != null ?
+                new ObjectParameter("IP", iP) :
+                new ObjectParameter("IP", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter, sortParameter, iPParameter);
         }
     }
 }

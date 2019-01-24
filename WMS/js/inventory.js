@@ -45,9 +45,9 @@ function newFunction() {
                             , { field: 'ID', hide: true }
                             , { field: 'type', hide: true }
                             , { field: 'Name', title: '货位名称' }
-                            , { field: 'x_intercept', title: 'X坐标（cm）' }
-                            , { field: 'y_intercept', title: 'Y坐标（cm）' }
-                            , { field: 'z_intercept', title: 'Z坐标（cm）' }
+                            , { field: 'x_intercept', title: 'X坐标（mm）' }
+                            , { field: 'y_intercept', title: 'Y坐标（mm）' }
+                            , { field: 'z_intercept', title: 'Z坐标（mm）' }
                             , { field: 'Description', title: '描述' }
                             , { field: 'Size', title: '货位限制', edit: "text" }
                             , { align: 'center', toolbar: '#barDemo' }

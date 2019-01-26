@@ -47,6 +47,7 @@ namespace WMS.Models
         public virtual DbSet<ControlPlc> ControlPlc { get; set; }
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
+        public virtual DbSet<WCS_Comm> WCS_Comm { get; set; }
     
         public virtual int AddStorage(string name, string iD, string description, string createdBy, string type, string whid, string arid, string storageLocationID, string size, string tempPlate, string z, string x, string y, string category1, string partSpec, string partMaterial, string qTYperPallet, string units)
         {
@@ -279,7 +280,7 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DelAll", typeParameter, idParameter);
         }
     
-        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string iD, string partName, string partSpec, string partMaterial, string inQTY, string outQTY, string qTYperPallet, string sort, string units, string placeID, string type, string goodsAllocationID)
+        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string iD, string partName, string partSpec, string partMaterial, string inQTY, string outQTY, string qTYperPallet, string sort, string units, string placeID, string type, string goodsAllocationID, string fromID)
         {
             var iDParameter = iD != null ?
                 new ObjectParameter("ID", iD) :
@@ -329,7 +330,11 @@ namespace WMS.Models
                 new ObjectParameter("GoodsAllocationID", goodsAllocationID) :
                 new ObjectParameter("GoodsAllocationID", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", iDParameter, partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, outQTYParameter, qTYperPalletParameter, sortParameter, unitsParameter, placeIDParameter, typeParameter, goodsAllocationIDParameter);
+            var fromIDParameter = fromID != null ?
+                new ObjectParameter("FromID", fromID) :
+                new ObjectParameter("FromID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", iDParameter, partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, outQTYParameter, qTYperPalletParameter, sortParameter, unitsParameter, placeIDParameter, typeParameter, goodsAllocationIDParameter, fromIDParameter);
         }
     
         public virtual int UpAll(string iD, string name, string x_intercept, string updatedBy, string updatedTime, string statusID, string y_intercept, string z_intercept, string size, string description, string tempPlate, string storageLocationID, string wHAreaID, string wHID, string createdBy, string createdTime, string type, string category1, string partSpec, string partMaterial, string qTYperPallet, string units, string partName, string category2, string category3)
@@ -578,6 +583,11 @@ namespace WMS.Models
                 new ObjectParameter("IP", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter, sortParameter, iPParameter);
+        }
+    
+        public virtual ObjectResult<PlcIn_Result> PlcIn()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PlcIn_Result>("PlcIn");
         }
     }
 }

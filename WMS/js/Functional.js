@@ -106,6 +106,7 @@ function newFunction() {
                     , { align: 'center', toolbar: '#barDemo' }
                 ]]
                 , done: function (res) {
+                    console.log(res)
                     ajax()
                     datas = res.data
                 }

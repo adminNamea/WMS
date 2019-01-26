@@ -10,7 +10,7 @@ namespace WMS.ControlPlc
     public class Controls
     {
         //连接PLC
-        public S7Client Operation(string IP, int array)
+        public static S7Client Operation(string IP, int array)
         {
             var client = new S7Client();
             try
@@ -56,7 +56,7 @@ namespace WMS.ControlPlc
         /// <param name="note">备用</param>
         /// <param name="ControlArray">控制数组</param>
         /// <returns>True或False</returns>
-        public bool WholePileInOut(string IP, int qx, int qy, int fx, int fy, int loadHeight, int note, int ControlArray)
+        public static bool WholePileInOut(string IP, int qx, int qy, int fx, int fy, int loadHeight, int note, int ControlArray)
         {
             try
             {
@@ -71,19 +71,22 @@ namespace WMS.ControlPlc
                     S7.SetDIntAt(writeBuffer, 16, loadHeight);
                     S7.SetDIntAt(writeBuffer, 20, note);
                     S7.SetDIntAt(writeBuffer, 24, ControlArray);
+                 
                     int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
                     if (writeResult == 0)
                     {
                       using(WMSEntities wms = new WMSEntities())
                       {
-                            Models.ControlPlc cp = new Models.ControlPlc();
-                            cp.TakeMaterialX = qx;
-                            cp.TakeMaterialY = qy;
-                            cp.PutMaterialX = fx;
-                            cp.PutMaterialY = fy;
-                            cp.LoadHeight = loadHeight;
-                            cp.note = note;
-                            cp.Array = ControlArray;
+                            Models.ControlPlc cp = new Models.ControlPlc
+                            {
+                                TakeMaterialX = qx,
+                                TakeMaterialY = qy,
+                                PutMaterialX = fx,
+                                PutMaterialY = fy,
+                                LoadHeight = loadHeight,
+                                note = note,
+                                Array = ControlArray
+                            };
                             wms.ControlPlc.Add(cp);
                             wms.SaveChanges();
                       }

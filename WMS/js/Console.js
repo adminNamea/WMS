@@ -27,6 +27,7 @@ function newFunction() {
                             $("tbody tr:eq(" + index + ")").css("color", "red")
                         }
                     })
+               
                 }
             });
             var tableIns2 = table.render({

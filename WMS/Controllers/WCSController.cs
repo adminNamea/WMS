@@ -85,27 +85,18 @@ namespace WMS.Controllers
         public ActionResult checkMachine(string type,string id,Dictionary<string,string> data,string value) {
             List<WCS_Machine> list;
             List<checkMachine_Result> list1;
-            StringBuilder builder = new StringBuilder("exec checkMachine ");
-            if (type != null) {
-                builder.Append("@type="+type+",");
-            }
-            SqlParameter[] parameters = new SqlParameter[data.Count()];
-            int i = 0;
+           
             using (WMSEntities wMS=new WMSEntities ()) {
+                Tools.builder = new StringBuilder("exec checkMachine ");
+                if (type != null)
+                {
+                    Tools.builder.Append("@type=" + type + ",");
+                }
+                Tools.parameter = new SqlParameter[data.Count()];
                 if (id == "1")
                 {
-                    foreach (var da in data) {
-                        parameters[i] = new SqlParameter("@"+da.Key,da.Value);
-                        if (i + 1 == data.Count())
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key);
-                        }
-                        else {
-                            builder.Append("@" + da.Key + "=@" + da.Key+",");
-                        }
-                        i++;
-                    }
-                    list1 = wMS.Database.SqlQuery<checkMachine_Result>(builder.ToString(),parameters).ToList();
+                    Tools.SqlAll(data,null);
+                    list1 = wMS.Database.SqlQuery<checkMachine_Result>(Tools.builder.ToString(),Tools.parameter).ToList();
                     Dictionary<string, object> map = new Dictionary<string, object>
                     {
                         { "code", 0 },
@@ -204,23 +195,15 @@ namespace WMS.Controllers
         //添加机器等
         public string WcsAddAll(Dictionary<string,string> data, string type)
         {
-            StringBuilder builder = new StringBuilder("exec WcsAddAll @CreatedBy=" + Session["user"].ToString() + ",");
+            Tools.builder = new StringBuilder("exec WcsAddAll @CreatedBy=" + Session["user"].ToString() + ",");
+            Tools.parameter = new SqlParameter[data.Count];
             using (WMSEntities ws = new WMSEntities())
             {
                 if (type != null)
                 {
-                    builder.Append("@type=" + type + ",");
+                    Tools.builder.Append("@type=" + type + ",");
                 }
-                int index = 0;
-                SqlParameter[] parameter = new SqlParameter[data.Count()];
-                foreach (var add in data)
-                {
-                    parameter[index] = new SqlParameter("@" + add.Key, add.Value);
-                    builder.Append("@" + add.Key + "=@" + add.Key + ",");
-                    index++;
-                }
-                string sql = builder.ToString().Substring(0, builder.ToString().LastIndexOf(","));
-                ws.Database.ExecuteSqlCommand(sql, parameter);
+                Tools.SqlAll(data,"");
             }
             return "true";
         }
@@ -247,36 +230,25 @@ namespace WMS.Controllers
             }
             return Json(list, JsonRequestBehavior.AllowGet);
         }
-        //查询机器
+        //查询功能位置
         public ActionResult checkPlace(string type, string id, Dictionary<string, string> data, string value)
         {
             List<WCS_Place> list;
             List<checkPlace_Result> list1;
-            StringBuilder builder = new StringBuilder("exec checkPlace ");
-            if (type != null)
-            {
-                builder.Append("@type=" + type + ",");
-            }
-            SqlParameter[] parameters = new SqlParameter[data.Count()];
-            int i = 0;
+            
             using (WMSEntities wMS = new WMSEntities())
             {
+                Tools.parameter = new SqlParameter[data.Count()];
+                Tools.builder = new StringBuilder("exec checkPlace ");
+                if (type != null)
+                {
+                    Tools.builder.Append("@type=" + type + ",");
+                }
+
                 if (id == "1")
                 {
-                    foreach (var da in data)
-                    {
-                        parameters[i] = new SqlParameter("@" + da.Key, da.Value);
-                        if (i + 1 == data.Count())
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key);
-                        }
-                        else
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                        }
-                        i++;
-                    }
-                    list1 = wMS.Database.SqlQuery<checkPlace_Result>(builder.ToString(), parameters).ToList();
+                    Tools.SqlAll(data,null);
+                    list1 = wMS.Database.SqlQuery<checkPlace_Result>(Tools.builder.ToString(), Tools.parameter).ToList();
                     Dictionary<string, object> map = new Dictionary<string, object>
                     {
                         { "code", 0 },

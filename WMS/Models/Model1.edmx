@@ -58,6 +58,25 @@
           <Property Name="TacticsName" Type="varchar" MaxLength="50" />
           <Property Name="StatusID" Type="int" />
         </EntityType>
+        <!--生成过程中发现错误:
+警告 6002: 表/视图“WMS.dbo.WCS_Comm”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
+        <EntityType Name="WCS_Comm">
+          <Key>
+            <PropertyRef Name="AID" />
+            <PropertyRef Name="CID" />
+            <PropertyRef Name="Statu" />
+          </Key>
+          <Property Name="AID" Type="int" Nullable="false" />
+          <Property Name="CID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="qx" Type="int" />
+          <Property Name="qy" Type="int" />
+          <Property Name="fx" Type="int" />
+          <Property Name="fy" Type="int" />
+          <Property Name="InQTY" Type="float" />
+          <Property Name="Statu" Type="varchar" MaxLength="8" Nullable="false" />
+          <Property Name="IP" Type="varchar" MaxLength="20" />
+        </EntityType>
         <EntityType Name="WCS_DecomposedCommand">
           <Key>
             <PropertyRef Name="ID" />
@@ -267,7 +286,7 @@
           <Property Name="GoodsAllocationID" Type="int" />
           <Property Name="FromID" Type="int" />
           <Property Name="ToID" Type="nchar" MaxLength="10" />
-          <Property Name="Status" Type="varchar" MaxLength="20" />
+          <Property Name="Status" Type="varchar" MaxLength="50" />
           <Property Name="CreatedTime" Type="varchar" MaxLength="30" />
           <Property Name="PlaceID" Type="varchar" MaxLength="20" />
         </EntityType>
@@ -365,7 +384,9 @@
           <Parameter Name="PlaceID" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
           <Parameter Name="GoodsAllocationID" Type="varchar" Mode="In" />
+          <Parameter Name="FromID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="PlcIn" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UpAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="Name" Type="varchar" Mode="In" />
@@ -460,6 +481,20 @@
     [ControlPlc].[Array] AS [Array], 
     [ControlPlc].[ID] AS [ID]
     FROM [dbo].[ControlPlc] AS [ControlPlc]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="WCS_Comm" EntityType="Self.WCS_Comm" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [WCS_Comm].[AID] AS [AID], 
+    [WCS_Comm].[CID] AS [CID], 
+    [WCS_Comm].[Name] AS [Name], 
+    [WCS_Comm].[qx] AS [qx], 
+    [WCS_Comm].[qy] AS [qy], 
+    [WCS_Comm].[fx] AS [fx], 
+    [WCS_Comm].[fy] AS [fy], 
+    [WCS_Comm].[InQTY] AS [InQTY], 
+    [WCS_Comm].[Statu] AS [Statu], 
+    [WCS_Comm].[IP] AS [IP]
+    FROM [dbo].[WCS_Comm] AS [WCS_Comm]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="WH_Applier" EntityType="Self.WH_Applier" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -707,7 +742,7 @@
           <Property Name="GoodsAllocationID" Type="Int32" />
           <Property Name="FromID" Type="Int32" />
           <Property Name="ToID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CreatedTime" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="PlaceID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
@@ -866,6 +901,7 @@
             <Parameter Name="PlaceID" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
             <Parameter Name="GoodsAllocationID" Mode="In" Type="String" />
+            <Parameter Name="FromID" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="UpAll">
             <Parameter Name="ID" Mode="In" Type="String" />
@@ -932,6 +968,9 @@
             <Parameter Name="Sort" Mode="In" Type="String" />
             <Parameter Name="IP" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="PlcIn" ReturnType="Collection(WMSModel.PlcIn_Result)">
+            </FunctionImport>
+          <EntitySet Name="WCS_Comm" EntityType="WMSModel.WCS_Comm" />
         </EntityContainer>
         <ComplexType Name="checkComm_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1033,6 +1072,35 @@
           <Property Type="String" Name="type" Nullable="false" MaxLength="4" />
           <Property Type="String" Name="Status" Nullable="true" MaxLength="20" />
         </ComplexType>
+        <ComplexType Name="PlcIn_Result">
+        <Property Type="Int32" Name="AID" Nullable="false" />
+          <Property Type="Int32" Name="CID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="qx" Nullable="true" />
+          <Property Type="Int32" Name="qy" Nullable="true" />
+          <Property Type="Int32" Name="fx" Nullable="true" />
+          <Property Type="Int32" Name="fy" Nullable="true" />
+          <Property Type="Double" Name="InQTY" Nullable="true" />
+          <Property Type="String" Name="Statu" Nullable="false" MaxLength="8" />
+          <Property Type="String" Name="IP" Nullable="true" MaxLength="20" />
+        </ComplexType>
+        <EntityType Name="WCS_Comm">
+          <Key>
+            <PropertyRef Name="AID" />
+            <PropertyRef Name="CID" />
+            <PropertyRef Name="Statu" />
+          </Key>
+          <Property Name="AID" Type="Int32" Nullable="false" />
+          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="qx" Type="Int32" />
+          <Property Name="qy" Type="Int32" />
+          <Property Name="fx" Type="Int32" />
+          <Property Name="fy" Type="Int32" />
+          <Property Name="InQTY" Type="Double" />
+          <Property Name="Statu" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="IP" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1477,6 +1545,38 @@
           <FunctionImportMapping FunctionImportName="WcsAddAll" FunctionName="WMSModel.Store.WcsAddAll" />
           <FunctionImportMapping FunctionImportName="WcsDelAll" FunctionName="WMSModel.Store.WcsDelAll" />
           <FunctionImportMapping FunctionImportName="WcsUpAll" FunctionName="WMSModel.Store.WcsUpAll" />
+          <FunctionImportMapping FunctionImportName="PlcIn" FunctionName="WMSModel.Store.PlcIn">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.PlcIn_Result">
+              <ScalarProperty Name="AID" ColumnName="AID" />
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="qx" ColumnName="qx" />
+                <ScalarProperty Name="qy" ColumnName="qy" />
+                <ScalarProperty Name="fx" ColumnName="fx" />
+                <ScalarProperty Name="fy" ColumnName="fy" />
+                <ScalarProperty Name="InQTY" ColumnName="InQTY" />
+                <ScalarProperty Name="Statu" ColumnName="Statu" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="WCS_Comm">
+            <EntityTypeMapping TypeName="WMSModel.WCS_Comm">
+              <MappingFragment StoreEntitySet="WCS_Comm">
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="Statu" ColumnName="Statu" />
+                <ScalarProperty Name="InQTY" ColumnName="InQTY" />
+                <ScalarProperty Name="fy" ColumnName="fy" />
+                <ScalarProperty Name="fx" ColumnName="fx" />
+                <ScalarProperty Name="qy" ColumnName="qy" />
+                <ScalarProperty Name="qx" ColumnName="qx" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="AID" ColumnName="AID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

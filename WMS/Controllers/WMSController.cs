@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using WMS.Models;
 using System.Data.SqlClient;
 using System.Text;
+using WMS.ControlPlc;
 
 namespace WMS.Controllers
 {
@@ -24,11 +25,29 @@ namespace WMS.Controllers
             return View();
         }
         //PLC交互
-        public ActionResult PlcIn(Dictionary<string, string> data)
+        public ActionResult PlcIn()
         {
-            StringBuilder builder = new StringBuilder("exec PlcIn");
-            return Json(Builder.SqlAll(builder, data, "select"),JsonRequestBehavior.AllowGet);
-          
+            bool o = true;
+            List<PlcIn_Result> list=new List<PlcIn_Result>();
+            using (WMSEntities mSEntities = new WMSEntities())
+            {
+                list= mSEntities.Database.SqlQuery<PlcIn_Result>("exec PlcIn").ToList();
+             
+                //for (var i=0;i<list.Count();i++) {
+                //    if (o)
+                //    {
+                //        o = Controls.WholePileInOut(list[i].IP,Convert.ToInt32(list[i].qx),
+                //        Convert.ToInt32(list[i].qy),
+                //        Convert.ToInt32(list[i].fx),
+                //        Convert.ToInt32(list[i].fy),0,0,1);
+                //    }
+                //    else {
+                //        break;
+                //    }
+
+                //}
+            }
+            return Json(list, JsonRequestBehavior.AllowGet);
         }
         #endregion
         #region 出库

@@ -85,7 +85,7 @@ function newFunction() {
             })
             form.on('select(Category1)', function (data) {
                 var index = $(".Category1").index(data.elem)
-                obj = {}
+                var obj = {}
                 obj[".PartName:eq(" + index + ")"] = {
                     data: "/WMS/checkwu",
                     where: { page: 0, limit: 0, value: data.value },
@@ -106,7 +106,7 @@ function newFunction() {
             form.on('select(PartName)', function (data) {
                 namem = data.value
                 var index = $(".PartName").index(data.elem)
-                obj = {}
+                var obj = {}
                 obj[".PartSpec:eq(" + index + ")"] = {
                     data: "/WMS/CheckPartSpec",
                     where: { page: 0, limit: 0, Name: data.value },
@@ -118,7 +118,7 @@ function newFunction() {
             form.on('select(PartSpec)', function (data) {
                 PartSpecs = data.value
                 var index = $(".PartSpec").index(data.elem)
-                obj = {}
+                var obj = {}
                 obj[".PartMaterial:eq(" + index + ")"] = {
                     data: "/WMS/CheckPartMaterial",
                     where: { Name: namem, PartSpec: data.value },

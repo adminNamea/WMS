@@ -132,6 +132,7 @@
             $(document).ajaxStop(function () {
                 layer.close(indexs)
                 for (var i = 0; i < datas.length; i++) {
+               
                     $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
                     $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID)
                     $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)

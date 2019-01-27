@@ -200,45 +200,21 @@ namespace WMS.Controllers
     public ActionResult checkhuo(string id, string value, Dictionary<string, string> data,string type)
     {
         List<WH_GoodsAllocation> list;
-        List<checkHuo_Result> list1;
         using (WMSEntities wMS = new WMSEntities())
         {
 
             if (id == "1")
                 {
-                    StringBuilder builder = new StringBuilder("exec checkHuo ");
+                    string sql = "exec checkHuo ";
+                    
                     if (type != null)
                     {
-                        builder.Append("@type=" + type);
+                        sql += "@type=" + type;
                         if (data.Count() > 0) {
-                            builder.Append(",");
+                            sql += ",";
                         }
-                       
                     }
-                    SqlParameter[] parameter = new SqlParameter[data.Count()];
-                int index = 0;
-                foreach (var da in data)
-                {
-                    parameter[index] = new SqlParameter("@" + da.Key, da.Value);
-                    if ((index + 1) == data.Count())
-                    {
-                        builder.Append("@" + da.Key + "=@" + da.Key);
-                    }
-                    else
-                    {
-                        builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                        index++;
-                    }
-                }
-                list1 = wMS.Database.SqlQuery<checkHuo_Result>(builder.ToString(), parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", "" },
-                        { "data", list1 }
-                    };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkHuo_Result>.SqlMap(sql, data), JsonRequestBehavior.AllowGet);
             }
             else
             {

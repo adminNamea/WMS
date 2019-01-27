@@ -16,9 +16,6 @@ function newFunction() {
                     async: false,
                     datatype: "json",
                 }).done(function (data) {
-                    
-                    console.log(data)
-                   
                     tableIns3 = table.render({
                         elem: '#laytable'
                         , page: true
@@ -32,7 +29,7 @@ function newFunction() {
                             , { field: 'PartMaterial', title: '物料材质' }
                             , { field: 'InQTY', title: '数量（PCS）' }
                             , { field: 'PalletQTY', title: '栈板数量' }
-                            , { field: 'Name', title: '货口（出/入）' }
+                            , { field: 'Name', title: '位置' }
                             , { field: 'type', title: '类型' }
                             , { field: 'Status', title: '状态' }
                         ]]
@@ -149,9 +146,9 @@ function newFunction() {
             //监听提交
             form.on('submit(formDemo)', function (data) {
                 var index = $(".formDemo").index(data.elem)
+                
                 if (boo) {
-                    $.post("/WMS/InMaterial", { data: data.field }, function (data) {
-                       
+                    $.post("/WMS/InMaterial", { data: data.field}, function (data) {
                         if (data == "true") {
                             tableIns3.reload({
                                 page: {

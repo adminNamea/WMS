@@ -31,6 +31,7 @@
         <div class="layui-inline">
             <blockquote class="layui-elem-quote">入库</blockquote>
             <form class="layui-form-pane layui-form" id="form1">
+                <input class="layui-hide" name="InType" value="入库" />
                 <div class="layui-form-item">
                     <label class="layui-form-label">物料类别</label>
                     <div class="layui-input-block">
@@ -89,6 +90,7 @@
         <div class="layui-inline">
             <blockquote class="layui-elem-quote">出库</blockquote>
             <form class="layui-form-pane layui-form" id="form2">
+                <input class="layui-hide" name="InType" value="出库"/>
                 <div class="layui-form-item">
                     <label class="layui-form-label">物料类别</label>
                     <div class="layui-input-block">
@@ -116,7 +118,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" >出库数量</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="OutQTY" required lay-verify="required|number" class="layui-input OutQTY" value="100">
+                        <input type="text" name="InQTY" required lay-verify="required|number" class="layui-input InQTY" value="100">
                     </div>
                     <div class="layui-form-mid layui-word-aux" style="margin-left:250px">PCS</div>
                 </div>
@@ -134,7 +136,7 @@
                 </div>
                 <div class="layui-form-item">
                     <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit lay-filter="formDemo1" disabled>立即提交</button>
+                        <button class="layui-btn" lay-submit lay-filter="formDemo" >立即提交</button>
                         <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
                 </div>

@@ -31,17 +31,19 @@ namespace WMS.Controllers
             List<PlcIn_Result> list=new List<PlcIn_Result>();
             using (WMSEntities mSEntities = new WMSEntities())
             {
-                list= mSEntities.Database.SqlQuery<PlcIn_Result>("exec PlcIn").ToList();
-             
-                //for (var i=0;i<list.Count();i++) {
+                list= mSEntities.PlcIn().ToList();
+
+                //for (var i = 0; i < list.Count(); i++)
+                //{
                 //    if (o)
                 //    {
-                //        o = Controls.WholePileInOut(list[i].IP,Convert.ToInt32(list[i].qx),
+                //        o = Controls.WholePileInOut(list[i].IP, Convert.ToInt32(list[i].qx),
                 //        Convert.ToInt32(list[i].qy),
                 //        Convert.ToInt32(list[i].fx),
-                //        Convert.ToInt32(list[i].fy),0,0,1);
+                //        Convert.ToInt32(list[i].fy), 0, 0, 1);
                 //    }
-                //    else {
+                //    else
+                //    {
                 //        break;
                 //    }
 
@@ -402,39 +404,11 @@ namespace WMS.Controllers
     }
         //查询物料
     public ActionResult checkwu(string id,Dictionary<string,string> data,int page,int limit,string type,string value) {
-            List<checkwu_Result> list;
             List<WH_Material> list1;
-            StringBuilder builder = new StringBuilder("exec checkwu ");
             using (WMSEntities mSEntities=new WMSEntities ()) {
                 if (id == "1")
                 {
-                   
-                    SqlParameter[] parameters = new SqlParameter[data.Count()];
-                    int i = 0;
-                    foreach (var da in data)
-                    {
-                        parameters[i] = new SqlParameter("@" + da.Key, da.Value);
-                        if (i + 1 == data.Count())
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key);
-                        }
-                        else
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                        }
-                        i++;
-                    }
-                    list = mSEntities.Database.SqlQuery<checkwu_Result>(builder.ToString(), parameters).ToList();
-                    PageList<checkwu_Result> pageList = new PageList<checkwu_Result>(list, page, limit);
-                    int count = list.Count();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", count },
-                        { "data", pageList }
-                    };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkwu_Result>.SqlMap("exec checkwu ", data, page, limit), JsonRequestBehavior.AllowGet);
                 }
                 else {
                     if (type != null)
@@ -459,50 +433,17 @@ namespace WMS.Controllers
 
     }
 
-        //查询入库详情
+        //查询出入库详情
         public ActionResult CheckIn(int page, int limit) {
-            List<InOutMaterial_Result> list;
             using (WMSEntities wMS=new WMSEntities ()) {
-                list = wMS.Database.SqlQuery<InOutMaterial_Result>("exec InOutMaterial @type='sel'").ToList();
-                int count = list.Count();
-                PageList<InOutMaterial_Result> pageList = new PageList<InOutMaterial_Result>(list, page, limit);
-                Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", count },
-                        { "data", pageList }
-                    };
-                return Json(map, JsonRequestBehavior.AllowGet);
+                string sql = "exec InOutMaterial @type='sel'";
+                return Json(Tools<InOutMaterial_Result>.SqlMap(sql,page,limit), JsonRequestBehavior.AllowGet);
             }
         }
-        //入库
+        //入库出库
         public string InMaterial(Dictionary<string, string> data) {
-            using (WMSEntities mSEntities=new WMSEntities ()) {
-                StringBuilder builder = new StringBuilder("exec InOutMaterial @type='in',");
-                SqlParameter[] parameters = new SqlParameter[data.Count()];
-                int i = 0;
-                foreach (var da in data) {
-                    parameters[i] = new SqlParameter("@" + da.Key, da.Value);
-                    if (i + 1 == data.Count())
-                    {
-                        builder.Append("@" + da.Key + "=@" + da.Key);
-                    }
-                    else {
-                        builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                    }
-                    i++;
-                }
-                mSEntities.Database.ExecuteSqlCommand(builder.ToString(),parameters);
-            }
+                Tools<object>.SqlComm("exec InOutMaterial @type='in',", data);
                 return "true";
-        }
-        //出库
-        public string OutMaterial(Dictionary<string,string> data)
-        {
-
-
-            return "true";
         }
         //查询物料规格材质
         public ActionResult CheckPartSpec(string Name)

@@ -83,28 +83,16 @@ namespace WMS.Controllers
         }
         //查询机器
         public ActionResult checkMachine(string type,string id,Dictionary<string,string> data,string value) {
-            List<WCS_Machine> list;
-            List<checkMachine_Result> list1;
-           
+            List<WCS_Machine> list;           
             using (WMSEntities wMS=new WMSEntities ()) {
-                Tools.builder = new StringBuilder("exec checkMachine ");
+                string sql = "exec checkMachine ";
                 if (type != null)
                 {
-                    Tools.builder.Append("@type=" + type + ",");
+                    sql+="@type=" + type + ",";
                 }
-                Tools.parameter = new SqlParameter[data.Count()];
                 if (id == "1")
                 {
-                    Tools.SqlAll(data,null);
-                    list1 = wMS.Database.SqlQuery<checkMachine_Result>(Tools.builder.ToString(),Tools.parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", list1.Count() },
-                        { "data", list1 }
-                    };
-                    return Json(map,JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkMachine_Result>.SqlMap(sql, data), JsonRequestBehavior.AllowGet);
                 }
                 else {
                     if (value != null)
@@ -195,15 +183,14 @@ namespace WMS.Controllers
         //添加机器等
         public string WcsAddAll(Dictionary<string,string> data, string type)
         {
-            Tools.builder = new StringBuilder("exec WcsAddAll @CreatedBy=" + Session["user"].ToString() + ",");
-            Tools.parameter = new SqlParameter[data.Count];
+            string sql = "exec WcsAddAll @CreatedBy=" + Session["user"].ToString() + ",";
             using (WMSEntities ws = new WMSEntities())
             {
                 if (type != null)
                 {
-                    Tools.builder.Append("@type=" + type + ",");
+                    sql += "@type=" + type + ",";
                 }
-                Tools.SqlAll(data,"");
+                Tools<checkPlace_Result>.SqlComm(sql, data);
             }
             return "true";
         }
@@ -234,29 +221,16 @@ namespace WMS.Controllers
         public ActionResult checkPlace(string type, string id, Dictionary<string, string> data, string value)
         {
             List<WCS_Place> list;
-            List<checkPlace_Result> list1;
-            
             using (WMSEntities wMS = new WMSEntities())
             {
-                Tools.parameter = new SqlParameter[data.Count()];
-                Tools.builder = new StringBuilder("exec checkPlace ");
+                string sql = "exec checkPlace ";
                 if (type != null)
                 {
-                    Tools.builder.Append("@type=" + type + ",");
+                    sql += "@type=" + type + ",";
                 }
-
                 if (id == "1")
                 {
-                    Tools.SqlAll(data,null);
-                    list1 = wMS.Database.SqlQuery<checkPlace_Result>(Tools.builder.ToString(), Tools.parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", list1.Count() },
-                        { "data", list1 }
-                    };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkPlace_Result>.SqlMap(sql,data), JsonRequestBehavior.AllowGet);
                 }
                 else
                 {

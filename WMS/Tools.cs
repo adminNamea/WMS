@@ -10,22 +10,23 @@ namespace WMS
 {
     public class Tools<T>
     {
-        static StringBuilder builder ;
-        static SqlParameter[] parameter ;
+        private static StringBuilder Builder ;
+        private static SqlParameter[] Parameter ;
         public static void Sql(string Name,Dictionary<string, string> data)
         {
-            builder = new StringBuilder(Name);
+            Builder = new StringBuilder(Name);
+            Parameter = new SqlParameter[data.Count()];
             int i = 0;
             foreach (var da in data)
             {
-                parameter[i] = new SqlParameter("@" + da.Key, da.Value);
+                Parameter[i] = new SqlParameter("@" + da.Key, da.Value);
                 if (i + 1 == data.Count())
                 {
-                    builder.Append("@" + da.Key + "=@" + da.Key);
+                    Builder.Append("@" + da.Key + "=@" + da.Key);
                 }
                 else
                 {
-                    builder.Append("@" + da.Key + "=@" + da.Key + ",");
+                    Builder.Append("@" + da.Key + "=@" + da.Key + ",");
                 }
                 i++;
             }
@@ -35,15 +36,15 @@ namespace WMS
             Sql(Name,data);
             using (WMSEntities wms = new WMSEntities())
             {
-                wms.Database.ExecuteSqlCommand(builder.ToString(), parameter);
+                wms.Database.ExecuteSqlCommand(Builder.ToString(), Parameter);
             }
         }
-        public static Dictionary<string,object> SqlMap(string Name, Dictionary<string, string> data)
+        public static Dictionary<string,object> SqlMap(string Name,Dictionary<string, string> data)
         {
             Sql(Name, data);
             using (WMSEntities wms = new WMSEntities())
             {
-                var list= wms.Database.SqlQuery<T>(builder.ToString(), parameter).ToList();
+                var list= wms.Database.SqlQuery<T>(Builder.ToString(), Parameter).ToList();
                 Dictionary<string, object> map = new Dictionary<string, object>
                     {
                         { "code", 0 },
@@ -59,7 +60,7 @@ namespace WMS
             Sql(Name, data);
             using (WMSEntities wms = new WMSEntities())
             {
-                List<T> list = wms.Database.SqlQuery<T>(builder.ToString(), parameter).ToList();
+                List<T> list = wms.Database.SqlQuery<T>(Builder.ToString(), Parameter).ToList();
                 PageList<T> pageList = new PageList<T>(list, page, limit);
                 Dictionary<string, object> map = new Dictionary<string, object>
                     {
@@ -75,7 +76,7 @@ namespace WMS
         {
             using (WMSEntities wms = new WMSEntities())
             {
-                List<T> list = wms.Database.SqlQuery<T>(Name, parameter).ToList();
+                List<T> list = wms.Database.SqlQuery<T>(Name).ToList();
                 PageList<T> pageList = new PageList<T>(list, page, limit);
                 Dictionary<string, object> map = new Dictionary<string, object>
                     {
@@ -92,7 +93,7 @@ namespace WMS
             Sql(Name, data);
             using (WMSEntities wms = new WMSEntities())
             {
-                return wms.Database.SqlQuery<T>(builder.ToString(), parameter).ToList();
+                return wms.Database.SqlQuery<T>(Builder.ToString(), Parameter).ToList();
             }
         }
     }

@@ -27,7 +27,7 @@ function newFunction() {
                             , { field: 'PartName', title: '物料名称' }
                             , { field: 'PartSpec', title: '物料规格' }
                             , { field: 'PartMaterial', title: '物料材质' }
-                            , { field: 'InQTY', title: '数量（PCS）' }
+                            , { field: 'QTY', title: '数量（PCS）' }
                             , { field: 'PalletQTY', title: '栈板数量' }
                             , { field: 'Name', title: '位置' }
                             , { field: 'type', title: '类型' }

@@ -91,20 +91,10 @@ namespace WMS.Controllers
         //添加仓库等
         public string AddWarehouse(Dictionary<string, string> data, string type)
         {
-            StringBuilder builder = new StringBuilder("exec AddStorage @type=" + type + ",@CreatedBy="+Session["user"].ToString() + ",");
             using (WMSEntities ws = new WMSEntities())
             {
-                int index = 0;
-                int len = data.Count();
-                SqlParameter[] parameter = new SqlParameter[len];
-                foreach (var add in data)
-                {
-                    parameter[index] = new SqlParameter("@" + add.Key, add.Value);
-                    builder.Append("@" + add.Key + "=@" + add.Key + ",");
-                    index++;
-                }
-                string sql = builder.ToString().Substring(0, builder.ToString().LastIndexOf(","));
-                ws.Database.ExecuteSqlCommand(sql, parameter);
+                string sql = "exec AddStorage @type=" + type + ",@CreatedBy=" + Session["user"].ToString() + ",";
+                Tools<object>.SqlComm(sql,data);
             }
             return "true";
         }
@@ -153,37 +143,13 @@ namespace WMS.Controllers
     public ActionResult checkkq(string id, string value, Dictionary<string, string> data)
     {
             List<WH_Area> list;
-            List<checkKq_Result> list1;
+
             using (WMSEntities wMS = new WMSEntities())
             {
 
                 if (id == "1")
                 {
-                    StringBuilder builder = new StringBuilder("exec checkKq ");
-                    SqlParameter[] parameter = new SqlParameter[data.Count()];
-                    int index = 0;
-                    foreach (var da in data)
-                    {
-                        parameter[index] = new SqlParameter("@" + da.Key, da.Value);
-                        if ((index + 1) == data.Count())
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key);
-                        }
-                        else
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                            index++;
-                        }
-                    }
-                    list1 = wMS.Database.SqlQuery<checkKq_Result>(builder.ToString(), parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", "" },
-                        { "data", list1 }
-                    };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkKq_Result>.SqlMap("exec checkKq ",data), JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -205,37 +171,14 @@ namespace WMS.Controllers
     public ActionResult checkkw(string id, string value, Dictionary<string,string> data)
     {
             List<WH_StorageLocation> list;
-            List<checkkw_Result> list1;
             using (WMSEntities wMS = new WMSEntities())
             {
 
                 if (id == "1")
                 {
-                    StringBuilder builder = new StringBuilder("exec checkkw ");
-                    SqlParameter[] parameter = new SqlParameter[data.Count()];
-                    int index = 0;
-                    foreach (var da in data)
-                    {
-                        parameter[index] = new SqlParameter("@" + da.Key, da.Value);
-                        if ((index + 1) == data.Count())
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key);
-                        }
-                        else
-                        {
-                            builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                            index++;
-                        }
-                    }
-                    list1 = wMS.Database.SqlQuery<checkkw_Result>(builder.ToString(), parameter).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", "" },
-                        { "data", list1 }
-                    };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    string sql = "exec checkkw ";
+
+                    return Json(Tools<checkkw_Result>.SqlMap(sql,data), JsonRequestBehavior.AllowGet);
                 }
                 else
                 {

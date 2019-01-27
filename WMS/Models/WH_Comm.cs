@@ -10,8 +10,9 @@
 namespace WMS.Models
 {
     using System;
+    using System.Collections.Generic;
     
-    public partial class InOutMaterial_Result
+    public partial class WH_Comm
     {
         public int aid { get; set; }
         public int mid { get; set; }

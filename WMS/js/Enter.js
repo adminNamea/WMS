@@ -9,14 +9,7 @@ function newFunction() {
             var element = layui.element;
             $(function () { 
             var namem, PartSpecs, boo = true
-                var tableIns3
-                $.ajax({
-                    url: "/WMS/PlcIn",
-                    type: "post",
-                    async: false,
-                    datatype: "json",
-                }).done(function (data) {
-                    tableIns3 = table.render({
+                var tableIns3 = table.render({
                         elem: '#laytable'
                         , page: true
                         , limit: 8
@@ -40,7 +33,6 @@ function newFunction() {
                                     $("tbody tr:eq(" + index + ")").css("color","red");
                                 }
                             })
-
                             //var endTime = new Date().getTime()+55555
                             //    , serverTime = new Date().getTime();
                             //var countTime = (endTime - serverTime) / 1000
@@ -77,8 +69,6 @@ function newFunction() {
 
                         }
                     });
-                })
-                
             SELECT.render({
                 ".Place": { data: "/WCS/checkPlace" },
                 ".Category1": { data: "/WMS/checkwu",  where: { page: 0, limit: 0, type: "lei" } }
@@ -149,13 +139,15 @@ function newFunction() {
                 
                 if (boo) {
                     $.post("/WMS/InMaterial", { data: data.field}, function (data) {
-                        if (data == "true") {
+                        if (data == 1) {
                             tableIns3.reload({
                                 page: {
                                     curr: tableIns3.config.page.pages
                                 }
                             })
-                                layer.msg("已确认")
+                            layer.msg("已确认", { time: 500 })
+                        } else {
+                            layer.msg("货位已用完", { time: 500 })
                         }
                     })
                 } else {

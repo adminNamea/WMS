@@ -28,6 +28,22 @@ namespace WMS.Controllers
 
             return View();
         }
+        //查询wcs命令
+        public ActionResult WcsComm(string aid) {
+            List<WCS_Comm> list = null;
+            using (WMSEntities mSEntities=new WMSEntities ()) {
+                list = mSEntities.WCS_Comm.Where(p=>p.AID==aid).ToList();
+
+            }
+            Dictionary<string, object> map = new Dictionary<string, object>
+                    {
+                        { "code", 0 },
+                        { "msg", "" },
+                        { "count", list.Count() },
+                        { "data", list }
+                    };
+            return Json(map, JsonRequestBehavior.AllowGet);
+        }
         #endregion
         #region 命令分解
         public ActionResult Command() {

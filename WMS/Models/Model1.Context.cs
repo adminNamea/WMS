@@ -281,7 +281,7 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DelAll", typeParameter, idParameter);
         }
     
-        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string partName, string partSpec, string partMaterial, string inQTY, string placeID, string type, string inType)
+        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string partName, string partSpec, string partMaterial, string inQTY, string placeID, string type, string inType, string qTYperPallet)
         {
             var partNameParameter = partName != null ?
                 new ObjectParameter("PartName", partName) :
@@ -311,7 +311,11 @@ namespace WMS.Models
                 new ObjectParameter("InType", inType) :
                 new ObjectParameter("InType", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter);
+            var qTYperPalletParameter = qTYperPallet != null ?
+                new ObjectParameter("QTYperPallet", qTYperPallet) :
+                new ObjectParameter("QTYperPallet", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter, qTYperPalletParameter);
         }
     
         public virtual ObjectResult<PlcIn_Result> PlcIn()

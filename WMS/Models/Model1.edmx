@@ -63,8 +63,8 @@
             <PropertyRef Name="AID" />
             <PropertyRef Name="CID" />
           </Key>
-          <Property Name="AID" Type="int" Nullable="false" />
-          <Property Name="CID" Type="int" Nullable="false" />
+          <Property Name="AID" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CID" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" />
           <Property Name="qx" Type="int" />
           <Property Name="qy" Type="int" />
@@ -213,8 +213,8 @@
             <PropertyRef Name="aid" />
             <PropertyRef Name="mid" />
           </Key>
-          <Property Name="aid" Type="int" Nullable="false" />
-          <Property Name="mid" Type="int" Nullable="false" />
+          <Property Name="aid" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="mid" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="PartName" Type="varchar" MaxLength="50" />
           <Property Name="PartSpec" Type="varchar" MaxLength="50" />
           <Property Name="PartMaterial" Type="varchar" MaxLength="50" />
@@ -393,6 +393,7 @@
           <Parameter Name="PlaceID" Type="varchar" Mode="In" />
           <Parameter Name="type" Type="varchar" Mode="In" />
           <Parameter Name="InType" Type="varchar" Mode="In" />
+          <Parameter Name="QTYperPallet" Type="varchar" Mode="In" />
         </Function>
         <Function Name="PlcIn" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UpAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -566,8 +567,8 @@
             <PropertyRef Name="AID" />
             <PropertyRef Name="CID" />
           </Key>
-          <Property Name="AID" Type="Int32" Nullable="false" />
-          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="AID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="qx" Type="Int32" />
           <Property Name="qy" Type="Int32" />
@@ -699,8 +700,8 @@
             <PropertyRef Name="aid" />
             <PropertyRef Name="mid" />
           </Key>
-          <Property Name="aid" Type="Int32" Nullable="false" />
-          <Property Name="mid" Type="Int32" Nullable="false" />
+          <Property Name="aid" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="mid" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="PartName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PartSpec" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PartMaterial" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -928,6 +929,7 @@
             <Parameter Name="PlaceID" Mode="In" Type="String" />
             <Parameter Name="type" Mode="In" Type="String" />
             <Parameter Name="InType" Mode="In" Type="String" />
+            <Parameter Name="QTYperPallet" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PlcIn" ReturnType="Collection(WMSModel.PlcIn_Result)" />
           <FunctionImport Name="UpAll">
@@ -1084,8 +1086,8 @@
           <Property Type="String" Name="Units" Nullable="true" MaxLength="10" />
         </ComplexType>
         <ComplexType Name="InOutMaterial_Result">
-          <Property Type="Int32" Name="aid" Nullable="false" />
-          <Property Type="Int32" Name="mid" Nullable="false" />
+          <Property Type="String" Name="aid" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="mid" Nullable="false" MaxLength="20" />
           <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
@@ -1097,8 +1099,8 @@
           <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
         </ComplexType>
         <ComplexType Name="PlcIn_Result">
-          <Property Type="Int32" Name="AID" Nullable="false" />
-          <Property Type="Int32" Name="CID" Nullable="false" />
+          <Property Type="String" Name="AID" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="CID" Nullable="false" MaxLength="10" />
           <Property Type="String" Name="Name" Nullable="true" MaxLength="50" />
           <Property Type="Int32" Name="qx" Nullable="true" />
           <Property Type="Int32" Name="qy" Nullable="true" />

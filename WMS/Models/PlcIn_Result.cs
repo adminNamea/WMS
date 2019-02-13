@@ -13,8 +13,8 @@ namespace WMS.Models
     
     public partial class PlcIn_Result
     {
-        public int AID { get; set; }
-        public int CID { get; set; }
+        public string AID { get; set; }
+        public string CID { get; set; }
         public string Name { get; set; }
         public Nullable<int> qx { get; set; }
         public Nullable<int> qy { get; set; }

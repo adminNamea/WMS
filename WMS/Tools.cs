@@ -31,12 +31,12 @@ namespace WMS
                 i++;
             }
         }
-        public static void SqlComm(string Name, Dictionary<string, string> data)
+        public static int SqlComm(string Name, Dictionary<string, string> data)
         {
             Sql(Name,data);
             using (WMSEntities wms = new WMSEntities())
             {
-                wms.Database.ExecuteSqlCommand(Builder.ToString(), Parameter);
+               return wms.Database.ExecuteSqlCommand(Builder.ToString(), Parameter);
             }
         }
         public static Dictionary<string,object> SqlMap(string Name,Dictionary<string, string> data)

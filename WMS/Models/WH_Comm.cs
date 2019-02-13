@@ -14,8 +14,8 @@ namespace WMS.Models
     
     public partial class WH_Comm
     {
-        public int aid { get; set; }
-        public int mid { get; set; }
+        public string aid { get; set; }
+        public string mid { get; set; }
         public string PartName { get; set; }
         public string PartSpec { get; set; }
         public string PartMaterial { get; set; }

@@ -28,29 +28,29 @@ namespace WMS.Controllers
         public ActionResult PlcIn()
         {
             bool o = true;
-            List<PlcIn_Result> list=new List<PlcIn_Result>();
+            List<PlcIn_Result> list = null;
+            StringBuilder cid = new StringBuilder();
             using (WMSEntities mSEntities = new WMSEntities())
             {
-                list= mSEntities.PlcIn().ToList();
-
-                //for (var i = 0; i < list.Count(); i++)
-                //{
-                //    if (o)
-                //    {
-                //        o = Controls.WholePileInOut(list[i].IP, Convert.ToInt32(list[i].qx),
-                //        Convert.ToInt32(list[i].qy),
-                //        Convert.ToInt32(list[i].fx),
-                //        Convert.ToInt32(list[i].fy), 0, 0, 1);
-                //    }
-                //    else
-                //    {
-                //        break;
-                //    }
-
-                //}
+                list = mSEntities.PlcIn().ToList();
             }
             return Json(list, JsonRequestBehavior.AllowGet);
         }
+        //for (var i = 0; i < list.Count(); i++)
+        //{
+        //    if (o)
+        //    {
+        //        o = Controls.WholePileInOut(list[i].IP, Convert.ToInt32(list[i].qx),
+        //        Convert.ToInt32(list[i].qy),
+        //        Convert.ToInt32(list[i].fx),
+        //        Convert.ToInt32(list[i].fy), 0, 0, 1);
+        //    }
+        //    else
+        //    {
+        //        break;
+        //    }
+
+        //}
         #endregion
         #region 出库
         public ActionResult Out()
@@ -94,15 +94,15 @@ namespace WMS.Controllers
             using (WMSEntities ws = new WMSEntities())
             {
                 string sql = "exec AddStorage @type=" + type + ",@CreatedBy=" + Session["user"].ToString() + ",";
-                Tools<object>.SqlComm(sql,data);
+                Tools<object>.SqlComm(sql, data);
             }
             return "true";
         }
         //查询仓库信息
         public ActionResult checkWo(string id, string value, string data)
         {
-           
-          
+
+
             using (WMSEntities wMS = new WMSEntities())
             {
 
@@ -135,13 +135,13 @@ namespace WMS.Controllers
                     {
                         list = wMS.WH.ToList();
                     }
-                    return Json(list,JsonRequestBehavior.AllowGet);
+                    return Json(list, JsonRequestBehavior.AllowGet);
                 }
             }
         }
-    //查询库区信息
-    public ActionResult checkkq(string id, string value, Dictionary<string, string> data)
-    {
+        //查询库区信息
+        public ActionResult checkkq(string id, string value, Dictionary<string, string> data)
+        {
             List<WH_Area> list;
 
             using (WMSEntities wMS = new WMSEntities())
@@ -149,7 +149,7 @@ namespace WMS.Controllers
 
                 if (id == "1")
                 {
-                    return Json(Tools<checkKq_Result>.SqlMap("exec checkKq ",data), JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkKq_Result>.SqlMap("exec checkKq ", data), JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -167,9 +167,9 @@ namespace WMS.Controllers
                 }
             }
         }
-    //查询库位信息
-    public ActionResult checkkw(string id, string value, Dictionary<string,string> data)
-    {
+        //查询库位信息
+        public ActionResult checkkw(string id, string value, Dictionary<string, string> data)
+        {
             List<WH_StorageLocation> list;
             using (WMSEntities wMS = new WMSEntities())
             {
@@ -178,7 +178,7 @@ namespace WMS.Controllers
                 {
                     string sql = "exec checkkw ";
 
-                    return Json(Tools<checkkw_Result>.SqlMap(sql,data), JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkkw_Result>.SqlMap(sql, data), JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -196,95 +196,101 @@ namespace WMS.Controllers
                 }
             }
         }
-    //查询货位信息
-    public ActionResult checkhuo(string id, string value, Dictionary<string, string> data,string type)
-    {
-        List<WH_GoodsAllocation> list;
-        using (WMSEntities wMS = new WMSEntities())
+        //查询货位信息
+        public ActionResult checkhuo(string id, string value, Dictionary<string, string> data, string type)
         {
+            List<WH_GoodsAllocation> list;
+            using (WMSEntities wMS = new WMSEntities())
+            {
 
-            if (id == "1")
+                if (id == "1")
                 {
                     string sql = "exec checkHuo ";
-                    
+
                     if (type != null)
                     {
                         sql += "@type=" + type;
-                        if (data.Count() > 0) {
+                        if (data.Count() > 0)
+                        {
                             sql += ",";
                         }
                     }
                     return Json(Tools<checkHuo_Result>.SqlMap(sql, data), JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                if (value != null)
-                {
-                    list = wMS.WH_GoodsAllocation.Where(p => p.Name == value).ToList();
-                    return Json(list, JsonRequestBehavior.AllowGet);
                 }
                 else
+                {
+                    if (value != null)
                     {
-                        if (type == "add") {
-                         list = wMS.WH_GoodsAllocation.Where(p=>p.Size==0||p.Size==null).ToList();
-                        } else { 
-                         list = wMS.WH_GoodsAllocation.ToList();
+                        list = wMS.WH_GoodsAllocation.Where(p => p.Name == value).ToList();
+                        return Json(list, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        if (type == "add")
+                        {
+                            list = wMS.WH_GoodsAllocation.Where(p => p.Size == 0 || p.Size == null).ToList();
+                        }
+                        else
+                        {
+                            list = wMS.WH_GoodsAllocation.ToList();
                         }
                         return Json(list, JsonRequestBehavior.AllowGet);
-                }
+                    }
 
+                }
             }
         }
-    }
-    //删除单个
-    public string DelSingle(string id, string type)
-    {
-        using (WMSEntities wMS = new WMSEntities())
+        //删除单个
+        public string DelSingle(string id, string type)
         {
-                    SqlParameter[] parameters = new SqlParameter[2];
-                    parameters[0] = new SqlParameter("@type",type);
-                    parameters[1] = new SqlParameter("@id",id);
-                    wMS.Database.ExecuteSqlCommand("exec DelAll @type=@type,@ID=@id",parameters);
-        }
+            using (WMSEntities wMS = new WMSEntities())
+            {
+                SqlParameter[] parameters = new SqlParameter[2];
+                parameters[0] = new SqlParameter("@type", type);
+                parameters[1] = new SqlParameter("@id", id);
+                wMS.Database.ExecuteSqlCommand("exec DelAll @type=@type,@ID=@id", parameters);
+            }
             return "true";
 
         }
-    //删除多个
-    public string DelAll(List<string> id, string type)
-    {
-        StringBuilder builder = new StringBuilder();
-        using (WMSEntities wMS = new WMSEntities())
+        //删除多个
+        public string DelAll(List<string> id, string type)
         {
+            StringBuilder builder = new StringBuilder();
+            using (WMSEntities wMS = new WMSEntities())
+            {
                 int i = 0;
-            foreach (var all in id)
+                foreach (var all in id)
                 {
                     if ((i + 1) == id.Count())
                     {
                         builder.Append(all);
                     }
-                    else {
-                builder.Append(all+",");
+                    else
+                    {
+                        builder.Append(all + ",");
                     }
                     i++;
-            }
-            SqlParameter[] parameter = new SqlParameter[2];
-            parameter[0] = new SqlParameter("@type", type);
-            parameter[1] = new SqlParameter("@id", builder.ToString());
-            wMS.Database.ExecuteSqlCommand("exec DelAll @type=@type,@id=@id", parameter);
-        }
-        return "true";
-    }
-    //修改操作
-    public string UpAll(Dictionary<string, string> data, string type)
-    {
-        using (WMSEntities wMS = new WMSEntities())
-        {
-            StringBuilder builder = new StringBuilder("exec UpAll ");
-                if (type!=null) {
-                    builder.Append("@type=" + type+",");
                 }
-            SqlParameter[] parameters = new SqlParameter[data.Count()];
-            int i = 0;
+                SqlParameter[] parameter = new SqlParameter[2];
+                parameter[0] = new SqlParameter("@type", type);
+                parameter[1] = new SqlParameter("@id", builder.ToString());
+                wMS.Database.ExecuteSqlCommand("exec DelAll @type=@type,@id=@id", parameter);
+            }
+            return "true";
+        }
+        //修改操作
+        public string UpAll(Dictionary<string, string> data, string type)
+        {
+            using (WMSEntities wMS = new WMSEntities())
+            {
+                StringBuilder builder = new StringBuilder("exec UpAll ");
+                if (type != null)
+                {
+                    builder.Append("@type=" + type + ",");
+                }
+                SqlParameter[] parameters = new SqlParameter[data.Count()];
+                int i = 0;
                 foreach (var da in data)
                 {
                     if (da.Key == "Size")
@@ -292,77 +298,84 @@ namespace WMS.Controllers
                         float Size = float.Parse(da.Value.Replace(" PCS", ""));
                         parameters[i] = new SqlParameter("@" + da.Key, Size);
                     }
-                    else {
-                    if (da.Key == "CreatedBy") {
-                        parameters[i] = new SqlParameter("@CreatedBy", Session["user"]);
+                    else
+                    {
+                        if (da.Key == "CreatedBy")
+                        {
+                            parameters[i] = new SqlParameter("@CreatedBy", Session["user"]);
+                        }
+                        else
+                        {
+                            parameters[i] = new SqlParameter("@" + da.Key, da.Value);
+                        }
+                    }
+                    if ((i + 1) == data.Count())
+                    {
+                        builder.Append("@" + da.Key + "=@" + da.Key);
                     }
                     else
                     {
-                        parameters[i] = new SqlParameter("@" + da.Key, da.Value);
+                        builder.Append("@" + da.Key + "=@" + da.Key + ",");
                     }
-                    }
-                    if ((i + 1) == data.Count())
-                {
-                    builder.Append("@" + da.Key + "=@" + da.Key);
+                    i++;
                 }
-                else
-                {
-                    builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                }
-                i++;
+                wMS.Database.ExecuteSqlCommand(builder.ToString(), parameters);
             }
-            wMS.Database.ExecuteSqlCommand(builder.ToString(), parameters);
+            return "true";
         }
-        return "true";
-    }
-    #endregion
-    #region 物料信息
-    public ActionResult Material()
-    {
-        return View();
-    }
+        #endregion
+        #region 物料信息
+        public ActionResult Material()
+        {
+            return View();
+        }
         //查询物料
-    public ActionResult checkwu(string id,Dictionary<string,string> data,int page,int limit,string type,string value) {
+        public ActionResult checkwu(string id, Dictionary<string, string> data, int page, int limit, string type, string value)
+        {
             List<WH_Material> list1;
-            using (WMSEntities mSEntities=new WMSEntities ()) {
+            using (WMSEntities mSEntities = new WMSEntities())
+            {
                 if (id == "1")
                 {
                     return Json(Tools<checkwu_Result>.SqlMap("exec checkwu ", data, page, limit), JsonRequestBehavior.AllowGet);
                 }
-                else {
+                else
+                {
                     if (type != null)
                     {
                         List<Category> list2 = mSEntities.Category.ToList();
                         return Json(list2, JsonRequestBehavior.AllowGet);
                     }
-                    else {
+                    else
+                    {
                         if (value != null)
                         {
-                            list1 = mSEntities.WH_Material.Where(p => p.Category1 == value).GroupBy(p => p.PartName).Select(g=>g.FirstOrDefault()).ToList();
+                            list1 = mSEntities.WH_Material.Where(p => p.Category1 == value).GroupBy(p => p.PartName).Select(g => g.FirstOrDefault()).ToList();
                         }
-                        else {
+                        else
+                        {
                             list1 = mSEntities.WH_Material.ToList();
                         }
-                   
-                    return Json(list1,JsonRequestBehavior.AllowGet);
+
+                        return Json(list1, JsonRequestBehavior.AllowGet);
                     }
                 }
 
             }
 
-    }
+        }
 
         //查询出入库详情
-        public ActionResult CheckIn(int page, int limit) {
-            using (WMSEntities wMS=new WMSEntities ()) {
-                string sql = "exec InOutMaterial @type='sel'";
-                return Json(Tools<InOutMaterial_Result>.SqlMap(sql,page,limit), JsonRequestBehavior.AllowGet);
-            }
+        public ActionResult CheckIn(int page, int limit)
+        {
+            string sql = "exec InOutMaterial @type='sel'";
+            return Json(Tools<InOutMaterial_Result>.SqlMap(sql, page, limit), JsonRequestBehavior.AllowGet);
         }
         //入库出库
-        public string InMaterial(Dictionary<string, string> data) {
-                Tools<object>.SqlComm("exec InOutMaterial @type='in',", data);
-                return "true";
+        public int InMaterial(Dictionary<string, string> data)
+        {
+           int i= Tools<object>.SqlComm("exec InOutMaterial @type='in',", data);
+            return i;
         }
         //查询物料规格材质
         public ActionResult CheckPartSpec(string Name)
@@ -378,7 +391,7 @@ namespace WMS.Controllers
         //查询物料材质
         public ActionResult CheckPartMaterial(string Name, string PartSpec)
         {
-            
+
             List<WH_Material> list;
             using (WMSEntities mSEntities = new WMSEntities())
             {
@@ -387,33 +400,33 @@ namespace WMS.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
         //查询物料托盘数
-        public ActionResult CheckQTYperPallet(string Name, string PartSpec,string PartMaterial)
+        public ActionResult CheckQTYperPallet(string Name, string PartSpec, string PartMaterial)
         {
             List<WH_Material> list;
             using (WMSEntities mSEntities = new WMSEntities())
             {
-                list = mSEntities.WH_Material.Where(p => p.PartName == Name && p.PartSpec == PartSpec&&p.PartMaterial== PartMaterial).ToList();
+                list = mSEntities.WH_Material.Where(p => p.PartName == Name && p.PartSpec == PartSpec && p.PartMaterial == PartMaterial).ToList();
             }
             return Json(list, JsonRequestBehavior.AllowGet);
         }
         #endregion
         #region 库存限制维护
         public ActionResult Inventory()
-    {
-        return View();
+        {
+            return View();
+        }
+        #endregion
+        #region 策略
+        public ActionResult Strategy()
+        {
+            return View();
+        }
+        #endregion
+        #region 员工登陆
+        public ActionResult login()
+        {
+            return View();
+        }
+        #endregion
     }
-    #endregion
-    #region 策略
-    public ActionResult Strategy()
-    {
-        return View();
-    }
-    #endregion
-    #region 员工登陆
-    public ActionResult login()
-    {
-        return View();
-    }
-    #endregion
-}
 }

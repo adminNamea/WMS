@@ -26,9 +26,9 @@
         <div class="layui-header">
             <div class="layui-logo">智能立体仓库</div>
             <ul class="layui-nav layui-layout-left">
-                <li class="layui-nav-item"><a href="">控制台</a></li>
-                <li class="layui-nav-item"><a href="">商品管理</a></li>
-                <li class="layui-nav-item"><a href="">用户</a></li>
+                <li class="layui-nav-item Console"><a href="javascript:;">控制台</a></li>
+                <li class="layui-nav-item"><a href="javascript:;">商品管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:;">用户</a></li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">其它系统</a>
                     <dl class="layui-nav-child">
@@ -66,7 +66,7 @@
                     <li class="layui-nav-item WCS" style="display:none">
                         <a href="javascript:;">WCS</a>
                         <dl class="layui-nav-child">
-                            <dd><a href="javascript:;">WCS操作</a></dd>
+                            <dd><a href="javascript:;" class="wcsdata">WCS操作</a></dd>
                             <dd><a href="javascript:;">WCS基础资料</a></dd>
                         </dl>
                     </li>
@@ -163,6 +163,11 @@
                     }
                 });
             })
+            $(".Console").click(function () {
+                $(".WCS a").click()
+                $('.wcsdata').click()
+                element.tabChange('docDemoTabBrief', 12);
+            })
             $(".UserData").click(function () {
                     $('.data').click()
                     element.tabChange('docDemoTabBrief', 11);
@@ -190,7 +195,7 @@
                         break;
                     case "WCS操作":
                         $(".layui-tab-title").empty()
-                        $(".layui-tab-title").append("<li>仓库实时运行状况</li><i>/WCS/WarehouseState</i><li>监控台</li><i>/WCS/Console</i>")
+                        $(".layui-tab-title").append("<li>仓库实时运行状况</li><i>/WCS/WarehouseState</i><li lay-id=12>控制台</li><i>/WCS/Console</i>")
                         break;
                     case "WCS基础资料":
                         $(".layui-tab-title").empty()

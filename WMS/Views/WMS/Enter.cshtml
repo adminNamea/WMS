@@ -8,6 +8,8 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="~/layui/layui.js"></script>
+    <link href="~/layui/css/layui.css" rel="stylesheet"/>
     <script type="text/javascript" src="~/js/Enter.js"></script>
     <title>入库</title>
     <style type="text/css">
@@ -28,7 +30,7 @@
     </style>
 </head>
 <body>
-        <div class="layui-inline">
+        <div class="layui-inline in" style="display:none">
             <blockquote class="layui-elem-quote">入库</blockquote>
             <form class="layui-form-pane layui-form" id="form1">
                 <input class="layui-hide" name="InType" value="入库" />
@@ -83,11 +85,7 @@
                 </div>
             </form>
         </div>
-        <div class="layui-inline" style="width:420px">
-            <ul class="layui-timeline"></ul>
-            <ul class="layui-timeline"></ul>
-        </div>
-        <div class="layui-inline">
+        <div class="layui-inline out" style="display:none">
             <blockquote class="layui-elem-quote">出库</blockquote>
             <form class="layui-form-pane layui-form" id="form2">
                 <input class="layui-hide" name="InType" value="出库"/>
@@ -142,6 +140,5 @@
                 </div>
             </form>
         </div>
-        <table id="laytable" lay-filter="table"></table>
 </body>
 </html>

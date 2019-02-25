@@ -106,7 +106,7 @@ function newFunction() {
                     , { align: 'center', toolbar: '#barDemo' }
                 ]]
                 , done: function (res) {
-                    console.log(res)
+                 
                     ajax()
                     datas = res.data
                 }
@@ -151,9 +151,7 @@ function newFunction() {
                                 SELECT.reload(res.data)
                             }
                         })
-                    } else {
-                        table.cache.laytable[ind]["" + obj.field + ""] = obj.value
-                    }
+                    } 
                 }
             });
             form.on('select', function (data) {

@@ -17,5 +17,7 @@ namespace WMS.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
+        public string width { get; set; }
+        public string height { get; set; }
     }
 }

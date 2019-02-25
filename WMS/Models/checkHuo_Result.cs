@@ -24,9 +24,8 @@ namespace WMS.Models
         public int StorageLocationID { get; set; }
         public int WHAreaID { get; set; }
         public int WHID { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedTime { get; set; }
-        public string UpdatedBy { get; set; }
+        public string width { get; set; }
+        public string height { get; set; }
         public string StatusID { get; set; }
         public string CreatedTime { get; set; }
     }

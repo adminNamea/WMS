@@ -25,5 +25,7 @@ namespace WMS.Models
         public string Name { get; set; }
         public string type { get; set; }
         public string Status { get; set; }
+        public Nullable<int> FromID { get; set; }
+        public Nullable<int> ToID { get; set; }
     }
 }

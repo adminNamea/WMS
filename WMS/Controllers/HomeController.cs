@@ -17,38 +17,26 @@ namespace WMS.Controllers
             return View();
         }
         public ActionResult Registered() {
-
             return View();
         }
         //注册-更新
         public string AddUser(Dictionary<string,string> User,string type) {
-            using (WMSEntities ms =new WMSEntities ()) {
-                SqlParameter[] parameters = new SqlParameter[User.Count()];
-               
-                StringBuilder builder = new StringBuilder("exec AddUser @type='"+type+"',");
-                int i = 0;
-                foreach (var user in User) {
-                    parameters[i] = new SqlParameter("@"+user.Key,user.Value);
-                    if ((i + 1) == User.Count())
-                    {
-                        builder.Append("@" + user.Key + "=@" + user.Key);
-                    }
-                    else {
-                        builder.Append("@" + user.Key + "=@" + user.Key+",");
-                    }
-                    i++;
-                }
-                ms.Database.ExecuteSqlCommand(builder.ToString(),parameters);
-            }
+            string sql = "exec AddUser @type = '"+type+"',";
+            int i= Tools<object>.SqlComm(sql,User);
+            if (i > 0)
+            {
                 return "true";
+            }
+            else {
+                return "false";
+            }           
         }
         //登陆
         public string Login(string Name, string Pwd, bool WCS) {
             List<Employee> employees;
             using (WMSEntities mSEntities=new WMSEntities()) {
                 employees = mSEntities.Employee.Where(p =>p.PWD == Pwd).Where(p => p.UserName == Name || p.Tel == Name).ToList();
-                if (employees.Count() > 0)
-                {
+                if (employees.Count() > 0){
                     Session["user"] = employees[0].UserName;
                     Session["WCS"] = WCS;
                     return "true";
@@ -56,8 +44,7 @@ namespace WMS.Controllers
                 else {
                     return "false";
                 }
-            }
-          
+            }         
         }
         //注销
         public string OutUser() {
@@ -79,9 +66,31 @@ namespace WMS.Controllers
                 else { 
                     employees = wm.Employee.Where(p => p.UserName == value||p.Tel==value).ToList();
                 }
-
             }
             return Json(employees,JsonRequestBehavior.AllowGet);
+        }
+        //系统设置
+        public ActionResult SystemSe()
+        {
+            return View();
+        }
+        public string SystemSet(Dictionary<string,string> data) {
+           int i= Tools<object>.SqlComm("exec SystemSe ", data);
+            if (i > 0)
+            {
+                return "true";
+            }
+            else {
+                return "false";
+            }
+        }
+        //查询立体仓基本信息
+        public ActionResult CheckSystem() {
+            SystemSet list;
+            using (WMSEntities wMS=new WMSEntities()) {
+                list = wMS.SystemSet.FirstOrDefault();
+            }
+                return Json(list,JsonRequestBehavior.AllowGet);
         }
         //基本资料
         public ActionResult UserData() {

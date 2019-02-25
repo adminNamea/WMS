@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Category">
           <Key>
             <PropertyRef Name="ID" />
@@ -38,6 +38,18 @@
           <Property Name="StatusID" Type="varchar" MaxLength="2" Nullable="false" />
           <Property Name="Tel" Type="varchar" MaxLength="40" />
         </EntityType>
+        <EntityType Name="Position">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="type" Type="varchar" MaxLength="10" />
+          <Property Name="x" Type="int" />
+          <Property Name="y" Type="int" />
+          <Property Name="name" Type="varchar" MaxLength="50" />
+          <Property Name="width" Type="int" />
+          <Property Name="height" Type="int" />
+        </EntityType>
         <EntityType Name="PurchaseOrder">
           <Key>
             <PropertyRef Name="ID" />
@@ -49,6 +61,15 @@
           <Property Name="Units" Type="varchar" MaxLength="5" />
           <Property Name="ApplierID" Type="int" />
           <Property Name="StatusID" Type="int" />
+        </EntityType>
+        <EntityType Name="SystemSet">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="x" Type="varchar" MaxLength="50" />
+          <Property Name="y" Type="varchar" MaxLength="50" />
+          <Property Name="z" Type="varchar" MaxLength="50" />
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="Tactics">
           <Key>
@@ -73,6 +94,8 @@
           <Property Name="InQTY" Type="float" />
           <Property Name="Statu" Type="varchar" MaxLength="8" Nullable="false" />
           <Property Name="IP" Type="varchar" MaxLength="20" />
+          <Property Name="pname" Type="varchar" MaxLength="20" />
+          <Property Name="gname" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="WCS_DecomposedCommand">
           <Key>
@@ -111,6 +134,8 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" />
           <Property Name="Status" Type="varchar" MaxLength="20" />
+          <Property Name="width" Type="nchar" MaxLength="10" />
+          <Property Name="height" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="WCS_Place">
           <Key>
@@ -136,6 +161,8 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="20" />
+          <Property Name="width" Type="nchar" MaxLength="10" />
+          <Property Name="height" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="WCS_Task">
           <Key>
@@ -224,6 +251,8 @@
           <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="type" Type="varchar" MaxLength="4" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="50" />
+          <Property Name="FromID" Type="int" />
+          <Property Name="ToID" Type="int" />
         </EntityType>
         <!--生成过程中发现错误:
 警告 6002: 表/视图“WMS.dbo.WH_Defect”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
@@ -259,6 +288,8 @@
           <Property Name="UpdatedTime" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="20" />
           <Property Name="StatusID" Type="varchar" MaxLength="20" />
+          <Property Name="width" Type="nchar" MaxLength="10" />
+          <Property Name="height" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="WH_Material">
           <Key>
@@ -338,6 +369,8 @@
           <Parameter Name="PartMaterial" Type="varchar" Mode="In" />
           <Parameter Name="QTYperPallet" Type="varchar" Mode="In" />
           <Parameter Name="Units" Type="varchar" Mode="In" />
+          <Parameter Name="width" Type="varchar" Mode="In" />
+          <Parameter Name="height" Type="varchar" Mode="In" />
         </Function>
         <Function Name="AddUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserName" Type="varchar" Mode="In" />
@@ -374,6 +407,8 @@
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="PlaceTypeID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="CheckPosition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="CheckWCount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="checkWo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="varchar" Mode="In" />
         </Function>
@@ -396,6 +431,11 @@
           <Parameter Name="QTYperPallet" Type="varchar" Mode="In" />
         </Function>
         <Function Name="PlcIn" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="SystemSe" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="x" Type="varchar" Mode="In" />
+          <Parameter Name="y" Type="varchar" Mode="In" />
+          <Parameter Name="z" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="UpAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="Name" Type="varchar" Mode="In" />
@@ -422,6 +462,8 @@
           <Parameter Name="PartName" Type="varchar" Mode="In" />
           <Parameter Name="Category2" Type="varchar" Mode="In" />
           <Parameter Name="Category3" Type="varchar" Mode="In" />
+          <Parameter Name="width" Type="varchar" Mode="In" />
+          <Parameter Name="height" Type="varchar" Mode="In" />
         </Function>
         <Function Name="WcsAddAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Name" Type="varchar" Mode="In" />
@@ -438,6 +480,8 @@
           <Parameter Name="type" Type="varchar" Mode="In" />
           <Parameter Name="Sort" Type="varchar" Mode="In" />
           <Parameter Name="IP" Type="varchar" Mode="In" />
+          <Parameter Name="width" Type="varchar" Mode="In" />
+          <Parameter Name="height" Type="varchar" Mode="In" />
         </Function>
         <Function Name="WcsDelAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ID" Type="varchar" Mode="In" />
@@ -464,7 +508,9 @@
         <EntityContainer Name="WMSModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Position" EntityType="Self.Position" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PurchaseOrder" EntityType="Self.PurchaseOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SystemSet" EntityType="Self.SystemSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tactics" EntityType="Self.Tactics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WCS_Comm" EntityType="Self.WCS_Comm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WCS_DecomposedCommand" EntityType="Self.WCS_DecomposedCommand" Schema="dbo" store:Type="Tables" />
@@ -519,8 +565,7 @@
     FROM [dbo].[WH_Defect] AS [WH_Defect]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="WMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -542,6 +587,18 @@
           <Property Name="StatusID" Type="String" MaxLength="2" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Tel" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Position">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="x" Type="Int32" />
+          <Property Name="y" Type="Int32" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="width" Type="Int32" />
+          <Property Name="height" Type="Int32" />
+        </EntityType>
         <EntityType Name="PurchaseOrder">
           <Key>
             <PropertyRef Name="ID" />
@@ -553,6 +610,15 @@
           <Property Name="Units" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
           <Property Name="ApplierID" Type="Int32" />
           <Property Name="StatusID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="SystemSet">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="x" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="y" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="z" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="Tactics">
           <Key>
@@ -577,6 +643,8 @@
           <Property Name="InQTY" Type="Double" />
           <Property Name="Statu" Type="String" MaxLength="8" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IP" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="pname" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="gname" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="WCS_DecomposedCommand">
           <Key>
@@ -615,6 +683,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="width" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="height" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
         </EntityType>
         <EntityType Name="WCS_Place">
           <Key>
@@ -640,6 +710,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="width" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="height" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
         </EntityType>
         <EntityType Name="WCS_Task">
           <Key>
@@ -711,6 +783,8 @@
           <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="type" Type="String" MaxLength="4" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FromID" Type="Int32" />
+          <Property Name="ToID" Type="Int32" />
         </EntityType>
         <EntityType Name="WH_GoodsAllocation">
           <Key>
@@ -732,6 +806,8 @@
           <Property Name="UpdatedTime" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="StatusID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="width" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="height" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
         </EntityType>
         <EntityType Name="WH_Material">
           <Key>
@@ -835,7 +911,9 @@
         <EntityContainer Name="WMSEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Category" EntityType="Self.Category" />
           <EntitySet Name="Employee" EntityType="Self.Employee" />
+          <EntitySet Name="Position" EntityType="Self.Position" />
           <EntitySet Name="PurchaseOrder" EntityType="Self.PurchaseOrder" />
+          <EntitySet Name="SystemSet" EntityType="Self.SystemSet" />
           <EntitySet Name="Tactics" EntityType="Self.Tactics" />
           <EntitySet Name="WCS_Comm" EntityType="Self.WCS_Comm" />
           <EntitySet Name="WCS_DecomposedCommand" EntityType="Self.WCS_DecomposedCommand" />
@@ -874,6 +952,8 @@
             <Parameter Name="PartMaterial" Mode="In" Type="String" />
             <Parameter Name="QTYperPallet" Mode="In" Type="String" />
             <Parameter Name="Units" Mode="In" Type="String" />
+            <Parameter Name="width" Mode="In" Type="String" />
+            <Parameter Name="height" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AddUser">
             <Parameter Name="UserName" Mode="In" Type="String" />
@@ -884,7 +964,7 @@
             <Parameter Name="id" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="checkComm" ReturnType="Collection(WMSModel.checkComm_Result)">
-            <Parameter Name="Name" Mode="In" Type="String" />
+          <Parameter Name="Name" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="checkHuo" ReturnType="Collection(WMSModel.checkHuo_Result)">
             <Parameter Name="StorageLocationID" Mode="In" Type="String" />
@@ -910,8 +990,9 @@
             <Parameter Name="ID" Mode="In" Type="String" />
             <Parameter Name="PlaceTypeID" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="CheckPosition" ReturnType="Collection(WMSModel.CheckPosition_Result)" />
           <FunctionImport Name="checkWo" ReturnType="Collection(WMSModel.checkWo_Result)">
-            <Parameter Name="id" Mode="In" Type="String" />
+          <Parameter Name="id" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="checkwu" ReturnType="Collection(WMSModel.checkwu_Result)">
             <Parameter Name="Category" Mode="In" Type="String" />
@@ -932,6 +1013,11 @@
             <Parameter Name="QTYperPallet" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PlcIn" ReturnType="Collection(WMSModel.PlcIn_Result)" />
+          <FunctionImport Name="SystemSe">
+            <Parameter Name="x" Mode="In" Type="String" />
+            <Parameter Name="y" Mode="In" Type="String" />
+            <Parameter Name="z" Mode="In" Type="String" />
+          </FunctionImport>
           <FunctionImport Name="UpAll">
             <Parameter Name="ID" Mode="In" Type="String" />
             <Parameter Name="Name" Mode="In" Type="String" />
@@ -958,6 +1044,8 @@
             <Parameter Name="PartName" Mode="In" Type="String" />
             <Parameter Name="Category2" Mode="In" Type="String" />
             <Parameter Name="Category3" Mode="In" Type="String" />
+            <Parameter Name="width" Mode="In" Type="String" />
+            <Parameter Name="height" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="WcsAddAll">
             <Parameter Name="Name" Mode="In" Type="String" />
@@ -974,6 +1062,8 @@
             <Parameter Name="type" Mode="In" Type="String" />
             <Parameter Name="Sort" Mode="In" Type="String" />
             <Parameter Name="IP" Mode="In" Type="String" />
+            <Parameter Name="width" Mode="In" Type="String" />
+            <Parameter Name="height" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="WcsDelAll">
             <Parameter Name="ID" Mode="In" Type="String" />
@@ -997,6 +1087,7 @@
             <Parameter Name="Sort" Mode="In" Type="String" />
             <Parameter Name="IP" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="CheckWCount" ReturnType="Collection(WMSModel.CheckWCount_Result)" />
         </EntityContainer>
         <ComplexType Name="checkComm_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1017,9 +1108,8 @@
           <Property Type="Int32" Name="StorageLocationID" Nullable="false" />
           <Property Type="Int32" Name="WHAreaID" Nullable="false" />
           <Property Type="Int32" Name="WHID" Nullable="false" />
-          <Property Type="String" Name="CreatedBy" Nullable="false" MaxLength="20" />
-          <Property Type="String" Name="UpdatedTime" Nullable="true" MaxLength="20" />
-          <Property Type="String" Name="UpdatedBy" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="width" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="height" Nullable="true" MaxLength="10" />
           <Property Type="String" Name="StatusID" Nullable="true" MaxLength="20" />
           <Property Type="String" Name="CreatedTime" Nullable="true" MaxLength="20" />
         </ComplexType>
@@ -1066,6 +1156,14 @@
           <Property Type="Double" Name="z_intercept" Nullable="true" />
           <Property Type="String" Name="Status" Nullable="true" MaxLength="20" />
         </ComplexType>
+        <ComplexType Name="CheckPosition_Result">
+          <Property Type="String" Name="type" Nullable="true" MaxLength="10" />
+          <Property Type="Int32" Name="x" Nullable="true" />
+          <Property Type="Int32" Name="y" Nullable="true" />
+          <Property Type="String" Name="name" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="width" Nullable="true" />
+          <Property Type="Int32" Name="height" Nullable="true" />
+        </ComplexType>
         <ComplexType Name="checkWo_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
           <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
@@ -1109,6 +1207,15 @@
           <Property Type="Double" Name="InQTY" Nullable="true" />
           <Property Type="String" Name="Statu" Nullable="false" MaxLength="8" />
           <Property Type="String" Name="IP" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="gname" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="pname" Nullable="true" MaxLength="20" />
+        </ComplexType>
+        <ComplexType Name="CheckWCount_Result">
+          <Property Type="Int32" Name="no" Nullable="true" />
+          <Property Type="Int32" Name="yse" Nullable="true" />
+          <Property Type="Int32" Name="myse" Nullable="true" />
+          <Property Type="Int32" Name="mno" Nullable="true" />
+          <Property Type="Int32" Name="mxx" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1136,6 +1243,19 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Position">
+            <EntityTypeMapping TypeName="WMSModel.Position">
+              <MappingFragment StoreEntitySet="Position">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="x" ColumnName="x" />
+                <ScalarProperty Name="y" ColumnName="y" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="PurchaseOrder">
             <EntityTypeMapping TypeName="WMSModel.PurchaseOrder">
               <MappingFragment StoreEntitySet="PurchaseOrder">
@@ -1146,6 +1266,16 @@
                 <ScalarProperty Name="Units" ColumnName="Units" />
                 <ScalarProperty Name="ApplierID" ColumnName="ApplierID" />
                 <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SystemSet">
+            <EntityTypeMapping TypeName="WMSModel.SystemSet">
+              <MappingFragment StoreEntitySet="SystemSet">
+                <ScalarProperty Name="x" ColumnName="x" />
+                <ScalarProperty Name="y" ColumnName="y" />
+                <ScalarProperty Name="z" ColumnName="z" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1161,6 +1291,8 @@
           <EntitySetMapping Name="WCS_Comm">
             <EntityTypeMapping TypeName="WMSModel.WCS_Comm">
               <MappingFragment StoreEntitySet="WCS_Comm">
+                <ScalarProperty Name="gname" ColumnName="gname" />
+                <ScalarProperty Name="pname" ColumnName="pname" />
                 <ScalarProperty Name="AID" ColumnName="AID" />
                 <ScalarProperty Name="CID" ColumnName="CID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -1212,6 +1344,8 @@
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1239,6 +1373,8 @@
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1314,6 +1450,8 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1336,6 +1474,8 @@
                 <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1471,9 +1611,8 @@
                 <ScalarProperty Name="StorageLocationID" ColumnName="StorageLocationID" />
                 <ScalarProperty Name="WHAreaID" ColumnName="WHAreaID" />
                 <ScalarProperty Name="WHID" ColumnName="WHID" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
                 <ScalarProperty Name="StatusID" ColumnName="StatusID" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
               </ComplexTypeMapping>
@@ -1538,6 +1677,18 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="CheckPosition" FunctionName="WMSModel.Store.CheckPosition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckPosition_Result">
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="x" ColumnName="x" />
+                <ScalarProperty Name="y" ColumnName="y" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="checkWo" FunctionName="WMSModel.Store.checkWo">
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.checkWo_Result">
@@ -1596,13 +1747,27 @@
                 <ScalarProperty Name="InQTY" ColumnName="InQTY" />
                 <ScalarProperty Name="Statu" ColumnName="Statu" />
                 <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="gname" ColumnName="gname" />
+                <ScalarProperty Name="pname" ColumnName="pname" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SystemSe" FunctionName="WMSModel.Store.SystemSe" />
           <FunctionImportMapping FunctionImportName="UpAll" FunctionName="WMSModel.Store.UpAll" />
           <FunctionImportMapping FunctionImportName="WcsAddAll" FunctionName="WMSModel.Store.WcsAddAll" />
           <FunctionImportMapping FunctionImportName="WcsDelAll" FunctionName="WMSModel.Store.WcsDelAll" />
           <FunctionImportMapping FunctionImportName="WcsUpAll" FunctionName="WMSModel.Store.WcsUpAll" />
+          <FunctionImportMapping FunctionImportName="CheckWCount" FunctionName="WMSModel.Store.CheckWCount">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckWCount_Result">
+                <ScalarProperty Name="no" ColumnName="no" />
+                <ScalarProperty Name="yse" ColumnName="yse" />
+                <ScalarProperty Name="myse" ColumnName="myse" />
+                <ScalarProperty Name="mno" ColumnName="mno" />
+                <ScalarProperty Name="mxx" ColumnName="mxx" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

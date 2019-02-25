@@ -10,14 +10,13 @@
 namespace WMS.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class WCS_MachinType
+    public partial class CheckWCount_Result
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public string Status { get; set; }
-        public string width { get; set; }
-        public string height { get; set; }
+        public Nullable<int> no { get; set; }
+        public Nullable<int> yse { get; set; }
+        public Nullable<int> myse { get; set; }
+        public Nullable<int> mno { get; set; }
+        public Nullable<int> mxx { get; set; }
     }
 }

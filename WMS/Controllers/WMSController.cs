@@ -29,7 +29,6 @@ namespace WMS.Controllers
         {
             bool o = true;
             List<PlcIn_Result> list = null;
-            StringBuilder cid = new StringBuilder();
             using (WMSEntities mSEntities = new WMSEntities())
             {
                 list = mSEntities.PlcIn().ToList();
@@ -49,7 +48,6 @@ namespace WMS.Controllers
         //    {
         //        break;
         //    }
-
         //}
         #endregion
         #region 出库
@@ -91,18 +89,14 @@ namespace WMS.Controllers
         //添加仓库等
         public string AddWarehouse(Dictionary<string, string> data, string type)
         {
-            using (WMSEntities ws = new WMSEntities())
-            {
-                string sql = "exec AddStorage @type=" + type + ",@CreatedBy=" + Session["user"].ToString() + ",";
-                Tools<object>.SqlComm(sql, data);
-            }
+            data.Add("type", type);
+            data.Add("CreatedBy",Session["user"].ToString());
+            Tools<object>.SqlComm("exec AddStorage ", data);
             return "true";
         }
         //查询仓库信息
         public ActionResult checkWo(string id, string value, string data)
         {
-
-
             using (WMSEntities wMS = new WMSEntities())
             {
 
@@ -112,17 +106,9 @@ namespace WMS.Controllers
                     {
                         data = "";
                     }
-                    SqlParameter[] parameters = new SqlParameter[1];
-                    parameters[0] = new SqlParameter("@id", data);
-                    List<checkWo_Result> list1 = wMS.Database.SqlQuery<checkWo_Result>("exec checkWo @id", parameters).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", "" },
-                        { "data", list1 }
-                    };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    Dictionary<string, string> a = new Dictionary<string, string>();
+                    a.Add("id",data);
+                    return Json(Tools<checkWo_Result>.SqlMap("exec checkWo ",a), JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -163,7 +149,6 @@ namespace WMS.Controllers
                         list = wMS.WH_Area.ToList();
                         return Json(list, JsonRequestBehavior.AllowGet);
                     }
-
                 }
             }
         }
@@ -173,11 +158,9 @@ namespace WMS.Controllers
             List<WH_StorageLocation> list;
             using (WMSEntities wMS = new WMSEntities())
             {
-
                 if (id == "1")
                 {
                     string sql = "exec checkkw ";
-
                     return Json(Tools<checkkw_Result>.SqlMap(sql, data), JsonRequestBehavior.AllowGet);
                 }
                 else
@@ -202,7 +185,6 @@ namespace WMS.Controllers
             List<WH_GoodsAllocation> list;
             using (WMSEntities wMS = new WMSEntities())
             {
-
                 if (id == "1")
                 {
                     string sql = "exec checkHuo ";
@@ -375,12 +357,11 @@ namespace WMS.Controllers
         public int InMaterial(Dictionary<string, string> data)
         {
            int i= Tools<object>.SqlComm("exec InOutMaterial @type='in',", data);
-            return i;
+           return i;
         }
         //查询物料规格材质
         public ActionResult CheckPartSpec(string Name)
         {
-
             List<WH_Material> list;
             using (WMSEntities mSEntities = new WMSEntities())
             {
@@ -391,7 +372,6 @@ namespace WMS.Controllers
         //查询物料材质
         public ActionResult CheckPartMaterial(string Name, string PartSpec)
         {
-
             List<WH_Material> list;
             using (WMSEntities mSEntities = new WMSEntities())
             {

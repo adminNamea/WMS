@@ -7,6 +7,10 @@ using System.Web.Mvc;
 using WMS.Models;
 using System.Data.SqlClient;
 using System.Text;
+using org.apache.pdfbox.pdmodel;
+using org.apache.pdfbox.util;
+using System.IO;
+
 namespace WMS.Controllers
 {
     public class WCSController : Controller
@@ -19,8 +23,39 @@ namespace WMS.Controllers
         #region 仓库实时运行状况
         public ActionResult WarehouseState()
         {
+            
 
             return View();
+        }
+        //public ActionResult pdf2txt(HttpPostedFileBase file)
+        //{
+        //    var fileName1 = Path.Combine(Request.MapPath("~/Upload"), Path.GetFileName(file.FileName));
+        //    file.SaveAs(fileName1);
+        //    PDDocument doc = PDDocument.load(fileName1);
+            
+        //    PDFTextStripper pdfStripper = new PDFTextStripper();
+           
+        //    string text = pdfStripper.getText(doc);
+           
+        //    Dictionary<string, object> map = new Dictionary<string, object>
+        //            {
+        //                { "code", 0 },
+        //                { "msg", "" },
+        //                { "data",  text}
+        //            };
+        //    return Json(map,JsonRequestBehavior.AllowGet);
+        //}
+        //位置信息
+        public ActionResult CheckPosition() {
+            using (WMSEntities wMS=new WMSEntities()) {
+                return Json(wMS.CheckPosition().ToList(),JsonRequestBehavior.AllowGet);
+            }
+        }
+        //查询可用货位信息
+        public ActionResult CheckWCount(string name) {
+            using (WMSEntities wm=new WMSEntities ()) {
+                return Json(wm.CheckWCount().FirstOrDefault(), JsonRequestBehavior.AllowGet);
+            } 
         }
         #endregion
         #region 监控台
@@ -30,19 +65,23 @@ namespace WMS.Controllers
         }
         //查询wcs命令
         public ActionResult WcsComm(string aid) {
-            List<WCS_Comm> list = null;
             using (WMSEntities mSEntities=new WMSEntities ()) {
-                list = mSEntities.WCS_Comm.Where(p=>p.AID==aid).ToList();
-
+                return Json(mSEntities.WCS_Comm.Where(p => p.AID == aid).ToList(), JsonRequestBehavior.AllowGet);
             }
-            Dictionary<string, object> map = new Dictionary<string, object>
-                    {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", list.Count() },
-                        { "data", list }
-                    };
-            return Json(map, JsonRequestBehavior.AllowGet);
+        }
+        //查询wcs命令2
+        public ActionResult CheckWcsComm()
+        {
+            using (WMSEntities mSEntities = new WMSEntities())
+            {
+                return Json(mSEntities.WCS_Comm.ToList(), JsonRequestBehavior.AllowGet);
+            }
+        }
+        //查询任务队列
+        public ActionResult CheckTask() {
+            using (WMSEntities wMS=new WMSEntities()) {
+                return Json(wMS.WH_Comm.ToList(),JsonRequestBehavior.AllowGet);
+            }
         }
         #endregion
         #region 命令分解
@@ -52,29 +91,23 @@ namespace WMS.Controllers
         //查询命令
         public ActionResult checkComm(string Name)
         {
-            List<WCS_DecomposedCommand> list;
-            List<checkComm_Result> list1;
-            SqlParameter parameters = new SqlParameter("@Name",Name);
             using (WMSEntities wMS = new WMSEntities())
             {
                 if (Name!=null)
                 {
-                    list1 = wMS.Database.SqlQuery<checkComm_Result>("exec checkComm @Name",parameters).ToList();
-                    Dictionary<string, object> map = new Dictionary<string, object>
+                    Dictionary<string, string> map = new Dictionary<string, string>
                     {
-                        { "code", 0 },
-                        { "msg", "" },
-                        { "count", list1.Count() },
-                        { "data", list1 }
+                        { "Name",Name }
                     };
-                    return Json(map, JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkComm_Result>.SqlMap("exec checkComm ",map),JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
-                        list = wMS.WCS_DecomposedCommand.GroupBy(p=>p.Name).Select(g=>g.FirstOrDefault()).ToList();
+                    List<WCS_DecomposedCommand> list = wMS.WCS_DecomposedCommand.GroupBy(p=>p.Name).Select(g=>g.FirstOrDefault()).ToList();
+                    return Json(list, JsonRequestBehavior.AllowGet);
                 }
             }
-            return Json(list, JsonRequestBehavior.AllowGet);
+          
         }
         #endregion
         #region 机器信息注册
@@ -101,14 +134,13 @@ namespace WMS.Controllers
         public ActionResult checkMachine(string type,string id,Dictionary<string,string> data,string value) {
             List<WCS_Machine> list;           
             using (WMSEntities wMS=new WMSEntities ()) {
-                string sql = "exec checkMachine ";
                 if (type != null)
                 {
-                    sql+="@type=" + type + ",";
+                    data.Add("type",type);
                 }
                 if (id == "1")
                 {
-                    return Json(Tools<checkMachine_Result>.SqlMap(sql, data), JsonRequestBehavior.AllowGet);
+                    return Json(Tools<checkMachine_Result>.SqlMap("exec checkMachine ", data), JsonRequestBehavior.AllowGet);
                 }
                 else {
                     if (value != null)
@@ -133,49 +165,24 @@ namespace WMS.Controllers
         }
         //修改操作
         public string WcsUpAll(string type,Dictionary<string,string> data) {
-            StringBuilder builder = new StringBuilder("exec WcsUpAll @type="+type+",");
-            SqlParameter[] parameters = new SqlParameter[data.Count()];
-            int i = 0;
-            using (WMSEntities wMS = new WMSEntities()) {
-                foreach (var da in data)
-                {
-                    if (da.Key == "UpdatedBy")
-                    {
-                        parameters[i] = new SqlParameter("@CreatedBy", Session["user"]);
-                    }
-                    else {
-                    parameters[i] = new SqlParameter("@" + da.Key, da.Value);
-                    }
-                    if (i + 1 == data.Count())
-                    {
-                        builder.Append("@" + da.Key + "=@" + da.Key);
-                    }
-                    else
-                    {
-                        builder.Append("@" + da.Key + "=@" + da.Key + ",");
-                    }
-                    i++;
-                }
-                wMS.Database.ExecuteSqlCommand(builder.ToString(),parameters);
-            }
-                return "true";
+            data.Add("type", type);
+            Tools<object>.SqlComm("exec WcsUpAll ",data);
+            return "true";
         }
         //删除单个
         public string WcsDelSingle(string type,string id) {
-            using (WMSEntities wMS=new WMSEntities ()) {
-                SqlParameter[] parameters = new SqlParameter[2];
-                parameters[0] = new SqlParameter("@type",type);
-                parameters[1] = new SqlParameter("@id",id);
-                wMS.Database.ExecuteSqlCommand("exec WcsDelAll @type=@type,@ID=@id",parameters);
-            }
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                {"type",type },
+                {"id",id }
+            };
+            Tools<object>.SqlComm("exec WcsDelAll ",data);
                 return "true";
         }
         //删除多个
         public string WcsDelAll(string type,List<string> id)
         {
             StringBuilder builder = new StringBuilder();
-            using (WMSEntities wMS = new WMSEntities())
-            {
                 int i = 0;
                 foreach (var all in id)
                 {
@@ -189,11 +196,12 @@ namespace WMS.Controllers
                     }
                     i++;
                 }
-                SqlParameter[] parameters = new SqlParameter[2];
-                parameters[0] = new SqlParameter("@type", type);
-                parameters[1] = new SqlParameter("@id", builder.ToString());
-                wMS.Database.ExecuteSqlCommand("exec WcsDelAll @type=@type,@ID=@id",parameters);
-            }
+                Dictionary<string, string> data = new Dictionary<string, string>
+                {
+                    {"type",type },
+                    {"id",builder.ToString()}
+                };
+                Tools<object>.SqlComm("exec WcsDelAll ",data);
             return "true";
         }
         //添加机器等

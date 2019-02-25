@@ -10,7 +10,7 @@ namespace WMS
 {
     public class Tools<T>
     {
-        private static StringBuilder Builder ;
+        private static StringBuilder Builder;
         private static SqlParameter[] Parameter ;
         public static void Sql(string Name,Dictionary<string, string> data)
         {

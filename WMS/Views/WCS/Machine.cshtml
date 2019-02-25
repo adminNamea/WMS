@@ -44,8 +44,22 @@
                 <input class="layui-input" name="Name" required lay-verify="required" />
             </div>
         </div>
-                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">长(m)</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" name="width" required lay-verify="required|number" />
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">宽(m)</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" name="height" required lay-verify="required|number" />
+                </div>
+            </div>
+        </div>
+        <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
     </form>
     <form class="layui-form layui-form-pane" id="ji" style="display:none">
         <div class="layui-form-item">

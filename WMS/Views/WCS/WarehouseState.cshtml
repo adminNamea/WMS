@@ -8,10 +8,425 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <script src="~/layui/layui.js" type="text/javascript"></script>
+    <script src="~/js/echarts.js"></script>
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
     <title>WarehouseState</title>
-</head>
+    <script type="text/javascript">
+        layui.use(["layer", "form", "element","util"], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            var layer = layui.layer;
+            var util = layui.util;
+            var stratDate = util.toDateString(new Date().getTime());
+            var radioValue=1
+            var element = layui.element
+            var myChart = echarts.init(document.getElementById("main"));
+            var myChart1 = echarts.init(document.getElementById("main1"));
+            //var upload = layui.upload
+            //upload.render({
+            //    elem: '#id'
+            //    , url: '/WCS/pdf2txt'
+            //    , done: function (res, index, upload) { //上传后的回调
+            //        console.log(res.data)
+            //    }
+            //    ,accept: 'file' //允许上传的文件类型
+            //    //,size: 50 //最大允许上传的文件大小
+            //    //,……
+            //})
+            var t1 = 0;
+            var t2 = 0;
+            function CheckTask() {
+                $.ajax({
+                    url: "/WCS/CheckTask",
+                    async: false,
+                    success: function (data) {
+                        if (data.length > 0) {
+                            layui.each(data, function (index, value) {
+                                if (value.Status == "正在执行") {
+                                    var task = '<button class="layui-btn layui-btn-danger task' + index + '" style="width:70px;">' + value.aid + '</button>'
+                                    $(".Task div:eq(0)").append(task)
+                                    $('.task' + index).data("data", value)
+                                    t1++;
+                                }
+                                else {
+                                    var task = '<button class="layui-btn task' + index + '" style="width:70px;background-color:rgb(0,255,0);margin:7px 5px 0px 0px ">' + value.aid + '</button>'
+                                    $(".Task div:eq(1)").append(task)
+                                    $('.task' + index).data("data", value)
+                                    t2++;
+                                }
+                            })
+                            $(".layui-badge:eq(0)").text(t1)
+                            $(".layui-badge:eq(1)").text(t2)
+                        }
+                    }
+                })
+            }
+            CheckTask()
+            //element.on('tab(docDemoTabBrief)', function (data) {
+            //    switch (data.index) {
+            //        case 0:
+                        
+            //            break;
+            //        case 1:
+                        
+            //            break;
+            //    }
+            //});
+            var option = {
+                title: {
+                    text: '货位使用情况',
+                    left: 'center',
+                  
+                },
+                legend: {
+                    type: 'scroll',
+                    top: 30,
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                series: [
+                    {
+                        name: '使用情况',
+                        type: 'pie',
+                        radius: ['20%', '50%'],
+                        center: ['50%', '50%'],
+                        data: getData().mData
+                    }
+                ]
+                , color: ['rgb(0,255,0)', 'rgb(255,0,0)']
+            };
+            var option1 = {
+                title: {
+                    text: '机器使用情况',
+                    left: 'center',
+                   
+                },
+                legend: {
+                    type: 'scroll',
+                    top: 30,
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                series: [
+                    {
+                        name: '使用情况',
+                        type: 'pie',
+                        radius: ['20%', '50%'],
+                        center: ['50%', '50%'],
+                        data: getData().wData
+                    }
+                ]
+                , color: ['#00f7ff', 'rgb(0,255,0)','rgb(255,0,0)']
+            };
+            myChart.setOption(option);
+            myChart1.setOption(option1);
+            
+            function getData() {
+                var mData ;
+                var wData ;
+                $.ajax({
+                    url: "/WCS/CheckWCount",
+                    async: false,
+                    success: function (res) {
+                        mData = [];
+                        wData = [];
+                        if (res.yse != 0) {
+                            mData.push({ name: "可用", value: res.yse })
+                        }
+                        if (res.no != 0) {
+                            mData.push({ name: "已用", value: res.no })
+                        }
+                        if (res.mno != 0) {
+                            wData.push({ name: "正在执行", value: res.mno })
+                        }
+                        if (res.myse != 0) {
+                            wData.push({ name: "可用", value: res.myse })
+                        }
+                        if (res.mxx != 0) {
+                            wData.push({ name: "故障", value: res.mxx })
+                        }
+                       
+                    }
+                })
+                return {
+                    mData: mData,
+                    wData: wData
+                };
+            }
+            var reload = function () {
+                option.series[0].data = getData().mData
+                option1.series[0].data = getData().wData
+                myChart.setOption(option);
+                myChart1.setOption(option1);
+            }
+            $(function () {
+                $.get("/WCS/CheckPosition", function (data) {
+                    var width = $(".div").width()
+                    var height = $(".div").height()
+                    var Width, Height
+                    var s = 0
+                    layui.each(data, function (index, value) {
+                        if ($.trim(value.type) != "仓库") {
+                            var w = width * (value.width / Width);
+                            var h = height * (value.height / Height)
+                            s += w
+                            var x = width * (value.x / Width) - s;
+                            var y = height - height * (value.y / height) - 15;
+                            var a = "<button class='layui-btn" + " btn" + index + "'></button>"
+                            $(a).appendTo(".div")
+                            $('.btn' + index).css({ "position": "relative", "width": w, "height": h, "top": 0 + "px", "left": 0 + "px" })
+                            $('.btn' + index).data("data",value)
+                        } else {
+                            Width = value.x
+                            Height = value.y
+                        }
+
+                    })
+                })
+                var tips = function () {
+                    var a = '<div style="width:500px">类型：' + $(this).data("data").type + '<br/>名称：' + $(this).data("data").name + '</div>'
+                    if ($(this).data("data").name == undefined) {
+                        a = '<div style="width:500px">类型：' +
+                            $(this).data("data").type + '<br/>编号：' +
+                            $(this).data("data").aid + '<br/>状态：' +
+                            $(this).data("data").Status + '<br/>物料:' +
+                            $(this).data("data").PartName + '<br/>数量:' +
+                            $(this).data("data").QTY+'PSC</div>'
+                    }
+                    layer.tips(a, this, {
+                        tips: [1, 'rgba(255,0,0,0.7)'],
+                        time: false,
+                        success: function (layero, index) {
+                            $(layero).css("left", layero[0].offsetLeft - 12)
+                        }
+                    });
+                }
+                var close = function () {
+                    layer.close(layer.index)
+                }
+                var btnClick = function () {
+                    $.get("/WCS/WcsComm", { aid: $(this).data("data").aid }, function (data) {
+                        if (data.length > 0) {
+                            var s = ["无"];
+                            var x = "无";
+                            var z = {};
+                            layui.each(data, function (index, value) {
+                                if (index == 0) {
+                                    z = value;
+                                } else if (index == 1) {
+                                    x = value.Name
+                                } else {
+                                    s = [];
+                                    s.push(value.Name)
+                                }
+                            })
+                            var pro = '<p>开始时间:' + stratDate+'</p>' +
+                                '<p>预计时间:' + stratDate+'</p>' +
+                                '<p>进度:<div class="layui-progress layui-progress-big" lay-showPercent="true" style="display:inline-block;width:270px;top: -18px;left: 35px;">' +
+                                '<div class="layui-progress-bar layui-bg-blue" lay-percent="10%"></div></div></p > ' ;
+                            var comm = '<ul class="layui-timeline">' +
+                                '<li class="layui-timeline-item">' +
+                                '<i class="layui-icon layui-anim-rotate layui-anim-loop layui-icon-loading layui-timeline-axis" ></i >' +
+                                '<div class="layui-timeline-content layui-text"><div class="layui-timeline-title" ><h3>正在执行<em>' + z.Name + '</em></h3>' +
+                                '<p>入货口:<em>' + z.pname + '</em></p></div>' +
+                                '<p>放货位:<em>' + z.gname + '</em></p></div>' +
+                                '</div ></li >' +
+                                '<li class="layui-timeline-item">' +
+                                '<i class="layui-icon layui-timeline-axis" >&#xe63f;</i >' +
+                                '<div class="layui-timeline-content layui-text"><div class="layui-timeline-title" ><h3>下条命令</h3><p><em>' + x + '</em></p></div>' +
+                                '</div ></li >' +
+                                '<li class="layui-timeline-item">' +
+                                '<i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis"></i>' +
+                                '<div class="layui-timeline-content layui-text"><div class="layui-timeline-title"><h3>剩余命令</h3><p><em class="em"></em></p></div>' +
+                                '</div ></li ></ul >';
+                            $(".btuClick").empty();
+                            $(".btuClick").append(comm);
+                            $(".btuClick").append(pro);
+                            element.render('progress')
+                            s.forEach(function (value) {
+                                $(".em").append(value);
+                            })
+                            element.tabChange('dome', 1)
+                        } else {
+                            var html = '<h1>任务等待中，请骚后~</h1><img src = "/img/sao.svg" style="width:310px;height:350px" />'
+                            $(".btuClick").html(html)
+                            element.tabChange('dome',1)
+                        }
+                    })
+                }
+                element.on('nav(filter)', function (elem) {
+                    var i = layer.open({
+                        type: 2,
+                        content: '/Home/Index',
+                        maxmin: true,
+                        end: function () {
+                            reload()
+                        }
+                    });
+                    layer.full(i)
+                });
+                $('.div,.Task').on('mouseenter', '.layui-btn', tips)
+                $('.div,.Task').on('mouseleave', '.layui-btn', close)
+                $('.Task').on('click', '.layui-btn',btnClick)
+                form.on('radio', function (data) {
+                    radioValue=data.value
+                }); 
+                $(".add").click(function () {
+                    layer.open({
+                        type: 2,
+                        area: ['610px', '750px'],
+                        content: '/WMS/Enter',
+                        success: function (layero,index) {
+                            var type = ".in";
+                            if (radioValue == 0) {
+                                type = ".out";
+                            }
+                            var frame = layer.getChildFrame(type, index);
+                            frame.show()
+                        },
+                        end: function () {
+                            reload();
+                        }
+                    });
+                })
+                $(".Automatic").click(function () {
+                    $.ajax({
+                        url: "/WMS/PlcIn",
+                        type: "get",
+                        dataType: "json",
+                    }).done(function (data) {
+                        if (data.length > 0) {
+                            if (data[0].AID != null) {
+                                stratDate = util.toDateString(new Date());
+                            } else {
+                                layer.msg("无可用机器")
+                            }
+                        } else {
+                            layer.msg("无命令")
+                        }
+                    })
+                })
+                //$.get("/WCS/CheckWcsComm", function (data) {
+
+                //var endTime = new Date().getTime()+55555
+                //                    , serverTime = new Date().getTime();
+                //                var countTime = (endTime - serverTime) / 1000
+                //                var s = (100 / countTime)
+                //                var b = -(100 / countTime);
+                //                $(".layui-timeline").empty()
+                //                util.countdown(endTime, serverTime, function (date) {
+                //                    var str = date[1] + '时' + date[2] + '分' + date[3] + '秒';
+                //                    $('#time').html(str);
+                //                    b = s + b
+                //                    if (b > 100) {
+                //                        b=100
+                //                    }
+                //                    $("#b").html(b.toFixed(4) + "%")
+                //                    element.progress('demo0', '100%');
+                //                });
+                //                for (var i = 0; i < data.length; i++) {
+                //                    var pro = '<div class="layui-progress" lay-showpercent="true" lay-filter="demo' + i + '"><div class="layui-progress-bar"></div></div>'
+
+                //                    var li = '<li class="layui-timeline-item">'
+                //                    var icon = '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>'
+                //                    if (data[i].Statu == "正在执行") {
+                //                        icon ='<i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis Start"></i>'
+                //                    }
+                //                    var div = '<div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">' + data[i].Statu + '</h3>'
+                //                    var p = '<p>命令编号：<em>' + data[i].AID + '</em></p><p> 预计时间：<em id="time"></em></p><p>进度：<em id="b"><em><em>' + pro + '</em></p></div></li >'
+                //                    if ($(".layui-timeline:eq(0)").find("li").length == 4) {
+                //                        $(".layui-timeline:eq(1)").append(li + icon + div + p)
+                //                    } else {
+                //                        $(".layui-timeline:eq(0)").append(li + icon + div + p)
+                //                    }
+                //                }
+                //                $(".layui-progress-bar").css('-webkit-transition', countTime + "s linear");
+                //})
+            })
+        })
+    </script>
+    <style type="text/css">
+        .div {
+            border: 1px solid #000000;
+           width:1300px;
+            height: 600px;
+        }
+        .layui-btn {
+            padding: 0px;
+            margin-left: 0px;
+        }
+
+        .div1 {
+            border: 1px solid #00ff21;
+            width: 329px;
+            height: 600px;
+            margin:0px;
+            padding:0px;
+        }
+    </style>
+</head> 
 <body>
-    <div> 
+    @*<button class="layui-btn" id="id">上传</button>*@
+    <ul class="layui-nav" lay-filter="filter">
+        <li class="layui-nav-item"><i class="layui-icon layui-icon-console"></i><a href="javaScript:;" style="display:inline-block;padding-left:3px;">后台管理</a></li>
+    </ul>
+    <div style="width:1919px;border:1px solid red;height:600px;margin:0px auto" class="layui-row">
+        <div class="layui-col-md1" style="border:1px solid #b6ff00;width:290px">
+            <blockquote class="layui-elem-quote" style="text-align:center;padding-right:30px"><img src="~/img/bb.svg" style="color:#808080" />状况分析</blockquote>
+            <div id="main" style="height:268px;">
+
+            </div>
+            <div id="main1" style="height:268px;">
+
+            </div>
+        </div>
+        <div class="div layui-col-md6" id="div">
+
+        </div>
+        <div class="div1 layui-col-md3 layui-form layui-form-pane">
+            <blockquote class="layui-elem-quote" style="margin-bottom:0px;text-align:center;padding-right:65px"><img src="~/img/cc.svg" style="color:#808080" />任务管理</blockquote>
+            <div class="layui-form-item" pane style="width:inherit;margin:0px;padding:0px">
+                <label class="layui-form-label"><img src="~/img/aa.svg" />任务类型</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="type" value="1" title="入库" checked>
+                    <input type="radio" name="type" value="0" title="出库">
+                </div>
+            </div>
+            <button class="layui-btn layui-btn-danger add" style="width:inherit;">添加任务</button>
+            <div class="layui-tab layui-tab-card" lay-filter="dome">
+                <ul class="layui-tab-title ">
+                    <li class="layui-this" style="width:100px"><img src="~/img/dd.svg"/>任务队列</li>
+                    <li style="width:100px" lay-id="1"><img src="~/img/gg.svg" />详细信息</li>
+                </ul>
+                <div class="layui-tab-content" style="height: 350px;">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                            <ul class="layui-tab-title t">
+                                <li class="layui-this" style="width:123px">执行中任务<span class="layui-badge">0</span></li>
+                                <li style="width:123px">等待中任务<span class="layui-badge">0</span></li>
+                            </ul>
+                            <div class="layui-tab-content Task">
+                                <div class="layui-tab-item layui-show"></div>
+                                <div class="layui-tab-item"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item btuClick">
+                        <h1>点击任务查看详细信息</h1>
+                        <img src="~/img/rr.svg" style="width:310px;height:350px"/>
+                    </div>
+                </div>
+            </div>
+            <button class="layui-btn layui-btn-danger Automatic" style="width:inherit;">开始执行</button>
+        </div>
+    </div>
+    <div style="border:1px solid #ffd800;width:inherit;height:200px" class="layui-row">
+        <div></div>
     </div>
 </body>
 </html>

@@ -27,8 +27,7 @@
             <div class="layui-logo">智能立体仓库</div>
             <ul class="layui-nav layui-layout-left">
                 <li class="layui-nav-item Console"><a href="javascript:;">控制台</a></li>
-                <li class="layui-nav-item"><a href="javascript:;">商品管理</a></li>
-                <li class="layui-nav-item"><a href="javascript:;">用户</a></li>
+                <li class="layui-nav-item Set"><a href="javascript:;">系统设置</a></li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">其它系统</a>
                     <dl class="layui-nav-child">
@@ -51,7 +50,6 @@
                 <li class="layui-nav-item"><a href="javascript:;" class="out">退了</a></li>
             </ul>
         </div>
-
         <div class="layui-side layui-bg-black">
             <div class="layui-side-scroll">
                 <ul class="layui-nav layui-nav-tree" lay-filter="test" lay-shrink="all">
@@ -85,7 +83,7 @@
         </div>
 
         <div class="layui-footer">
-            © layui.com - 底部固定区域
+            www.cccc.ccc
         </div>
 
     </div>
@@ -115,6 +113,15 @@
                 })
                 datas = new Array()
             })
+            $(".Set").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['700px', '450px'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: 'Home/SystemSe'
+                });
+            })
             //$(document).ajaxSuccess(function (event, xhr, options) {
             //    if (options.type != "POST") {
             //        var key = options.url.substring(options.url.lastIndexOf("/") + 1, options.url.indexOf("?"))
@@ -131,8 +138,7 @@
             //})
             $(document).ajaxStop(function () {
                 layer.close(indexs)
-                for (var i = 0; i < datas.length; i++) {
-               
+                for (var i = 0; i < datas.length; i++) {              
                     $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
                     $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID)
                     $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
@@ -212,14 +218,10 @@
                         })
                             for (var la in layui.cache.event) {
                                 if (la != "element.nav" && la != "element.tab") {
-                                    layui.cache.event["" + la + ""] = null
+                                    layui.cache.event[la] = null
                                 }
                         }
-                        $(".layui-btn").off()
-                        $(".layui-btn").unbind
-                        $(".layui-icon-add-1").off()
-                        $(".layui-icon-add-1").unbind
-                        $(".layui-tab-content").empty()
+                       
                         $(".layui-tab-content").load(url, function () {
                             form.render()
                         })

@@ -59,11 +59,8 @@ function newFunction() {
                         , { field: 'StorageLocationID', title: '库位名称', toolbar: '#selectkw', width: 200 }
                         , { field: 'WHAreaID', title: '库区名称', toolbar: '#selectkq', width: 200 }
                         , { field: 'WHID', title: '仓库名称', toolbar: '#selectca', width: 200 }
-                        , { field: 'Description', title: '描述', edit: "text" }
-                        , { field: 'CreatedTime', title: '创建时间' }
-                        , { field: 'CreatedBy', title: '创建人' }
-                        , { field: 'UpdatedTime', title: '更新时间' }
-                        , { field: 'UpdatedBy', title: '更新人' }
+                        , { field: 'width', title: '长(m)', edit: "text" }
+                        , { field: 'height', title: '宽(m)', edit: "text" }
                         , { align: 'center', toolbar: '#barDemo' }
                     ]]
                     , done: function (res) {
@@ -102,8 +99,6 @@ function newFunction() {
                                     SELECT.reload(res.data)
                                 }
                             })
-                        } else {
-                            table.cache.laytable[ind]["" + obj.field + ""] = obj.value
                         }
                     }
                 });
@@ -168,10 +163,10 @@ function newFunction() {
                         })
                     })
                 })
-                $(".add").off('click').click(function () {
+                $(".add").click(function () {
                     Add('添加货位', 4)
                 })
-                $(".up").off('click').click(function () {
+                $(".up").click(function () {
                     var checkStatu = table.checkStatus('laytable')
                     for (var i = 0; i < checkStatu.data.length; i++) {
                         $.ajax({

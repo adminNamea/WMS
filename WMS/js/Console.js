@@ -10,15 +10,17 @@ function newFunction() {
                 $(".Automatic").click(function () {
                     $.ajax({
                         url: "/WMS/PlcIn",
-                        where: {},
                         type: "get",
                         dataType:"json",
                     }).done(function (data) {
-                        
-                        if (data[0].AID != null) {
-                            tableIns3.reload({})
+                        if (data.length >0) {
+                            if (data[0].AID != null) {
+                                tableIns3.reload({})
+                            } else {
+                                layer.msg("无可用机器")
+                            }
                         } else {
-                            layer.msg("无可用机器")
+                            layer.msg("无命令")
                         }
                     })
                 })
@@ -46,30 +48,6 @@ function newFunction() {
                         }
                     });
                 });
-            tableIns3 = table.render({
-                elem: '#laytable'
-                , url: '/WMS/CheckIn'
-                , cols: [[
-                      { hide: true }
-                    , { field: 'aid', title: '命令编码' }
-                    , { field: 'mid', title: '物料编码' }
-                    , { field: 'PartName', title: '物料名称' }
-                    , { field: 'PartSpec', title: '物料规格' }
-                    , { field: 'PartMaterial', title: '物料材质' }
-                    , { field: 'QTY', title: '入库数量（PCS）' }
-                    , { field: 'PalletQTY', title: '栈板数量' }
-                    , { field: 'Name', title: '入货口' }
-                    , { field: 'type', title: '类型' }
-                    , { field: 'Status', title: '状态' }
-                ]]
-                , done: function (res) {
-                    layui.each(res.data, function (index, value) {
-                        if (value.Status == "正在执行") {
-                            $("tbody tr:eq(" + index + ")").css("color", "red")
-                        }
-                    })
-                }
-            });
           
             })
         })

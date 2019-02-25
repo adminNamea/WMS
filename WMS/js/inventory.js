@@ -79,8 +79,6 @@ function newFunction() {
                                 url: "",
                                 data: table.cache.laytable
                             })
-                        } else {
-                            table.cache.laytable[ind].Size = obj.value
                         }
                     });
                     table.on('tool(table1)', function (obj) {

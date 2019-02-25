@@ -11,6 +11,7 @@ function newFunction() {
                         ".WHID": { data: "/WMS/checkWo" }
                     })
                 }
+                document.body.parentNode.style.overflow = "hidden";
                 function Add(name, i) {
                     var index = layer.open({
                         type: 2,
@@ -35,7 +36,7 @@ function newFunction() {
                     elem: '#laytable'
                     , url: "/WMS/checkWo"
                     , where: { id: "1" }
-                    , height: 'full-20'
+                
                     , cols: [[
                         { type: "checkbox" }
                         , { field: 'ID', title: '仓库编码' }
@@ -48,6 +49,7 @@ function newFunction() {
                     ]]
                     , done: function () {
                         ajax()
+                        $(".layui-table-body")
                     }
                 });
                 $("i").click(function () {

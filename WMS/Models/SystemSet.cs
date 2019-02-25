@@ -12,12 +12,11 @@ namespace WMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class WCS_MachinType
+    public partial class SystemSet
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public string Status { get; set; }
-        public string width { get; set; }
-        public string height { get; set; }
+        public string x { get; set; }
+        public string y { get; set; }
+        public string z { get; set; }
+        public int id { get; set; }
     }
 }

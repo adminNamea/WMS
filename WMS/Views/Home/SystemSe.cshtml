@@ -1,0 +1,95 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/layui/css/layui.css" rel="stylesheet"/>
+    <script type="text/javascript" src="~/layui/layui.js"></script>
+    <title>SystemSe</title>
+    <script type="text/javascript">
+        layui.use('form', function () {
+        var $ = layui.jquery; var form =layui.form;
+        
+        $(function () {
+            $.ajax({
+                url: "/Home/CheckSystem",
+                type: "get",
+                dataType: "json",
+            }).done(function (data) {
+                if (data != null) {
+                
+                    form.val('form', {
+                        'x': data.x,
+                        'y': data.y,
+                        'z': data.z
+                    })
+                }
+                })
+            var add = function (obj) {
+                $.post("/Home/SystemSet", { data: obj.field }, function (data) {
+                    if (data == "true") {
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index)
+                        parent.layer.msg("保存成功")
+                    }
+                })
+            }
+            form.on('submit(submit)', function (obj) {
+                if (obj.field.x > 100 || obj.field.y > 100) {
+                    layer.confirm('你加仓库这么大？', {
+                        skin: 'layui-layer-molv',
+                        title: false,
+                        btn: ['我有钱！', '没有。。'] //按钮
+                    }, function () {
+                        layer.msg('土豪交个朋友？', { icon: 1 }, function () {
+                            add(obj)
+                        });
+                        }, function () {
+                            layer.msg('下次注意点！',{ icon:5 ,tiem:500});
+                    });
+                } else {
+                    add(obj)
+                }
+                return false;
+            })
+            })
+        })
+    </script>
+</head>
+<body>
+    @*<svg>
+            <rect x="10" y="10" id="aa" rx="10" ry="10" width="10" height="10"></rect>
+        </svg>*@
+    <blockquote class="layui-elem-quote">立体仓大小设置</blockquote>
+    <form class="layui-form layui-form-pane" lay-filter="form">
+        <div class="layui-form-item" pane>
+            <div class="layui-inline">
+                <label class="layui-form-label">高度(m)</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" type="text" name="z" />
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">长度(m)</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" type="text" name="x" />
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">宽度(m)</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" type="text" name="y" />
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align:center">
+            <button class="layui-btn" lay-submit lay-filter="submit">保存</button>
+        </div>
+    </form>
+</body>
+</html>

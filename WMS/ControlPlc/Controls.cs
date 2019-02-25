@@ -61,6 +61,7 @@ namespace WMS.ControlPlc
             try
             {
                 var client = Operation(IP, 30);
+                
                 if (client != null)
                 {
                     var writeBuffer = new byte[30];

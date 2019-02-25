@@ -154,7 +154,7 @@ function newFunction() {
                 if (isNaN(obj.value)) {
                     layer.msg("只可以输入数字", { icon: 5 })
                     var ind = $("tbody tr").index(obj.tr)
-                    table.cache.laytable[ind]["" + obj.field + ""] = 0;
+                    table.cache.laytable[ind][obj.field] = 0;
                     tableIns3.reload({
                         url: "",
                         data: table.cache.laytable,
@@ -162,9 +162,7 @@ function newFunction() {
                             SELECT.reload(res.data)
                         }
                     })
-                } else {
-                    table.cache.laytable[ind]["" + obj.field + ""] = obj.value
-                    }
+                } 
                 }
             });
             table.on('tool(table)', function (obj) {

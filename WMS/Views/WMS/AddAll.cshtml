@@ -8,9 +8,7 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="~/layui/css/layui.css">
     <script type="text/javascript" src="~/layui/layui.js"></script>
-    <script type="text/javascript" src="~/js/AddAll.js">
-        
-    </script>
+    <script type="text/javascript" src="~/js/AddAll.js"></script>
     <title>AddAll</title>
     <style type="text/css">
         .layui-form-pane .layui-form-label {
@@ -82,15 +80,21 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">库区：</label>
+            <label class="layui-form-label">仓库：</label>
             <div class="layui-input-block">
-                <select class="Arid" name="Arid" lay-search></select>
+                <select class="wo" name="Whid" lay-search required lay-verify="required"></select>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">仓库：</label>
+            <label class="layui-form-label">库区：</label>
             <div class="layui-input-block">
-                <select class="wo" name="Whid" lay-search></select>
+                <select class="Arid" name="Arid" lay-search title="kq" lay-filter="up" required lay-verify="required"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">z坐标（1或2）</label>
+            <div class="layui-input-block">
+                <input class="layui-input" name="z" required lay-verify="required|pass|up"/>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
@@ -115,6 +119,30 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">仓库：</label>
+            <div class="layui-input-block">
+                <select class="wo" name="Whid" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库区：</label>
+            <div class="layui-input-block">
+                <select class="Arid" name="Arid" lay-search title="kq"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库位：</label>
+            <div class="layui-input-block">
+                <select class="StorageLocationID" name="StorageLocationID" title="kw" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">临时货位：</label>
+            <div class="layui-input-block">
+                <select class="h" name="TempPlate" lay-search title="huo"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">货位大小：</label>
             <div class="layui-input-block">
                 <input type="text" name="Size" required lay-verify="required|number" class="layui-input">
@@ -130,48 +158,6 @@
             <label class="layui-form-label">y坐标（m）</label>
             <div class="layui-input-block">
                 <input type="text" name="y" required lay-verify="required|number" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">z坐标（m）</label>
-            <div class="layui-input-block">
-                <input type="text" name="z" required lay-verify="required|number" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">宽（m）</label>
-            <div class="layui-input-block">
-                <input type="text" name="height" required lay-verify="required|number" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">长（m）</label>
-            <div class="layui-input-block">
-                <input type="text" name="width" required lay-verify="required|number" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">仓库：</label>
-            <div class="layui-input-block">
-                <select class="wo" name="Whid" lay-search></select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">库区：</label>
-            <div class="layui-input-block">
-                <select class="Arid" name="Arid" lay-search></select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">库位：</label>
-            <div class="layui-input-block">
-                <select class="StorageLocationID" name="StorageLocationID" lay-search></select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">临时货位：</label>
-            <div class="layui-input-block">
-                <select class="h" name="TempPlate" lay-search></select>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">

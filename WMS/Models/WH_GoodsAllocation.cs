@@ -18,7 +18,7 @@ namespace WMS.Models
         public string Name { get; set; }
         public double x_intercept { get; set; }
         public double y_intercept { get; set; }
-        public double z_intercept { get; set; }
+        public Nullable<double> z_intercept { get; set; }
         public Nullable<double> Size { get; set; }
         public string Description { get; set; }
         public int TempPlate { get; set; }
@@ -30,7 +30,5 @@ namespace WMS.Models
         public Nullable<System.DateTime> UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public string StatusID { get; set; }
-        public string width { get; set; }
-        public string height { get; set; }
     }
 }

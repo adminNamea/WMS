@@ -32,23 +32,31 @@ namespace WMS.Controllers
             using (WMSEntities mSEntities = new WMSEntities())
             {
                 list = mSEntities.PlcIn().ToList();
+                for (var i = 0; i < list.Count(); i++)
+                {
+                    if (o)
+                    {
+                        o = Controls.WholePileInOut(list[i].IP, Convert.ToInt32(list[i].qx),
+                        Convert.ToInt32(list[i].qy),
+                        -1350,
+                        Convert.ToInt32(list[i].fx),
+                        Convert.ToInt32(list[i].fy),-1350, 1,true);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             return Json(list, JsonRequestBehavior.AllowGet);
         }
-        //for (var i = 0; i < list.Count(); i++)
-        //{
-        //    if (o)
-        //    {
-        //        o = Controls.WholePileInOut(list[i].IP, Convert.ToInt32(list[i].qx),
-        //        Convert.ToInt32(list[i].qy),
-        //        Convert.ToInt32(list[i].fx),
-        //        Convert.ToInt32(list[i].fy), 0, 0, 1);
-        //    }
-        //    else
-        //    {
-        //        break;
-        //    }
-        //}
+        //停止执行
+        public string PlcStop() {
+          
+            return "true";
+        }
+
+       
         #endregion
         #region 出库
         public ActionResult Out()
@@ -106,8 +114,10 @@ namespace WMS.Controllers
                     {
                         data = "";
                     }
-                    Dictionary<string, string> a = new Dictionary<string, string>();
-                    a.Add("id",data);
+                    Dictionary<string, string> a = new Dictionary<string, string>
+                    {
+                        { "id", data }
+                    };
                     return Json(Tools<checkWo_Result>.SqlMap("exec checkWo ",a), JsonRequestBehavior.AllowGet);
                 }
                 else
@@ -177,6 +187,26 @@ namespace WMS.Controllers
                     }
 
                 }
+            }
+        }
+        public ActionResult Checkkqs(int a,int type) {
+            using (WMSEntities wMS=new WMSEntities ()) {
+                List<Checkkqs_Result> list = wMS.Checkkqs(a,type).ToList();
+                return Json(list, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult Checkkws(int a, int b)
+        {
+            using (WMSEntities wMS = new WMSEntities())
+            {
+                return Json(wMS.WH_StorageLocation.Where(p => p.WHID == a&&p.WHAreaID==b).ToList(), JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult Checkhuos(int a,int b,int c)
+        {
+            using (WMSEntities wMS = new WMSEntities())
+            {
+                return Json(wMS.WH_GoodsAllocation.Where(p => p.WHID == a&&p.WHAreaID==b&&p.StorageLocationID==c).ToList(), JsonRequestBehavior.AllowGet);
             }
         }
         //查询货位信息
@@ -336,7 +366,7 @@ namespace WMS.Controllers
                         }
                         else
                         {
-                            list1 = mSEntities.WH_Material.ToList();
+                            list1 = mSEntities.WH_Material.Distinct().ToList();
                         }
 
                         return Json(list1, JsonRequestBehavior.AllowGet);
@@ -358,6 +388,13 @@ namespace WMS.Controllers
         {
            int i= Tools<object>.SqlComm("exec InOutMaterial @type='in',", data);
            return i;
+        }
+        //查询货位限制
+        public ActionResult CeckHCount() {
+            using (WMSEntities wMS =new WMSEntities()) {
+
+                return Json(wMS.CeckHCount().ToList(), JsonRequestBehavior.AllowGet);
+            }
         }
         //查询物料规格材质
         public ActionResult CheckPartSpec(string Name)

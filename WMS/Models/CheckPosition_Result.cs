@@ -13,11 +13,10 @@ namespace WMS.Models
     
     public partial class CheckPosition_Result
     {
-        public string type { get; set; }
-        public Nullable<int> x { get; set; }
-        public Nullable<int> y { get; set; }
-        public string name { get; set; }
-        public Nullable<int> width { get; set; }
-        public Nullable<int> height { get; set; }
+        public string hName { get; set; }
+        public string kName { get; set; }
+        public Nullable<int> z { get; set; }
+        public string jName { get; set; }
+        public double x { get; set; }
     }
 }

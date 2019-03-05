@@ -26,5 +26,6 @@ namespace WMS.Models
         public string IP { get; set; }
         public string pname { get; set; }
         public string gname { get; set; }
+        public string speed { get; set; }
     }
 }

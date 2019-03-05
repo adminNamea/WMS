@@ -10,17 +10,10 @@
 namespace WMS.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class ControlPlc
+    public partial class Checkkqs_Result
     {
-        public Nullable<int> TakeMaterialX { get; set; }
-        public Nullable<int> TakeMaterialY { get; set; }
-        public Nullable<int> PutMaterialX { get; set; }
-        public Nullable<int> PutMaterialY { get; set; }
-        public Nullable<int> LoadHeight { get; set; }
-        public Nullable<int> note { get; set; }
-        public Nullable<int> Array { get; set; }
         public int ID { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -9,11 +9,85 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>login</title>
+    <script type="text/javascript">
+        layui.use(['form', 'layer', 'element'], function () {
+            "use strict";
+                var form = layui.form, layer = layui.layer;
+                var $ = layui.jquery
+                var WCS = true;
+                var bool = false;
+                form.on('switch', function (data) {
+                    WCS = data.elem.checked
+                });
+                $("[name=Name]").css("border-color", "rgba(255,0,0,0.5)")
+                $("[name=Name]").change(function () {
+                    var value = $(this).val().trim();
+                    $.get("/Home/checkUser", { value: value }, function (data) {
+                        if (data.length == 0) {
+                            $("[name=Name]").css("border-color", "rgba(255,0,0,0.5)")
+                            bool = false;
+                        } else {
+                            $("[name=Name]").css("border-color", "rgba(0,255,0,0.5)")
+                            bool = true;
+                        }
+                    })
+            })
+               var v= new Vue({
+                   data: {name:"登陆"},
+                    methods: {
+                        login: function () {
+                            if (bool) {
+                                $.post("/Home/Login", { Name: $("[name=Name]").val(), Pwd: $("[name=password]").val(), WCS: WCS }, function (data) {
+                                    if (data == "true") {
+                                        layer.msg("登陆成功", {
+                                            icon: 16
+                                            , shade: [0.8, '#393D49']
+                                            , time: 1000
+                                        }, function () {
+                                            location.reload();
+                                        })
+                                    } else {
+                                        layer.msg("密码错误", { icon: 2 })
+                                    }
+                                })
+                            } else {
+                                layer.msg('用户不存在', { icon: 5 })
+                            }
+                           
+                        }
+
+                    }
+               })
+            v.$mount('#login')
+            $(document).keydown(function (e) {
+                if (e.keyCode==13) {
+                    v.login()
+                    return false;
+                }
+            })
+                $(".Registered").click(function () {
+                    layer.msg()
+                    layer.open({
+                        type: 2,
+                        title: '员工注册',
+                        shadeClose: true,
+                        shade: false,
+                        maxmin: true,
+                        area: ['893px', '600px'],
+                        content: '/Home/Registered'
+                        , success: function () {
+
+                        }
+                    });
+
+                })
+            });
+    </script>
 </head>
 <body>
-    
+
     @*
-      登陆
+        登陆
     *@
     <blockquote class="layui-elem-quote">员工登陆</blockquote>
     <div class="layui-form layui-form-pane" style="padding-left:100px">
@@ -38,76 +112,13 @@
         </div>
         <div class="layui-form-item" style="padding-left:50px">
             <div class="layui-input-inline" style="width: 70px;">
-                <button class="layui-btn" id="login">登陆</button>
+                <button class="layui-btn" @@click="login" id="login">{{name}}</button>
             </div>
             <div class="layui-form-mid">忘记密码?</div>
-            <div class="layui-input-inline"  style="width: 100px;">
+            <div class="layui-input-inline" style="width: 100px;">
                 <button class="layui-btn layui-btn-primary Registered">注册</button>
             </div>
         </div>
     </div>
-    <script>
-        !function () { 
-            "use strict";
-        layui.use(['form', 'layer', 'element'], function () {
-            var form = layui.form, layer = layui.layer;
-            var $ = layui.jquery
-            var WCS = true;
-            var bool = false;
-            form.on('switch', function (data) {
-                WCS = data.elem.checked
-            });
-            $("[name=Name]").css("border-color","rgba(255,0,0,0.5)")
-            $("[name=Name]").change(function () {
-                var value = $(this).val().trim();
-                $.get("/Home/checkUser", { value: value }, function (data) {
-                    if (data.length == 0) {
-                        $("[name=Name]").css("border-color","rgba(255,0,0,0.5)")
-                        bool = false;
-                    } else {
-                        $("[name=Name]").css("border-color","rgba(0,255,0,0.5)")
-                        bool = true;
-                    }
-                })
-            })
-            $("#login").click(function () {
-                if (bool) {
-                    $.post("/Home/Login", { Name: $("[name=Name]").val(), Pwd: $("[name=password]").val(), WCS: WCS }, function (data) {
-                        if (data == "true") {
-                            layer.msg("登陆成功", {
-                                icon: 16
-                                , shade: [0.8, '#393D49']
-                                , time: 1000
-                            }, function () {
-                                location.reload();
-                            })
-                          
-                        } else {
-                            layer.msg("密码错误", { icon:2 })
-                        }
-                    })
-                } else {
-                    layer.msg('用户不存在', { icon: 5 })
-                }
-            })
-            $(".Registered").click(function () {
-                layer.msg()
-                layer.open({
-                    type: 2,
-                    title: '员工注册',
-                    shadeClose: true,
-                    shade: false,
-                    maxmin: true,
-                    area: ['893px', '600px'],
-                    content: '/Home/Registered'
-                    , success: function () {
-
-                    }
-                });
-
-            })
-            });
-        }()
-    </script>
 </body>
 </html>

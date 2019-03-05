@@ -149,10 +149,19 @@
     <Compile Include="Models\Category.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CeckHCount_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\checkComm_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CheckHuos_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\checkHuo_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Checkkqs_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\checkKq_Result.cs">
@@ -177,9 +186,6 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\checkwu_Result.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ControlPlc.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Employee.cs">
@@ -210,6 +216,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PurchaseOrder.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StrToTable_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SystemSet.cs">
@@ -269,6 +278,7 @@
     <Compile Include="Models\WH_StorageLocation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Sharp7.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WCSController.cs" />
@@ -279,7 +289,6 @@
     </Compile>
     <Compile Include="PageList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sharp7.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -296,6 +305,7 @@
     <Content Include="js\AddAll.js" />
     <Content Include="js\Command.js" />
     <Content Include="js\Console.js" />
+    <Content Include="js\constellation.js" />
     <Content Include="js\echarts.js" />
     <Content Include="js\Enter.js" />
     <Content Include="js\Functional.js" />
@@ -485,6 +495,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="css\" />
     <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>

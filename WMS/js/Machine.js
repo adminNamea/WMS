@@ -20,8 +20,13 @@ function newFunction() {
                 var obj = {}
                 obj[key] = { data: "/WCS/checkMachine" }
                 obj[key1] = { data: "/WCS/checkMachinType" }
+                obj[".WHAreaID"] = {
+                    data: "/WCS/CheckWo", where: { type: "1" }
+                }
+                console.log(obj)
                 SELECT.render(obj)
             }
+        
             var boo = false;
             var boo1 = false;
             

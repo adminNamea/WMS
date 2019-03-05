@@ -2,18 +2,53 @@
 function newFunction() {
     "use strict";
 !function () {
-    layui.use('form', function () {
-        var form = layui.form, $ = layui.jquery;
+    layui.config({base:'/js/'}).use(['form','SELECT'], function () {
+        var form = layui.form, $ = layui.jquery,select=layui.SELECT;
         var boo = false;
-        $("[name=name]").css("border-color", "rgba(255,0,0,0.5)")
+        var boos = false;
+        var a, b, c,s;
+        form.verify({
+            pass: [
+                /^[1-2]$/
+                , '请输入1或2'
+            ],
+            up: function (value) {
+                var obj = {}
+                obj["WHAreaID"] = s
+                $.ajax({
+                    url: "/WMS/checkkw/",
+                    data: { id: "1", data: obj },
+                    async: false,
+                    success: function (data) {
+                        if (data.data.length > 0) {
+                            if (data.data[0].z != value) {
+                                boos = true;
+                            } else {
+                                boos = false
+                            }
+                        } else {
+                            boos = true;
+                        }
+                    }
+                })
+                if (!boos) {
+                    return '该位置存在库位'
+                } 
+            }
+        });
+        form.on('select(up)', function (data) {
+            s = data.value
+        })
+        $("[name=name]").css("border-color","rgba(255,0,0,0.5)")
         function sub(su, type) {
+            console.log(su + type)
             form.on('submit(' + su + ')', function (data) {
                 if (boo) {
-                    $.post("/WMS/AddWarehouse", { data: data.field, type: type }, function () {
-                        var index = parent.layer.getFrameIndex(window.name)
-                        parent.layer.msg("添加成功")
-                        parent.layer.close(index);
-                    })
+                        $.post("/WMS/AddWarehouse", { data: data.field, type: type }, function () {
+                            var index = parent.layer.getFrameIndex(window.name)
+                            parent.layer.msg("添加成功")
+                            parent.layer.close(index);
+                        })
                 } else {
                     layer.msg('名称重复了', { icon: 5 })
                 }
@@ -53,7 +88,8 @@ function newFunction() {
                 }
             }
             form.render()
-            switch (Number($(".layui-hide").val())) {
+            var type = Number($(".layui-hide").val())
+            switch (type) {
                 case 1:
                     $(".ca").css("display", "block")
                     sub('formDemo', "ca")
@@ -71,38 +107,31 @@ function newFunction() {
                     sub('formDemo3', "huo")
                     break;
             }
-        })
-        $.get("/WMS/checkkq", function (data) {
-            if (data != null) {
-                $(".Arid").empty();
-                $(".Arid").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(".Arid").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
+            form.on('select', function (data) {
+                var index = $('select').index(data.elem)
+                var key = $('select:eq(' + Number(index + 1) + ')').attr("class")
+                var title = $('select:eq(' + Number(index + 1) + ')').attr("title")
+                if (title != undefined) {
+                    switch (title) {
+                        case "kq":
+                            a = Number(data.value);
+                            break;
+                        case "kw":
+                            b = Number(data.value);
+                            break;
+                        case "huo":
+                            c = Number(data.value);
+                            break;
+                    }
+                    var obj = {}
+                    console.log("type=" + type + "a=" + a)
+                    obj["." + key] = {
+                        data: "/WMS/Check" + title + "s", where: { a: a, b: b, c: c, type: type }
+                    }
+                    select.render(obj)
                 }
-            }
-            form.render()
+            })
         })
-        $.get("/WMS/checkkw", function (data) {
-            if (data != null) {
-                $(".StorageLocationID").empty();
-                $(".StorageLocationID").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(".StorageLocationID").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
-                }
-            }
-            form.render()
-        })
-        $.get("/WMS/checkhuo", function (data) {
-            if (data != null) {
-                $(".h").empty();
-                $(".h").append("<option value='' selected>请选择</option>")
-                for (var i = 0; i < data.length; i++) {
-                    $(".h").append("<option value='" + data[i].ID + "'>" + data[i].Name + "</option>")
-                }
-            }
-            form.render()
-        })
-           
     });
     }()
 }

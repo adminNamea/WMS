@@ -11,13 +11,12 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class CheckWCount_Result
+    public partial class CheckHuos_Result
     {
-        public Nullable<int> no { get; set; }
-        public Nullable<int> nos { get; set; }
-        public Nullable<int> yse { get; set; }
-        public Nullable<int> myse { get; set; }
-        public Nullable<int> mno { get; set; }
-        public Nullable<int> mxx { get; set; }
+        public string Name { get; set; }
+        public string PartName { get; set; }
+        public string PartSpec { get; set; }
+        public Nullable<double> StockQTY { get; set; }
+        public string Type { get; set; }
     }
 }

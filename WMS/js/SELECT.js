@@ -2,9 +2,10 @@
         layui.define(['jquery', 'layer', 'form'], function (exports) {
             "use strict";
             var $ = layui.jquery, layer = layui.layer, form = layui.form
-            var s = { };
+            var s = {};
             var obj = {
                 render: function (o, fu) {
+                    s = {}
                     for (var ob in o) {
                         if (o[ob].where == undefined) {
                             o[ob].where = {}
@@ -28,6 +29,7 @@
                                         async: false,
                                         dataType: "json",
                                         success: function (data) {
+                                            if (data.length > 0) { 
                                             s[ob] = { }
                                             s[ob]["data"] = data
                                             $(ob).empty()
@@ -38,6 +40,7 @@
                                                 } else {
                                                     $(ob).append("<option value=" + data[j].ID + ">" + data[j].Name + "</option>")
                                                 }
+                                                }
                                             }
                                         }
                                     })
@@ -45,14 +48,14 @@
                         if (o[ob].duf != undefined) { 
                             $(ob).val(o[ob].duf)
                         }
-                        form.render()
-                        if (fu != undefined) { 
-                            fu(s)
-                        }
                     } else {
                         layer.msg("请输入地址或数据源", { icon: 5 })
                     }
                     }
+                    if (fu != undefined) {
+                        fu(s)
+                    }
+                    form.render()
                 },
                 reload: function (duf) {
                     obj.render(s)

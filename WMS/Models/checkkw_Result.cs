@@ -23,5 +23,6 @@ namespace WMS.Models
         public string UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public Nullable<int> StatusID { get; set; }
+        public Nullable<int> z { get; set; }
     }
 }

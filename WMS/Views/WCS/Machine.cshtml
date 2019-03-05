@@ -81,13 +81,19 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">所在库区</label>
+            <div class="layui-input-block">
+              <select lay-search name="WHAreaID" class="WHAreaID" required ay-verify="required"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">x坐标（cm）</label>
             <div class="layui-input-block">
                 <input type="text" name="x_intercept" required lay-verify="required|number" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label" >y坐标（cm）</label>
+            <label class="layui-form-label">y坐标（cm）</label>
             <div class="layui-input-block">
                 <input type="text" name="y_intercept" required lay-verify="required|number" class="layui-input">
             </div>
@@ -107,7 +113,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">状态：</label>
             <div class="layui-input-block">
-                <input class="layui-input" name="Status" required lay-verify="required" />
+                <input class="layui-input" name="Status" required lay-verify="required" value="可用" disabled/>
             </div>
         </div>
         <div class="layui-form-item">

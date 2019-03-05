@@ -24,5 +24,6 @@ namespace WMS.Models
         public Nullable<System.DateTime> UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public Nullable<int> StatusID { get; set; }
+        public Nullable<int> z { get; set; }
     }
 }

@@ -28,5 +28,6 @@ namespace WMS.Models
         public string UpdatedBy { get; set; }
         public string Status { get; set; }
         public string IP { get; set; }
+        public Nullable<int> WHAreaID { get; set; }
     }
 }

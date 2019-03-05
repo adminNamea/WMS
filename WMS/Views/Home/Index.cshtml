@@ -10,9 +10,9 @@
     <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
     <META HTTP-EQUIV="Expires" CONTENT="0">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/js/vue.js"></script>
     <title>智能立体仓库</title>
     <link rel="stylesheet" href="~/layui/css/layui.css" media="all">
-    <script type="text/javascript" src="~/laydate/laydate.js"></script>
     <script type="text/javascript" src="~/layui/layui.js"></script>
     <style type="text/css">
         .layui-nav .layui-nav-item .layui-nav-child a {
@@ -57,14 +57,14 @@
                     <li class="layui-nav-item layui-nav-itemed">
                         <a class="" href="javascript:;">WMS</a>
                         <dl class="layui-nav-child">
-                            <dd><a href="javascript:;">WMS操作</a></dd>
+                           
                             <dd><a href="javascript:;" class="data">WMS基础资料</a></dd>
                         </dl>
                     </li>
                     <li class="layui-nav-item WCS" style="display:none">
                         <a href="javascript:;">WCS</a>
                         <dl class="layui-nav-child">
-                            <dd><a href="javascript:;" class="wcsdata">WCS操作</a></dd>
+                         
                             <dd><a href="javascript:;">WCS基础资料</a></dd>
                         </dl>
                     </li>
@@ -100,28 +100,28 @@
     layui.config({
         base: '/js/'
         }).use(['element','layer','form','SELECT'], function () {
-            var element = layui.element, form = layui.form, layer = layui.layer, $ = layui.jquery
-            var indexs
+            var element = layui.element, form = layui.form, layer = layui.layer, $ = layui.jquery;
+            var indexs;
             SELECT = layui.SELECT
             datamap = new Map();
             datas = new Array()
             $(document).ajaxStart(function () {
-                 indexs= layer.msg('加载中...', {
+                indexs = layer.msg('加载中...', {
                     icon: 16
-                     , shade: 0.01
-                     , time: false
+                    , shade: 0.01
+                    , time: false
                 })
                 datas = new Array()
-            })
+            });
             $(".Set").click(function () {
                 layer.open({
                     type: 2,
                     area: ['700px', '450px'],
                     fixed: false, //不固定
                     maxmin: true,
-                    content: 'Home/SystemSe'
+                    content: '/Home/SystemSe'
                 });
-            })
+            });
             //$(document).ajaxSuccess(function (event, xhr, options) {
             //    if (options.type != "POST") {
             //        var key = options.url.substring(options.url.lastIndexOf("/") + 1, options.url.indexOf("?"))
@@ -136,17 +136,44 @@
             //    console.log(xhr)
             //    console.log(options)
             //})
+            var a = 0;
+            var type = 0;
             $(document).ajaxStop(function () {
                 layer.close(indexs)
-                for (var i = 0; i < datas.length; i++) {              
-                    $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID)
-                    $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID)
-                    $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID)
+                for (var i = 0; i < datas.length; i++) {
+                    $("tbody tr:eq(" + i + ")").find(".WHID").val(datas[i].WHID).attr("lay-filter","WHID")
+                    $("tbody tr:eq(" + i + ")").find(".StorageLocationID").val(datas[i].StorageLocationID).attr("disabled","disabled")
+                    $("tbody tr:eq(" + i + ")").find(".WHAreaID").val(datas[i].WHAreaID).attr({ "disabled": "disabled", "lay-filter":"WHAreaID"})
                     $("tbody tr:eq(" + i + ")").find(".MachineTypeID").val(datas[i].MachineTypeID)
                     $("tbody tr:eq(" + i + ")").find(".PlaceTypeID").val(datas[i].PlaceTypeID)
                     $("tbody tr:eq(" + i + ")").find(".Category1").val(datas[i].Category1)
                 }
                 form.render()
+                $("tbody tr").find(".layui-input").attr("readonly", "readonly");
+                form.on('select(WHID)', function (data) {
+                    a = Number(data.value)
+                    var obj = {}
+                    var index = $('.WHID').index(data.elem)
+                    var key = ".WHAreaID:eq(" + index + ")"
+                    obj[key] = { data: "/WMS/Checkkqs", where: { a: a, type: type } }
+                    SELECT.render(obj, function (data) {
+                        data[key] != undefined ? !function () {
+                            $(key).removeAttr("disabled")
+                            form.render()
+                        }() : !function () {
+                            return false
+                        }();
+                    })
+                })
+                form.on('select(WHAreaID)', function (data) {
+                    var index = $('.WHAreaID').index(data.elem)
+                    var key = ".StorageLocationID:eq(" + index + ")"
+                    var obj = {}
+                    obj[key] = { data: "/WMS/Checkkws", where: { a: a, b: Number(data.value), type: type } }
+                    SELECT.render(obj)
+                    $(key).removeAttr("disabled")
+                    form.render()
+                })
                 })
             if ('@Session["user"]' != undefined && '@Session["user"]'!="") {
                 $(".userName").text('@Session["user"]')
@@ -213,15 +240,14 @@
                 var url = data.elem.find("li:eq(" + data.index + ")").next().text();
                 if (url != "/WMS/login") {
                     if ('@Session["user"]' != null && '@Session["user"]' != "") {
-                        $.ajaxSetup({
-                            cache: false
-                        })
                             for (var la in layui.cache.event) {
                                 if (la != "element.nav" && la != "element.tab") {
                                     layui.cache.event[la] = null
                                 }
                         }
-                       
+                        if (url == "/WMS/WarehousePosition") {
+                            type = 3;
+                        }
                         $(".layui-tab-content").load(url, function () {
                             form.render()
                         })
@@ -229,7 +255,6 @@
                         layer.msg("请先登陆", { icon: 5 })
                     }
                 } else {
-                    $.ajaxSetup({ cache: false });
                     $(".layui-tab-content").empty()
                     $(".layui-tab-content").load(url, function () {
                         form.render()

@@ -10,8 +10,24 @@ function newFunction() {
             var form = layui.form;
             var $ = layui.jquery;
             var SELECT = layui.SELECT;
+            var namem, PartSpecs, boo = true
             var c1 = {};
             var c2 = {};
+            form.verify({
+                notnull: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    if (value == "" || value == "-1" || value == null || value == undefined) {
+                        return '请选择一项';
+                    }
+                },
+                size: function (value) {
+                    var sz = parseInt(PartSpecs.substring(PartSpecs.lastIndexOf("*") + 1, PartSpecs.lastIndexOf("")));
+                    if (sz * value > 144) {
+                        return "超过货位限制";
+                    }
+                }
+            });
+            var p = "";
+            p.lastIndexOf
             $(function () {
                 $.get("/WMS/checkwu", { page: 0, limit: 0 }, function (data) {
                     if (data.length > 0) {
@@ -27,33 +43,58 @@ function newFunction() {
                         })
                     }
                 })
-                $.get("/WMS/CeckHCount", function (data) {
-                    if (data.length > 0) {
-                        layui.each(data, function (index, value) {
-                            v.to.push(value)
-                            v.place.push(value)
-                        })
-                    }
-                })
-                var checkAge = (rule, value, callback) => {
+                var CheckQTY = (rule, value, callback) => {
                     var d = {}
-                    v.to.find(function (x) {
+                    var f = {}
+                    layui.each(v.to,function (i,x) {
                         if (x.value == v.form.To) {
                             d = x;
                         }
                     })
+                    layui.each(v.place,function (i,x) {
+                        if (x.value == v.form.PlaceID) {
+                            f = x;
+                        }
+                    })
+                    var sz = 0;
+                    if (d.PartSpec != undefined) {
+                        sz = parseInt(d.PartSpec.substring(d.PartSpec.lastIndexOf("*") + 1, d.PartSpec.lastIndexOf("")));
+                    }
                     if (!value) {
                         return callback(new Error('数量不能为空'));
                     }
-                        if (!Number.isInteger(value)) {
-                            callback(new Error('请输入数字'));
+                    if (!Number.isInteger(value)) {
+                        callback(new Error('请输入数字'));
+                    } else {
+                        if (value > f.stockQTY) {
+                            callback(new Error('取料点数量不足'));
+                         } else if (value * sz > d.size) {
+                            callback(new Error('超过货位限制'));
                         } else {
-                                if (value > (d.size - d.InQTY)) {
-                                callback(new Error('超过货位限制'));
-                            }else {
-                                callback();
-                                }
+                            callback();
                         }
+                    }
+                }
+                var CheckTo = (rule, value, callback) => {
+                    if (!value) {
+                        return callback(new Error('请选择放料点'));
+                    }
+                    if (v.form.To == v.form.PlaceID) {
+
+                        callback(new Error('位置不能相同'))
+                    } else {
+                        callback()
+                    }
+                }
+                var CheckPlace = (rule, value, callback) => {
+                    if (!value) {
+                        return callback(new Error('请选择取料点'));
+                    }
+                    if (v.form.To == v.form.PlaceID) {
+                        callback(new Error('位置不能相同'))
+                    } else {
+                        callback()
+                    }
                 }
                 var v = new Vue({
                     data: {
@@ -62,42 +103,44 @@ function newFunction() {
                             PartSpec: '',
                             PartMaterial: '',
                             PlaceID: '',
-                            InQTY:'',
+                            InQTY: '',
                             To: '',
                             selectedOptions: [],
+                            InType: "调整"
                         },
                         options: [],
                         place: [],
                         to: [],
                         rules: {
-                            selectedOptions:[
-                                { required: true, message: '请选择物料', trigger: 'change' }
-                            ],
-                            PlaceID: [{ required: true, message: '请选择取料点 ', trigger: 'change' }],
-                            To: [{ required: true, message: '请选择放料点', trigger: 'change' }],
-                            InQTY: [
-                                { validator: checkAge, trigger: 'blur' }
-                            ]
+                            selectedOptions: [{ required: true, message: '请选择物料', trigger: 'change' }],
+                            PlaceID: [{ validator: CheckPlace, trigger: 'change' }],
+                            To: [{ validator: CheckTo, trigger: 'change' }],
+                            InQTY: [{ validator: CheckQTY, trigger: 'blur' }]
                         }
                     },
                     methods: {
                         onSubmit(formName) {
+                            console.log(this.form)
                             this.form.PartName = this.form.selectedOptions[0]
                             this.form.PartSpec = this.form.selectedOptions[1]
                             this.form.PartMaterial = this.form.selectedOptions[2]
-                            this.form.selectedOptions == undefined ? false:
-                            delete this.form.selectedOptions
                             this.$refs[formName].validate((valid) => {
                                 if (valid) {
-                                    alert('submit!');
-                                 //$.post("/WMS/InMaterial", { data: this.form }, function (data) {
-                                 //    layui.msg("添加成功")
-                                 //})
+                                    this.form.selectedOptions != undefined ? delete this.form.selectedOptions : "";
+                                    $.post("/WMS/InMaterial", { data: this.form }, function (data) {
+                                        if (data == 1) {
+                                            parent.vv.$message({
+                                                type: 'success',
+                                                message: '提交成功!'
+                                            });
+                                            parent.layer.close(parent.layer.index)
+                                        }
+                                    })
                                 } else {
                                     return false;
                                 }
                             });
-                           
+
                         },
                         resetForm(formName) {
                             this.$refs[formName].resetFields();
@@ -118,14 +161,33 @@ function newFunction() {
                                 }
 
                             })
-                        } 
+                        },
+                        selectChange_a(value) {
+                            $.get("/WMS/CeckHCount", function (data) {
+                                this.place = [];
+                                this.to = [];
+                                if (data.length > 0) {
+                                    layui.each(data, function (i,va) {
+                                        if (value[0] == va.PartName && value[1] == va.PartSpec && value[2] == va.PartMaterial) {
+                                            v.place.push(va)
+                                            var sz = va.PartSpec.substring(va.PartSpec.lastIndexOf("*") + 1, va.PartSpec.lastIndexOf(""));
+                                            if (sz * va.stockQTY + sz < va.size) {
+                                                v.to.push(va) 
+                                            }
+                                        } else if (va.stockQTY == null || va.stockQTY==0) {
+                                            v.to.push(va) 
+                                        } 
+                                    })
+                                }
+                            })
+                        }
                     }
                 }).$mount("#tiao")
-                var namem, PartSpecs, boo = true
+              
                 SELECT.render({
                     ".Place": { data: "/WCS/checkPlace" },
                     ".Category1": { data: "/WMS/checkwu", where: { page: 0, limit: 0, type: "lei" } },
-                    ".GoodsAllocationID": { data: "/WMS/checkhuo" }
+                    ".GoodsAllocationID": { data: "/WMS/OutHuo" }
                 })
                 form.on('select(Category1)', function (data) {
                     var index = $(".Category1").index(data.elem)
@@ -189,15 +251,16 @@ function newFunction() {
                 })
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
+                    
                     var index = $(".formDemo").index(data.elem)
                     if (boo) {
                         $.post("/WMS/InMaterial", { data: data.field }, function (data) {
                             if (data == 1) {
-                                parent.layer.close(layer.index)
+                                parent.layer.closeAll()
                                 parent.layer.msg("已确认", { time: 500 })
                             } else {
                                 parent.layer.close(layer.index)
-                                parent.layer.msg("货位已用完", { time: 500 })
+                                parent.layer.msg("货位已用完")
                             }
                         })
                     } else {

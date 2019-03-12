@@ -25,38 +25,47 @@ namespace WMS.Controllers
             return View();
         }
         //PLC交互
-        public ActionResult PlcIn()
+        public ActionResult PlcIn(string aid)
         {
-            bool o = true;
-            List<PlcIn_Result> list = null;
-            using (WMSEntities mSEntities = new WMSEntities())
-            {
-                list = mSEntities.PlcIn().ToList();
-                for (var i = 0; i < list.Count(); i++)
+            string msgg = "无可用机器";
+            Dictionary<string, object> map = new Dictionary<string, object>();
+            using (WMSEntities wMS =new WMSEntities ()) {
+                wMS.PlcIn(aid);
+                List<WCS_Comm> list = wMS.WCS_Comm.Where(p=>p.AID==aid).ToList();
+                try
                 {
-                    if (o)
-                    {
-                        o = Controls.WholePileInOut(list[i].IP, Convert.ToInt32(list[i].qx),
-                        Convert.ToInt32(list[i].qy),
-                        -1350,
-                        Convert.ToInt32(list[i].fx),
-                        Convert.ToInt32(list[i].fy),-1350, 1,true);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    msgg = Controls.WholePileInOut(list[0].IP,false,
+                    false,false,false,false, Convert.ToByte(list[0].mo), Convert.ToInt32(list[0].qx),
+                    Convert.ToInt32(list[0].qy), Convert.ToInt32(list[0].qz),
+                    Convert.ToInt32(list[0].fx), Convert.ToInt32(list[0].fy),
+                    Convert.ToInt32(list[0].fz), Convert.ToInt32(list[0].InQTY),
+                    Convert.ToInt32(list[0].y1), Convert.ToInt32(list[0].z1));
                 }
+                catch
+                {
+                    map.Add("msg", msgg);
+                    return Json(map, JsonRequestBehavior.AllowGet);
+                }
+                map.Add("msg", msgg);
+                map.Add("data", list);
+                return Json(map, JsonRequestBehavior.AllowGet);
             }
-            return Json(list, JsonRequestBehavior.AllowGet);
+               
         }
-        //停止执行
-        public string PlcStop() {
-          
-            return "true";
+        //plc使能
+        public string PlcSn(string IP) {
+          return Controls.PlcStrat(IP);
         }
+        //plc停止
+        public void PlcStop()
+        {
 
-       
+        }
+        //plc复位
+        public void PlcFw()
+        {
+
+        }
         #endregion
         #region 出库
         public ActionResult Out()
@@ -340,6 +349,13 @@ namespace WMS.Controllers
         public ActionResult Material()
         {
             return View();
+        }
+        //查询出库位
+        public ActionResult OutHuo() {
+            using (WMSEntities wMS=new WMSEntities()) {
+                return Json(wMS.OutHuo().ToList(), JsonRequestBehavior.AllowGet);
+            }
+
         }
         //查询物料
         public ActionResult checkwu(string id, Dictionary<string, string> data, int page, int limit, string type, string value)

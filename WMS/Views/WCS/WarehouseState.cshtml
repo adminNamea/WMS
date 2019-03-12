@@ -12,50 +12,104 @@
     <script src="~/js/echarts.js"></script>
     <link href="~/layui/css/layui.css" rel="stylesheet" />
     <script src="~/js/vue.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link href="~/StyleSheet1.css" rel="stylesheet" />
+    <script src="~/js/elemenui.js"></script>
     <title>WarehouseState</title>
     <script type="text/javascript">
         layui.use(['layer', 'util'], function () {
             var layer = layui.layer;
             var util = layui.util;
             var $ = layui.jquery;
-            $.get("/WCS/CheckWCount", function (data) {
+     
+            function render() {
+                $.get("/WCS/CheckTask", function (data) {
+                    v.timelineList = []
+                    if (data.length > 0) {
+                        layui.each(data, function (index, x) {
+                            var date = x.CreatedTime.substring(x.CreatedTime.indexOf("(") + 1, x.CreatedTime.indexOf(")"))
+                            var status = "text"
+                            var percentage = 0;
+                            switch (x.Status) {
+                                case "完成":
+                                    status = "success"
+                                    percentage = 100;
+                                    break;
+                                case "错误":
+                                    status = "exception"
+                                    break;
+                                case "正在执行":
+                                    v.thisTask = x.aid
+                                    break;
+                            }
+                            v.timelineList.push({
+                                aid: x.aid,
+                                statu: x.Status,
+                                type: x.type,
+                                date: parseInt(date),
+                                status: status,
+                                percentage: percentage,
+                                qty: x.QTY
+                            })
+                        })
+                    }
+                })
+                $.get("/WCS/CheckWCount", function (data) {
+                    if (data != null) {
+                        v.quantity.q1 = Number(data.myse)
+                        v.quantity.q2 = Number(data.mno)
+                        v.quantity.q3 = Number(data.mxx)
+                        v.gQuantity.q1 = Number(data.yse)
+                        v.gQuantity.q2 = Number(data.no)
+                        v.gQuantity.q3 = Number(data.nos)
+                    }
+                })
+                $.get("/WCS/checkMachine", function (data) {
+                    v.machine = []
+                    if (data.length > 0) {
+                        layui.each(data, function (index, value) {
+                            var TaskAid = value.TaskAid == null ? "无" : value.TaskAid
+                            var Time =
+                            v.machine.push({
+                                task: TaskAid,
+                                    time: value.Time == null ? 0 : util.toDateString(parseInt(value.Time.substring(value.Time.indexOf("(") + 1, value.Time.indexOf(")"))), "HH:mm:ss"),
+                                name: value.Name,
+                                status: value.Status
+                            })
+                        })
+                    }
+                })
+                $.get("/WCS/CheckHous", function (data) {
+                    v.goods = []
+                    if (data.length > 0) {
+                        layui.each(data, function (index, value) {
+                            v.goods.push({
+                                partName: value.PartName,
+                                partSpec: value.PartSpec,
+                                stockQTY: value.StockQTY,
+                                status: value.Type,
+                                name: value.Name
+                            })
+                        })
+                    }
+                })
+                $.get("/WCS/CheckWcsComm", function (data) {
+                    v.wcsComm = [];
+                    if (data.length > 0) {
+                        layui.each(data, function (index, value) {
+                            var Time = value.time == null ? 0 : value.time.substring(value.time.indexOf("(") + 1, value.time.indexOf(")"))
+                            v.wcsComm.push({
+                                time: parseInt(Time),
+                                name: value.Name,
+                                AID: value.AID,
+                                id: value.id,
+                                statu: value.Statu
+                            })
+                        })
+                    }
 
-                if (data != null) {
-                    v.quantity.q1 = Number(data.myse)
-                    v.quantity.q2 = Number(data.mno)
-                    v.quantity.q3 = Number(data.mxx)
-                    v.gQuantity.q1 = Number(data.yse)
-                    v.gQuantity.q2 = Number(data.no)
-                    v.gQuantity.q3 = Number(data.nos)
-                }
-            })
-            $.get("/WCS/checkMachine", function (data) {
-                if (data.length > 0) {
-                    layui.each(data, function (index, value) {
-                        v.machine.push({
-                            task: 1,
-                            date: util.toDateString(new Date(), 'HH:mm:ss'),
-                            name: value.Name,
-                            status: value.Status
-                        })
-                    })
-                }
-            })
-            $.get("/WCS/CheckHous", function (data) {
-                if (data.length > 0) {
-                    layui.each(data, function (index, value) {
-                        v.goods.push({
-                            partName: value.PartName,
-                            partSpec: value.PartSpec,
-                            stockQTY: value.StockQTY,
-                            status: value.Type,
-                            name: value.Name
-                        })
-                    })
-                }
-            })
+                })
+            }
+            render()
             var v = new Vue({
                 el: "#app",
                 data: {
@@ -90,10 +144,58 @@
                     },
                     o: {
                         overflow: 'auto'
+                    },
+                    date: '',
+                    timelineList: [],
+                    wcsComm: [],
+                    su: "机器检测中...",
+                    no: "无",
+                    thisTask: "",
+                    centerDialogVisible: false,
+                    taskSetData: {
+                        switchValue: false,
+                        removeTask: false,
+                        MonitoringTime: 5,
                     }
                 },
                 methods: {
-                    addClass: function (type, status) {
+                    run(boo, aid) {
+                                if (boo) {
+                                    v.timelineList.find(function (x) {
+                                        if (x.aid == aid) {
+                                            const loading = v.$loading({
+                                                lock: true,
+                                                text: '机器连接中',
+                                                spinner: 'el-icon-loading',
+                                                background: 'rgba(0, 0, 0, 0.7)'
+                                            });
+                                            setTimeout(() => {
+                                                $.get("/WMS/PlcIn", { aid: aid }, function (res) {
+                                                    if (res.msg == "true") {
+                                                        $.get("/WCS/UpTaskStatu", { aid: aid, status: "正在执行" }, function () {
+                                                            render()
+                                                        })
+                                                        loading.close();
+                                                        v.$message({
+                                                            message: "任务" + x.aid + '开始执行',
+                                                            type: 'success'
+                                                        });
+                                                    } else {
+                                                        loading.close();
+                                                        $.get("/WCS/UpTaskStatu", { aid: aid, status: "错误" }, function () {
+                                                            render()
+                                                        })
+                                                        v.no = res.msg
+                                                        v.$message.error("任务" + x.aid + '执行失败,原因:' + res.msg);
+                                                    }
+                                                })
+                                            }, 500);
+                                        }
+                                    })
+                                }
+                            
+                    },
+                    addClass(type, status) {
                         switch (status) {
                             case "可用":
                                 return type + " layui-bg-green";
@@ -109,37 +211,364 @@
                                 break;
                         }
                     },
-                    count: function (type) {
-                        return type == "goods" ? this.quantity.q1 + this.quantity.q2 + this.quantity.q3 :
-                            this.gQuantity.q1 + this.gQuantity.q2 + this.gQuantity.q3;
-                    },
-                    onSubmit:function() {
-                        layer.open({
-                        type: 2,
-                        title: false,
-                        area: ['610px', '750px'],
-                        content: '/WMS/Enter',
-                        success: function (layero, index) {
-                            var type = ".in";
-                            if (v.value == 2) {
-                                type = ".out";
-                            } else if (v.value == 3) {
-                                type = ".tiao";
-                            }
-                            var frame = layer.getChildFrame(type,index);
-                            frame.show()
+                    typeClass(status) {
+                        switch (status) {
+                            case "可用":
+                                return "success";
+                                break;
+                            case "占用":
+                                return "warning";
+                                break;
+                            case "故障":
+                                return "danger";
+                                break;
+                            default:
+                                return "primary";
+                                break;
                         }
-                    });
+                    },
+                    count(type) {
+                        if (type == "goods") {
+                            return this.gQuantity.q1 + this.gQuantity.q2 + this.gQuantity.q3
+                        } else {
+                            return this.quantity.q1 + this.quantity.q2 + this.quantity.q3
+                        }
+                    },
+                    onSubmit() {
+                        layer.open({
+                            type: 2,
+                            title: false,
+                            area: ['610px', '650px'],
+                            content: '/WMS/Enter',
+                            success: function (layero, index) {
+                                var type = ".in";
+                                if (v.value == 2) {
+                                    type = ".out";
+                                } else if (v.value == 3) {
+                                    type = ".tiao";
+                                }
+                                var frame = layer.getChildFrame(type, index);
+                                frame.show()
+                            },
+                            end: function () {
+                                render()
+                            }
+                        });
+                        return false
+                    },
+                    progress(aid) {
+                        $.get("/WCS/CheckPlc", function (data) {
+                            if (!data.ldms) {
+                                v.$message.error("非联动模式，请更改模式");
+                            } else {
+                                if (!data.ddjzc) {
+                                    v.$message.error("堆垛机不正常");
+                                } else { 
+                        var boo = true
+                        var booo = true
+                        var a = this.itemStatus
+                        if (a.bo3 != null) { 
+                            layui.each(a.bo3, function (i,va) {
+                            if (va.aid == aid) {
+                                booo = false;
+                                return false;
+                            }
+                            })
+                        }
+                        if (booo) {
+                            if (a.boo != null) {
+                                v.$message({
+                                    message: '请等待任务完成',
+                                    type: 'warning'
+                                });
+                                boo = false;
+                                return false;
+                            }
+                            if (a.bo1 != null) {
+                                var t = false
+                                layui.each(a.bo1, function (i, va) {
+                                    if (va.aid == aid) {
+                                        t = true;
+                                        return false;
+                                    }
+                                })
+                                if (t) {
+                                    this.$confirm('已确保机器信息正确？, 是否重试?', '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning',
+                                        center: true
+                                    }).then(() => {
+                                        boo = true
+                                        this.$message({
+                                            type: 'success',
+                                            message: '开始重试!'
+                                        });
+                                        this.run(boo, aid)
+                                    }).catch(() => {
+                                        this.$message({
+                                            type: 'info',
+                                            message: '已取消重试'
+                                        });
+                                    });
+                                } else {
+                                    this.run(boo, aid)
+                                }
+                            } else {
+                                this.run(boo, aid)
+                            }
+                        } else {
+                            v.$message({
+                                message: '任务已完成',
+                                type: 'warning'
+                            });
+                                    }
+                                }
+                            }
+                        })
+                    },
+                    Background() {
+                        var i = layer.open({
+                            type: 2,
+                            content: '/Home/Index',
+                            maxmin: true,
+                            end: function () {
+                                render()
+                            }
+                        });
+                        layer.full(i)
+                    },
+                    toDateString(d, f, text) {
+                        return text == undefined ? util.toDateString(d, f) : text + util.toDateString(d, f)
+                    },
+                    colse(aid) {
+                        var boo = true
+                        layui.each(this.timelineList, function (index, x) {
+                            if (x.aid == aid) {
+                                boo = x.statu == "完成" ? false : true
+                            }
+                        })
+                        if (boo) {
+                            this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning',
+                                center: true
+                            }).then(() => {
+                                $.get("/WCS/WcsDelSingle", { id: aid, type: "task" }, function (data) {
+                                    render();
+                                    if (data == "true") {
+                                        v.$message({
+                                            type: 'success',
+                                            message: '删除成功!'
+                                        });
+                                    }
+                                })
+                            }).catch(() => {
+                                this.$message({
+                                    type: 'info',
+                                    message: '已取消删除'
+                                });
+                            });
+                        } else {
+                            $.get("/WCS/WcsDelSingle", { id: aid, type: "task" }, function (data) {
+                                render();
+                                if (data == "true") {
+                                    v.$message({
+                                        type: 'success',
+                                        message: '已移除!'
+                                    });
+                                }
+                            })
+                        }
+                    },
+                    cofp(statu, aid) {
+                        return statu == "正在执行" ? this.progress(aid) : this.colse(aid)
+
+                    },
+                    itemStatu(statu, percentage) {
+                        var text = "";
+                        var icon = "";
+                        var types = "primary";
+                        if (this.itemStatus.boo == null) {
+                            text = statu == "正在执行" ? percentage + "%" : "点击执行"
+                        } else {
+                            text = statu == "正在执行" ? percentage + "%" : "等待执行"
+                        }
+                        switch (statu) {
+                            case "等待执行":
+                                types = "warning"
+                                icon = "el-icon-delete";
+                                break;
+                            case "正在执行":
+                                types = "danger"
+                                icon = "el-icon-loading";
+                                break;
+                            case "完成":
+                                types = "success"
+                                icon = "el-icon-close";
+                                break;
+                            case "错误":
+                                types = "danger"
+                                icon = "el-icon-delete";
+
+                                break;
+                        }
+                        return {
+                            text: text,
+                            icon: icon,
+                            types: types
+                        }
+                    },
+                    taskCancel(b) {
+                        if (b) {
+                            layui.data("taskSet", {
+                                key: 'taskSetData'
+                                , value: v.taskSetData
+                            })
+                        }
+                        v.centerDialogVisible = false
+                        v.taskSetData = layui.data('taskSet').taskSetData
+                     
+                    },
+                    delSuTask() {
+                        var a = this.itemStatus
+                        var New = [];
+                        if (v.taskSetData.removeTask) {
+                            $.ajax({
+                                url: "/WCS/DelSuTask",
+                                async: false
+                            })
+                            this.timelineList.forEach(function (va) {
+                                if (va.statu != "完成") {
+                                    New.push(va)
+                                }
+                            })
+                            this.timelineList = New
+                        }
+                        if (this.timelineList.length == 0) {
+                            render()
+                        }
+                        if (a.bo2.length > 0) { 
+                            if (v.taskSetData.switchValue) {
+                            v.progress(a.bo2[0].aid)
+                            }
+                        }
+                    },
+                    setTime() {
+                        setTimeout(function () {
+                            v.percentage = v.percentage + 1    
+                            $.get("/WCS/CheckPlc", { ip: "192.168.3.30" }, function (data) {
+                                if (data.msg) {
+                                    v.su = "无";
+                                    v.no = "信息读取失败"
+                                    v.$notify.error({
+                                        title: '错误',
+                                        message: '连接信息读取失败',
+                                        duration: 0
+                                    });
+                                    $.get("/WCS/UpTaskStatu", { aid: v.thisTask, status: "错误" })
+                                    v.itemStatus.boo.status = "exception"
+                                    v.itemStatus.boo.statu = "错误"
+
+                                }
+                                if (data.gzbj) {
+                                    $.get("/WCS/Error", { aid: v.thisTask }, function () {
+                                        v.$notify.error({
+                                            title: '错误',
+                                            message: '机器出现故障请及时处理',
+                                            duration: 0
+                                        });
+                                        render()
+                                        v.no = "机器故障"
+                                    })
+                                }
+                                if (v.su == "机器检测中...") { 
+                                    if (data.yxtu) {
+                                    if (v.itemStatus.boo.type == "入库" || v.itemStatus.boo.type == "出库") {
+                                        if (data.zdjcyxtd) {
+                                            $.get("/WCS/PlcSn", { ip: "192.168.3.30" }, function (data) {
+                                                if (data == "true") {
+                                                    v.su = "机器正在运行"
+                                                    v.setTime()
+                                                }
+                                            })
+                                        }
+                                    }
+                                    }
+                                }
+                                if (data.ddrwwc) {
+                                  
+                                    v.$message({
+                                        message: "任务" + v.thisTask + '完成',
+                                        type: 'success'
+                                    });
+                                    $.get("/WCS/SuTask", { aid: v.thisTask })
+                                    v.itemStatus.boo.percentage = 100
+                                    v.itemStatus.boo.status = "success"
+                                    v.itemStatus.boo.statu = "完成"
+                                    setTimeout(function () { 
+                                        v.delSuTask()
+                                    },1000)
+                                }
+                                if (data.xzyxz) {
+                                    v.su = "行走运行中"
+                                    v.setTime()
+                                }
+                                if (data.tsyxz) {
+                                    v.su = "提升运行中"
+                                    v.setTime()
+                                }
+                                if (data.xpyxz) {
+                                    v.su = "吸盘运行中"
+                                    v.setTime()
+                                }
+                                if (data.xxyxz) {
+                                    v.su = "下叉运行中"
+                                    v.setTime()
+                                }
+                                if (data.sxyxz) {
+                                    v.su = "上叉运行中"
+                                    v.setTime()
+                                }
+                                if (data.zdjcz) {
+                                    v.su = "整垛进出中"
+                                    v.setTime()
+                                }
+                                if (data.dzlqz) {
+                                    v.su = "单张量取中"
+                                    v.setTime()
+                                }
+                                if (data.zhclz) {
+                                    v.su = "载货出料中"
+                                    v.setTime()
+                                }
+                                if (data.zhqlz) {
+                                    v.su = "载货取料中"
+                                    v.setTime()
+                                }
+                                if (data.kndbz) {
+                                    v.su = "库内叠板中"
+                                    v.setTime()
+                                }
+                             
+
+                            })
+                        }, v.MoniTime)
+
+                    },
+                    start() {
+
                     }
                 },
                 computed: {
-                    mCount: function () {
+                    mCount() {
                         return this.machine.length > 3 ? true : false
                     },
-                    outDate: function () {
-                        return 0;
+                    gCount() {
+                        return this.goods.length > 3 ? true : false
                     },
-                    machineStatus: function () {
+                    machineStatus() {
                         return [{
                             status: '可用',
                             name: '可用',
@@ -158,14 +587,14 @@
                             quantitys: this.count("")
                         }]
                     },
-                    goodsStatus: function () {
+                    goodsStatus() {
                         return [{
                             status: '可用',
                             name: '可用',
                             quantitys: this.gQuantity.q1
                         }, {
                             status: '占用',
-                            name: '未满',
+                            name: '占用',
                             quantitys: this.gQuantity.q2
                         }, {
                             status: '故障',
@@ -176,115 +605,153 @@
                             name: '总数',
                             quantitys: this.count("goods")
                         }]
+                    },
+                    timelineStatu() {
+                        return this.timelineList.length > 0 ? true : false
+                    },
+                    itemStatus() {
+                        var boo = null;
+                        var bo1 = [];
+                        var bo2 = [];
+                        var bo3 = [];
+                        layui.each(this.timelineList, function (index, x) {
+                            if (x.statu == "正在执行") {
+                                boo = x
+                            } else if (x.statu == "错误") {
+                                bo1.push(x)
+                            } else if (x.statu == "完成") {
+                                bo3.push(x)
+                            } else {
+                                bo2.push(x)
+                            }
+                        })
+                        return {
+                            boo: boo,
+                            bo1: bo1,
+                            bo2: bo2,
+                            bo3: bo3
+                        }
+                    },
+                    MoniTime() {
+                        return this.taskSetData.MonitoringTime * 1000
+                    }
+
+
+                },
+                watch: {
+                    thisTask() {
+                        if (v.itemStatus.boo != null) {
+                            this.setTime()
+                        }
+                    },
+                    taskSetData() {
+                        v.delSuTask()
                     }
                 },
-                watch: {},
             })
+            window.vv = v
+            setInterval(() => {
+                v.date = util.toDateString(new Date())
+            }, 1000);
+            if (layui.data('taskSet').taskSetData != undefined) { 
+                v.taskSetData = layui.data('taskSet').taskSetData
+            }
         })
     </script>
-    <style>
-        .layui-col-md6 {
-            border: 1px solid red;
-            height: 300px;
-        }
-
-        li button {
-            margin-top: 25px;
-        }
-
-        .layui-badge-rim {
-            margin-left: 5px;
-        }
-
-        .machine {
-            height: 300px;
-            overflow: hidden;
-        }
-
-        #scroll::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-
-        #scroll::-webkit-scrollbar-track {
-            background: #f6f6f6;
-            border-radius: 2px;
-        }
-
-        #scroll::-webkit-scrollbar-thumb {
-            background: #aaa;
-            border-radius: 2px;
-        }
-
-            #scroll::-webkit-scrollbar-thumb:hover {
-                background: #747474;
-            }
-
-        #scroll::-webkit-scrollbar-corner {
-            background: #f6f6f6;
-        }
-
-        img {
-            width: 20px;
-            height: 20px
-        }
-
-        p {
-            margin-top: 20px;
-        }
-        .el-carousel__item h3 {
-            color: #475669;
-            font-size: 14px;
-            opacity: 0.75;
-            line-height: 150px;
-            margin: 0;
-        }
-
-        .el-carousel__item:nth-child(2n) {
-            background-color: #99a9bf;
-        }
-
-        .el-carousel__item:nth-child(2n+1) {
-            background-color: #d3dce6;
-        }
-    </style>
+    <link href="~/css/ht.css" rel="stylesheet" />
 </head>
 <body>
     <div id="app">
+        <el-menu class="el-menu-demo" mode="horizontal">
+            <el-menu-item index="1" @@click="Background">后台管理</el-menu-item>
+            <el-menu-item index="2" @@click="centerDialogVisible=true">基本设置</el-menu-item>
+        </el-menu>
         <div class="layui-row">
-            <div class="layui-col-md6">
-
+            <div class="layui-col-md4"></div>
+            <div class="layui-col-md4"></div>
+            <div class="layui-col-md4" id="scroll"
+                 style="height:600px;overflow:auto;">
+                <el-tabs tab-position="top">
+                    <el-tab-pane>
+                        <span slot="label"><i class="el-icon-date"></i>任务队列</span>
+                        <div class="block" style="margin-left:5px">
+                            <el-timeline>
+                                <el-timeline-item v-if="timelineStatu" v-for="(item,index) in timelineList" placement="top"
+                                                  :key="index"
+                                                  :timestamp="toDateString(item.date,'yyyy-MM-dd','创建日期：')"
+                                                  size="large"
+                                                  :type="itemStatu(item.statu).types">
+                                    <el-card>
+                                        <i :class="itemStatu(item.statu).icon" style=" float:right;cursor:pointer" @@click="cofp(item.statu,item.aid)"></i>
+                                        
+                                        <div style="display:inline-block">
+                                            <h3>创建任务：{{item.aid}}</h3>
+                                            <p>创建类型：{{item.type}}</p>
+                                            <p>任务状态：{{item.statu}}</p>
+                                            <p>创建于：{{toDateString(item.date,'HH:mm:ss')}}</p>
+                                        </div>
+                                        <div style="display:inline-block;margin-left:150px">
+                                            <p @@click="progress(item.aid)" style="cursor:pointer">
+                                                <el-progress type="circle"
+                                                             :percentage="item.percentage"
+                                                             :status="item.status">{{itemStatu(item.statu,item.percentage).text}}</el-progress>
+                                            </p>
+                                        </div>
+                                    </el-card>
+                                </el-timeline-item>
+                                <el-timeline-item v-if="!timelineStatu" :timestamp="date" size="large" placement="top" type="danger">
+                                    <el-card>
+                                        <h4>任务还没有创建</h4>
+                                    </el-card>
+                                </el-timeline-item>
+                            </el-timeline>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="执行状况" v-if="wcsComm.length>0">
+                        <div class="block" style="margin-left:5px">
+                            <el-timeline>
+                                <el-timeline-item v-for="(item,index) in wcsComm" placement="top"
+                                                  :key="index"
+                                                  :timestamp="toDateString(item.time,'yyyy-MM-dd','开始日期：')"
+                                                  size="large">
+                                    <el-card>
+                                        <div>
+                                            <h1>执行机器：{{item.name}}</h1>
+                                            <p>运行信息：{{su}}</p>
+                                            <p>故障信息：{{no}}</p>
+                                        </div>
+                                    </el-card>
+                                </el-timeline-item>
+                            </el-timeline>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
             </div>
-            <div class="layui-col-md6"></div>
-        </div>
-        <div class="layui-row">
-            <div class="layui-col-md6"></div>
-            <div class="layui-col-md6"></div>
         </div>
         <div class="layui-row">
             <div class="layui-col-md1 status">
-                <fieldset class="layui-elem-field">
-                    <legend>机器状态</legend>
-                    <div class="layui-field-box">
-                        <ul style="display:inline-block">
-                            <li v-for="item in machineStatus">
-                                <button :class="addClass('layui-btn',item.status)">{{item.name}}<span class="layui-badge-rim">{{item.quantitys}}</span></button>
-                            </li>
-                        </ul>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>机器状态</span>
                     </div>
-                </fieldset>
+                    <div v-for="item in machineStatus" class="text item">
+                        <el-badge :value="item.quantitys" class="item">
+                            <el-button :type="typeClass(item.status)">{{item.name}}</el-button>
+                        </el-badge>
+                    </div>
+                </el-card>
             </div>
-            <div class="layui-col-md1 status">
-                <fieldset class="layui-elem-field">
-                    <legend>货位状态</legend>
-                    <div class="layui-field-box">
-                        <ul style="display:inline-block">
-                            <li v-for="item in goodsStatus">
-                                <button :class="addClass('layui-btn',item.status)">{{item.name}}<span class="layui-badge-rim">{{item.quantitys}}</span></button>
-                            </li>
-                        </ul>
+            <div class="layui-col-md1">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>货位状态</span>
                     </div>
-                </fieldset>
+                    <div v-for="item in goodsStatus" class="text item">
+                        <el-badge :value="item.quantitys" class="item">
+                            <el-button :type="typeClass(item.status)">{{item.name}}</el-button>
+                        </el-badge>
+                    </div>
+                </el-card>
             </div>
             <div class="layui-col-md4 machine" id="scroll" :style=[mCount?o:'']>
                 <fieldset class="layui-elem-field">
@@ -295,14 +762,14 @@
                             <div class="layui-card-body">
                                 <p><img src="/img/ji.svg" />机器状态：<span :class="addClass('layui-badge-dot',item.status)"></span></p>
                                 <p><img src="/img/ji.svg" />当前任务：{{item.task}}</p>
-                                <p><img src="/img/ji.svg" />开始时间：{{item.date}}</p>
-                                <p><img src="/img/ji.svg" />运行时长：{{outDate}}</p>
+                                <p><img src="/img/ji.svg" />开始时间：{{item.time}}</p>
+                                <p><img src="/img/ji.svg" />当前时间：{{toDateString(date,'HH:mm:ss')}}</p>
                             </div>
                         </div>
                     </div>
                 </fieldset>
             </div>
-            <div class="layui-col-md4 machine" id="scroll" :style=[mCount?o:'']>
+            <div class="layui-col-md4 machine" id="scroll" :style=[gCount?o:'']>
                 <fieldset class="layui-elem-field">
                     <legend>货位详情</legend>
                     <div class="layui-field-box">
@@ -340,15 +807,50 @@
                         </el-form>
                     </div>
                 </el-card>
-                <div class="block">
-                    <el-carousel trigger="click" height="75px">
-                        <el-carousel-item v-for="item in 4" :key="item">
-                          
-                        </el-carousel-item>
-                    </el-carousel>
-                </div>
             </div>
         </div>
+        <el-dialog title="基本设置"
+                   :visible.sync="centerDialogVisible"
+                   width="30%"
+                   @@closed="taskCancel"
+                   center>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <div class="grid-content bg-purple">
+                        <el-switch style="display: block"
+                                   v-model="taskSetData.switchValue"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949"
+                                   active-text="开启自动执行"
+                                   inactive-text="关闭自动执行">
+                        </el-switch>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="grid-content bg-purple">
+                        <el-switch style="display: block"
+                                   v-model="taskSetData.removeTask"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949"
+                                   active-text="清理完成任务"
+                                   inactive-text="不清理任务">
+                        </el-switch>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="10"><div class="grid-content bg-purple"><h3>信息读取时间（秒）：</h3></div></el-col>
+                <el-col :span="8">
+                    <div class="grid-content bg-purple">
+                        <el-input-number v-model="taskSetData.MonitoringTime" :precision="2" :min="1" :step="0.1" :max="10"></el-input-number>
+                    </div>
+                </el-col>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @@click="centerDialogVisible = false">取消设置</el-button>
+                <el-button type="primary" @@click="taskCancel(true)">设置默认</el-button>
+            </span>
+        </el-dialog>
     </div>
 </body>
 </html>

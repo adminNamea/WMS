@@ -27,5 +27,12 @@ namespace WMS.Models
         public string pname { get; set; }
         public string gname { get; set; }
         public string speed { get; set; }
+        public string mo { get; set; }
+        public Nullable<int> z1 { get; set; }
+        public Nullable<int> y1 { get; set; }
+        public Nullable<int> qz { get; set; }
+        public Nullable<int> fz { get; set; }
+        public Nullable<System.DateTime> time { get; set; }
+        public int id { get; set; }
     }
 }

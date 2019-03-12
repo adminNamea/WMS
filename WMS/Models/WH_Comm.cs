@@ -27,5 +27,6 @@ namespace WMS.Models
         public string Status { get; set; }
         public Nullable<int> FromID { get; set; }
         public Nullable<int> ToID { get; set; }
+        public Nullable<System.DateTime> CreatedTime { get; set; }
     }
 }

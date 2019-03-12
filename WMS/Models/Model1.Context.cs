@@ -48,6 +48,7 @@ namespace WMS.Models
         public virtual DbSet<WH_Material> WH_Material { get; set; }
         public virtual DbSet<WH_MaterialList> WH_MaterialList { get; set; }
         public virtual DbSet<WH_StorageLocation> WH_StorageLocation { get; set; }
+        public virtual DbSet<PickUpOne> PickUpOne { get; set; }
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
     
@@ -61,7 +62,7 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<StrToTable_Result>("[WMSEntities].[StrToTable](@str)", strParameter);
         }
     
-        public virtual int AddStorage(string name, string iD, string description, string createdBy, string type, string whid, string arid, string storageLocationID, string size, string tempPlate, string z, string x, string y, string category1, string partSpec, string partMaterial, string qTYperPallet, string units)
+        public virtual int AddStorage(string name, string iD, string description, string createdBy, string type, string whid, string arid, string storageLocationID, string size, string tempPlate, string z, string x, string y, string category1, string partSpec, string partMaterial, string qTYperPallet, string units, string height)
         {
             var nameParameter = name != null ?
                 new ObjectParameter("name", name) :
@@ -135,7 +136,11 @@ namespace WMS.Models
                 new ObjectParameter("Units", units) :
                 new ObjectParameter("Units", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddStorage", nameParameter, iDParameter, descriptionParameter, createdByParameter, typeParameter, whidParameter, aridParameter, storageLocationIDParameter, sizeParameter, tempPlateParameter, zParameter, xParameter, yParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter);
+            var heightParameter = height != null ?
+                new ObjectParameter("height", height) :
+                new ObjectParameter("height", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddStorage", nameParameter, iDParameter, descriptionParameter, createdByParameter, typeParameter, whidParameter, aridParameter, storageLocationIDParameter, sizeParameter, tempPlateParameter, zParameter, xParameter, yParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter, heightParameter);
         }
     
         public virtual int AddUser(string userName, string employeeName, string pWD, string tel, string type, string id)
@@ -165,6 +170,11 @@ namespace WMS.Models
                 new ObjectParameter("id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddUser", userNameParameter, employeeNameParameter, pWDParameter, telParameter, typeParameter, idParameter);
+        }
+    
+        public virtual ObjectResult<CeckHCount_Result> CeckHCount()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CeckHCount_Result>("CeckHCount");
         }
     
         public virtual ObjectResult<checkComm_Result> checkComm(string name)
@@ -199,6 +209,11 @@ namespace WMS.Models
                 new ObjectParameter("type", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkHuo_Result>("checkHuo", storageLocationIDParameter, wHAreaIDParameter, wHIDParameter, tempPlateParameter, typeParameter);
+        }
+    
+        public virtual ObjectResult<CheckHuos_Result> CheckHuos()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHuos_Result>("CheckHuos");
         }
     
         public virtual ObjectResult<checkKq_Result> checkKq(string wHAreaID, string wHID)
@@ -306,6 +321,15 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkwu_Result>("checkwu", categoryParameter, iDParameter);
         }
     
+        public virtual int CommSuccess(string aid)
+        {
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CommSuccess", aidParameter);
+        }
+    
         public virtual int DelAll(string type, string id)
         {
             var typeParameter = type != null ?
@@ -319,7 +343,24 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DelAll", typeParameter, idParameter);
         }
     
-        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string partName, string partSpec, string partMaterial, string inQTY, string placeID, string type, string inType, string qTYperPallet, string to)
+        public virtual int HowToPick(string aid, string height, Nullable<int> inqty)
+        {
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            var heightParameter = height != null ?
+                new ObjectParameter("height", height) :
+                new ObjectParameter("height", typeof(string));
+    
+            var inqtyParameter = inqty.HasValue ?
+                new ObjectParameter("inqty", inqty) :
+                new ObjectParameter("inqty", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("HowToPick", aidParameter, heightParameter, inqtyParameter);
+        }
+    
+        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string partName, string partSpec, string partMaterial, string inQTY, string placeID, string type, string inType, string qTYperPallet, string to, string goodsAllocationID)
         {
             var partNameParameter = partName != null ?
                 new ObjectParameter("PartName", partName) :
@@ -357,12 +398,87 @@ namespace WMS.Models
                 new ObjectParameter("To", to) :
                 new ObjectParameter("To", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter, qTYperPalletParameter, toParameter);
+            var goodsAllocationIDParameter = goodsAllocationID != null ?
+                new ObjectParameter("GoodsAllocationID", goodsAllocationID) :
+                new ObjectParameter("GoodsAllocationID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter, qTYperPalletParameter, toParameter, goodsAllocationIDParameter);
         }
     
-        public virtual ObjectResult<PlcIn_Result> PlcIn()
+        public virtual int PickMany(Nullable<int> iD, Nullable<int> qTY, Nullable<int> plateThickness, Nullable<int> cargoHeight, Nullable<int> cargoPlateQTY, Nullable<int> loadingTableHeight, Nullable<int> loadingTablePlateQTY, Nullable<int> maxHeightDifference, Nullable<int> minHeightDifference)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PlcIn_Result>("PlcIn");
+            var iDParameter = iD.HasValue ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(int));
+    
+            var qTYParameter = qTY.HasValue ?
+                new ObjectParameter("QTY", qTY) :
+                new ObjectParameter("QTY", typeof(int));
+    
+            var plateThicknessParameter = plateThickness.HasValue ?
+                new ObjectParameter("PlateThickness", plateThickness) :
+                new ObjectParameter("PlateThickness", typeof(int));
+    
+            var cargoHeightParameter = cargoHeight.HasValue ?
+                new ObjectParameter("CargoHeight", cargoHeight) :
+                new ObjectParameter("CargoHeight", typeof(int));
+    
+            var cargoPlateQTYParameter = cargoPlateQTY.HasValue ?
+                new ObjectParameter("CargoPlateQTY", cargoPlateQTY) :
+                new ObjectParameter("CargoPlateQTY", typeof(int));
+    
+            var loadingTableHeightParameter = loadingTableHeight.HasValue ?
+                new ObjectParameter("LoadingTableHeight", loadingTableHeight) :
+                new ObjectParameter("LoadingTableHeight", typeof(int));
+    
+            var loadingTablePlateQTYParameter = loadingTablePlateQTY.HasValue ?
+                new ObjectParameter("LoadingTablePlateQTY", loadingTablePlateQTY) :
+                new ObjectParameter("LoadingTablePlateQTY", typeof(int));
+    
+            var maxHeightDifferenceParameter = maxHeightDifference.HasValue ?
+                new ObjectParameter("MaxHeightDifference", maxHeightDifference) :
+                new ObjectParameter("MaxHeightDifference", typeof(int));
+    
+            var minHeightDifferenceParameter = minHeightDifference.HasValue ?
+                new ObjectParameter("MinHeightDifference", minHeightDifference) :
+                new ObjectParameter("MinHeightDifference", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PickMany", iDParameter, qTYParameter, plateThicknessParameter, cargoHeightParameter, cargoPlateQTYParameter, loadingTableHeightParameter, loadingTablePlateQTYParameter, maxHeightDifferenceParameter, minHeightDifferenceParameter);
+        }
+    
+        public virtual int PickOne(string aid, string inqty, string height)
+        {
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            var inqtyParameter = inqty != null ?
+                new ObjectParameter("inqty", inqty) :
+                new ObjectParameter("inqty", typeof(string));
+    
+            var heightParameter = height != null ?
+                new ObjectParameter("height", height) :
+                new ObjectParameter("height", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PickOne", aidParameter, inqtyParameter, heightParameter);
+        }
+    
+        public virtual int PlcIn(string aid)
+        {
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PlcIn", aidParameter);
+        }
+    
+        public virtual ObjectResult<Strategy_Result> Strategy(string aid)
+        {
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Strategy_Result>("Strategy", aidParameter);
         }
     
         public virtual int SystemSe(string x, string y, string z)
@@ -650,14 +766,23 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter, sortParameter, iPParameter);
         }
     
-        public virtual ObjectResult<CheckHuos_Result> CheckHuos()
+        public virtual int delSuTask()
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHuos_Result>("CheckHuos");
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("delSuTask");
         }
     
-        public virtual ObjectResult<CeckHCount_Result> CeckHCount()
+        public virtual int Error(string aid)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CeckHCount_Result>("CeckHCount");
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Error", aidParameter);
+        }
+    
+        public virtual ObjectResult<OutHuo_Result> OutHuo()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<OutHuo_Result>("OutHuo");
         }
     }
 }

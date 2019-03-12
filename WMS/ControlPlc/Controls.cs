@@ -19,7 +19,7 @@ namespace WMS.ControlPlc
                 int connectionresult = client.ConnectTo(IP, 0, 1);
                 if (connectionresult != 0)
                 {
-                    return client;
+                    return null;
                 }
                 var buffer = new byte[array];
                 client.DBRead(1, 0, buffer.Length, buffer);
@@ -29,240 +29,220 @@ namespace WMS.ControlPlc
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return client;
+                return null;
             }
         }
-       
 
         /// <summary>
-        ///  整垛进出
+        ///  联动启动按钮
         /// </summary>
-        /// <param name="IP">地址</param>
-        /// <param name="sn">调度使能</param>
-        /// <param name="ms">调度模式</param>
-        /// <param name="array">数组长度</param>
-        /// <param name="qx">取料点X坐标</param>
-        /// <param name="qy">取料点Y坐标</param>
-        /// <param name="qz">取料点Z坐标</param>
-        /// <param name="fx">放料点X坐标</param>
-        /// <param name="fy">放料点Y坐标</param>
-        /// <param name="qz">放料点Z坐标</param>
-        /// <param name="loadHeight">载货台，库内板高度</param>
-        /// <param name="note">备用</param>
-        /// <param name="ControlArray">控制数组</param>
-        /// <returns>True或False</returns>
-        public static bool WholePileInOut(string IP, int qx, int qy, int qz, int fx, int fy,int fz, byte ms, bool sn)
+        ///  <param name="ldqd">联动启动</param>
+        public static string  WholePileInOut(string IP, Boolean ldqd)
         {
-          
-                var client = Operation(IP, 25);
-                
-                if (client != null)
-                {
-                    var writeBuffer = new byte[26];                                  
-                    S7.SetDIntAt(writeBuffer, 0, qx);
-                    S7.SetDIntAt(writeBuffer, 4, qy);
-                    S7.SetDIntAt(writeBuffer, 8, qz);
-                    S7.SetDIntAt(writeBuffer, 12, fx);
-                    S7.SetDIntAt(writeBuffer, 16, fy);
-                    S7.SetDIntAt(writeBuffer, 20, fz);
-                    S7.SetByteAt(writeBuffer,24,ms);
-                    S7.SetBitAt(ref writeBuffer, 25, 1, sn);
-                    int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
-                    if (writeResult == 0)
-                    {
-                        //using(WMSEntities wms = new WMSEntities())
-                        //{
-                        //      Models.ControlPlc cp = new Models.ControlPlc
-                        //      {
-
-                        //          TakeMaterialX = qx,
-                        //          TakeMaterialY = qy,
-                        //          PutMaterialX = fx,
-                        //          PutMaterialY = fy,
-
-                        //      };
-                        //      wms.ControlPlc.Add(cp);
-                        //      wms.SaveChanges();
-                        //}
-                        client.Disconnect();
-                        return true;
-                      
-                    }
-                   
-                }
-            return false;
-        }
-        /// <summary>
-        ///  单张量取
-        /// </summary>
-        /// <param name="IP">地址</param>
-        /// <param name="qx">取料点X坐标</param>
-        /// <param name="qy">取料点Y坐标</param>
-        /// <param name="qy1">取料点Y1坐标</param>
-        /// <param name="qz1">取料点Z1坐标</param>
-        /// <param name="qzs">取张数</param>
-        /// <param name="bh">板厚</param>
-        /// <param name="sn">调度使能</param>
-        /// <param name="ms">调度模式</param>
-        public static bool SheetMeasuring(string IP, int qx, int qy, int qy1, int qz1, int qzs, int bh, bool sn, byte ms)
-        {
-                var client = Operation(IP, 0);          
-                var writeBuffer = new byte[0];
-                //S7.SetDIntAt(writeBuffer, 0, qx);
-                //S7.SetDIntAt(writeBuffer, 4, qy);
-                //S7.SetDIntAt(writeBuffer, 8, qz);
-                //S7.SetDIntAt(writeBuffer, 12, fx);
-                //S7.SetDIntAt(writeBuffer, 16, fy);
-                //S7.SetDIntAt(writeBuffer, 20, fz);
-                //S7.SetByteAt(writeBuffer, 24, ms);
-                // S7.SetBitAt(ref writeBuffer, 25, 1, sn);
+            var client = Operation(IP, 48);
+            if (client != null)
+            {
+                var writeBuffer = new byte[48];
+                S7.SetBitAt(ref writeBuffer, 44, 0, ldqd);
                 int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
                 if (writeResult == 0)
                 {
                     client.Disconnect();
-                    return true;
-                }               
-            
-            return false;
+                    return "true";
+                }
+                else
+                {
+                    return "机器连接失败,请联系技术人员";
+                }
+            }
+            return "机器连接失败,请联系技术人员";
         }
 
         /// <summary>
-        ///  载货出料
+        ///  写进出
         /// </summary>
         /// <param name="IP">地址</param>
-        /// <param name="cx">存料X坐标</param>
-        /// <param name="cy">存料Y坐标</param>
-        /// <param name="cz">存料Z坐标</param>   
         /// <param name="sn">调度使能</param>
+        /// <param name="hydqd">回原点启动</param>
+        /// <param name="swjjt">上位机急停</param>
+        /// <param name="swjtz">上位机停止</param>
+        /// <param name="swgzfw">上位故障复位</param>
         /// <param name="ms">调度模式</param>
-        public static bool CargoDischarge(string IP,int cx,int cy,int cz, bool sn, byte ms)
+        /// <param name="qx">取料点X坐标</param>
+        /// <param name="qy">取料点Y坐标</param>
+        /// <param name="qz">取料点Z坐标</param>
+        /// <param name="cx">存货点X坐标</param>
+        /// <param name="cy">存货点Y坐标</param>
+        /// <param name="cz">存货点Z坐标</param>
+        /// <param name="cqbs">存取板数</param>
+        /// <param name="xpjzb">吸盘架坐标</param>
+        /// <param name="sxzb">升叉坐标</param>     
+        /// <param name="ccbh">存取板厚</param>  
+        public static string WholePileInOut(string IP,bool sn,bool hydqd,bool swjjt,bool swjtz,bool swgzfw,byte ms,
+            int qx,int qy,int qz,int cx,int cy,int cz,int cqbs,int xpjzb,int sxzb)
         {
-            var client = Operation(IP, 0);
-            var writeBuffer = new byte[0];
-            //S7.SetDIntAt(writeBuffer, 0, qx);
-            //S7.SetDIntAt(writeBuffer, 4, qy);
-            //S7.SetDIntAt(writeBuffer, 8, qz);
-            //S7.SetDIntAt(writeBuffer, 12, fx);
-            //S7.SetDIntAt(writeBuffer, 16, fy);
-            //S7.SetDIntAt(writeBuffer, 20, fz);
-            //S7.SetByteAt(writeBuffer, 24, ms);
-            // S7.SetBitAt(ref writeBuffer, 25, 1, sn);
-            int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
-            if (writeResult == 0)
-            {
-                client.Disconnect();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        ///  载货取料
-        /// </summary>
-        /// <param name="IP">地址</param>
-        /// <param name="qx">取料X坐标</param>
-        /// <param name="qy">取料Y坐标</param>
-        /// <param name="qz">取料Z坐标</param>   
-        /// <param name="sn">调度使能</param>
-        /// <param name="ms">调度模式</param>
-        public static bool LoadingMaterial(string IP,int qx,int qy,int qz,bool sn,byte ms)
-        {
-            var client = Operation(IP, 0);
-            var writeBuffer = new byte[0];
-            //S7.SetDIntAt(writeBuffer, 0, qx);
-            //S7.SetDIntAt(writeBuffer, 4, qy);
-            //S7.SetDIntAt(writeBuffer, 8, qz);
-            //S7.SetDIntAt(writeBuffer, 12, fx);
-            //S7.SetDIntAt(writeBuffer, 16, fy);
-            //S7.SetDIntAt(writeBuffer, 20, fz);
-            //S7.SetByteAt(writeBuffer, 24, ms);
-            // S7.SetBitAt(ref writeBuffer, 25, 1, sn);
-            int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
-            if (writeResult == 0)
-            {
-                client.Disconnect();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        ///  库内量存
-        /// </summary>
-        /// <param name="IP">地址</param>
-        /// <param name="qx">存料X坐标</param>
-        /// <param name="qy">存料Y坐标</param>
-        /// <param name="qy1">存料Y1坐标</param>   
-        /// <param name="qz1">存料Z1坐标</param> 
-        /// <param name="czs">存张数</param> 
-        /// <param name="bh">板厚</param> 
-        /// <param name="sn">调度使能</param>
-        /// <param name="ms">调度模式</param>
-        public static bool StorageInStorage(string IP,int qx,int qy,int qy1,int qz1,int czs,int bh, bool sn, byte ms)
-        {
-            var client = Operation(IP, 0);
-            var writeBuffer = new byte[0];
-            //S7.SetDIntAt(writeBuffer, 0, qx);
-            //S7.SetDIntAt(writeBuffer, 4, qy);
-            //S7.SetDIntAt(writeBuffer, 8, qz);
-            //S7.SetDIntAt(writeBuffer, 12, fx);
-            //S7.SetDIntAt(writeBuffer, 16, fy);
-            //S7.SetDIntAt(writeBuffer, 20, fz);
-            //S7.SetByteAt(writeBuffer, 24, ms);
-            // S7.SetBitAt(ref writeBuffer, 25, 1, sn);
-            int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
-            if (writeResult == 0)
-            {
-                client.Disconnect();
-                return true;
-            }
-            return false;
-        }
-
-        public static bool WholePileInStop(string IP, int qx, int qy, int qz, int fx, int fy, int fz, byte ms, bool sn)
-        {
-            var client = Operation(IP, 26);
-            if (client != null)
-            {
-                var writeBuffer = new byte[26];
-                S7.SetDIntAt(writeBuffer, 0, qx);
-                S7.SetDIntAt(writeBuffer, 4, qy);
-                S7.SetDIntAt(writeBuffer, 8, qz);
-                S7.SetDIntAt(writeBuffer, 12, fx);
-                S7.SetDIntAt(writeBuffer, 16, fy);
-                S7.SetDIntAt(writeBuffer, 20, fz);
-                S7.SetByteAt(writeBuffer, 24, ms);
-                S7.SetBitAt(ref writeBuffer, 25, 1, sn);
-                int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);                
-            }
-            return false;
+               var client = Operation(IP, 38);
+                if (client != null)
+                {
+                try {
+                    var writeBuffer = new byte[38];
+                    S7.SetBitAt(ref writeBuffer, 0, 1, hydqd);
+                    S7.SetBitAt(ref writeBuffer, 0, 2, swjjt);
+                    S7.SetBitAt(ref writeBuffer, 0, 3, swjtz);
+                    S7.SetBitAt(ref writeBuffer, 0, 4, swgzfw);
+                    S7.SetByteAt(writeBuffer, 1, ms);
+                    S7.SetDIntAt(writeBuffer, 2, qx);
+                    S7.SetDIntAt(writeBuffer, 6, qy);
+                    S7.SetDIntAt(writeBuffer, 10, qz);
+                    S7.SetDIntAt(writeBuffer, 14, cx);
+                    S7.SetDIntAt(writeBuffer, 18, cy);
+                    S7.SetDIntAt(writeBuffer, 22, cz);
+                    S7.SetDIntAt(writeBuffer, 26, cqbs);
+                    S7.SetDIntAt(writeBuffer, 30, xpjzb);
+                    S7.SetDIntAt(writeBuffer, 34, sxzb);
+                    S7.SetBitAt(ref writeBuffer, 0, 0, sn);
+                    int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
+                    if (writeResult == 0)
+                    {
+                        
+                        client.Disconnect();
+                        return "true";
+                    }
+                } catch{
+                    return "机器连接失败,请联系技术人员";
+                }
+                }
+            return "机器连接失败,请联系技术人员";
         }
 
         ///<summary>
-        /// 读取全部
+        /// 读取行驶状态
         /// </summary>
         /// <param name="IP">地址</param>
-        
-        public static Dictionary<string,int> CheckPLCDate(string IP)
+        /// <param name="ldms">联动模式</param>
+        /// <param name="sdms">手动模式</param>
+        /// <param name="ddjzc">堆垛机正常</param>
+        /// <param name="gzbj">故障报警</param>
+        /// <param name="jtz">急停中</param>
+        /// <param name="xzyxz">行走运行中</param>
+        /// <param name="tsyxz">提升运行中</param>
+        /// <param name="xpyxz">吸盘运行中</param>
+        /// <param name="xxyxz">下叉运行中</param>
+        /// <param name="sxyxz">上叉运行中</param>
+        /// <param name="zdjcz">整垛进出中（1）</param>
+        /// <param name="dzlqz">单张量取中（1）</param>
+        /// <param name="zhclz">载货出料中（1）</param>
+        /// <param name="zhqlz">载货取料中（1）</param>
+        /// <param name="kndbz">库内叠板中（1）</param>
+        /// <param name="ddrwwc">调度任务完成（1）</param>
+        /// <param name="ldqd">联动启动</param>
+        /// <param name="rkyxc">入库允许存</param>
+        /// <param name="rkyxq">入库允许取</param>
+        /// <param name="yxtd">允许调度</param>
+        /// <param name="zdjcyxtd">整垛进出允许调度</param>
+        /// <param name="dzlqyxtd">单张量取允许调度</param>
+        /// <param name="zhclyxtd">载货出料允许调度</param>
+        /// <param name="zhqlyxtd">载货取料允许调度</param>
+        /// <param name="kndbyxtd">库内叠板允许调度</param>
+        /// <param name="hydyx">回原点允许</param>
+
+        public static Dictionary<string, Boolean> CheckPLCDate(string IP)
         {
-            Dictionary<string, int> ds=new Dictionary<string, int>();
-            var client = Operation(IP, 26);
-            var writeBuffer = new byte[26];
-            int cqx=S7.GetDIntAt(writeBuffer, 0);
-            int cqy = S7.GetDIntAt(writeBuffer, 4);
-            int cqz = S7.GetDIntAt(writeBuffer, 8);
-            int cfx = S7.GetDIntAt(writeBuffer, 12);
-            int cfy = S7.GetDIntAt(writeBuffer, 16);
-            int cfz = S7.GetDIntAt(writeBuffer, 20);
-            ds.Add("int", cqx);
-            ds.Add("int", cqy);
-            ds.Add("int", cqz);
-            ds.Add("int", cfx);
-            ds.Add("int", cfy);
-            ds.Add("int", cqz);
-            return ds;
+            Dictionary<string, Boolean> ds=new Dictionary<string, Boolean>();
+            
+            
+                try
+                {
+                var client = new S7Client();
+                int connectionresult = client.ConnectTo("192.168.3.30", 0, 1);             
+                var buffer = new byte[46];
+                int readResult = client.DBRead(1, 0, buffer.Length, buffer);
+                Boolean ldms = S7.GetBitAt(buffer, 38, 0);
+                Boolean sdms = S7.GetBitAt(buffer, 38, 1);
+                Boolean ddjzc = S7.GetBitAt(buffer, 38, 2);
+                Boolean gzbj = S7.GetBitAt(buffer, 38, 3);
+                Boolean jtz = S7.GetBitAt(buffer, 38, 4);
+                Boolean xzyxz = S7.GetBitAt(buffer, 38, 5);
+                Boolean tsyxz = S7.GetBitAt(buffer, 38, 6);
+                Boolean xpyxz = S7.GetBitAt(buffer, 38, 7);
+                Boolean xxyxz = S7.GetBitAt(buffer, 39, 0);
+                Boolean sxyxz = S7.GetBitAt(buffer, 39, 1);
+                Boolean zdjcz = S7.GetBitAt(buffer, 39, 2);
+                Boolean dzlqz = S7.GetBitAt(buffer, 39, 3);
+                Boolean zhclz = S7.GetBitAt(buffer, 39, 4);
+                Boolean zhqlz = S7.GetBitAt(buffer, 39, 5);
+                Boolean kndbz = S7.GetBitAt(buffer, 39, 6);
+                Boolean ddrwwc = S7.GetBitAt(buffer, 39, 7);
+                Boolean ldqd = S7.GetBitAt(buffer, 44, 0);
+                Boolean rkyxc = S7.GetBitAt(buffer, 44, 1);
+                Boolean rkyxq = S7.GetBitAt(buffer, 44, 2);
+                Boolean yxtd = S7.GetBitAt(buffer, 44, 3);
+                Boolean zdjcyxtd = S7.GetBitAt(buffer, 44, 4);
+                Boolean dzlqyxtd = S7.GetBitAt(buffer, 44, 5);
+                Boolean zhclyxtd = S7.GetBitAt(buffer, 44, 6);
+                Boolean zhqlyxtd = S7.GetBitAt(buffer, 44, 7);
+                Boolean kndbyxtd = S7.GetBitAt(buffer, 45, 0);
+                Boolean hydyx = S7.GetBitAt(buffer, 45, 1);
+                ds.Add("ldms", ldms);
+                ds.Add("sdms", sdms);
+                ds.Add("ddjzc", ddjzc);
+                ds.Add("gzbj", gzbj);
+                ds.Add("jtz", jtz);
+                ds.Add("xzyxz", xzyxz);
+                ds.Add("tsyxz", tsyxz);
+                ds.Add("xpyxz", xpyxz);
+                ds.Add("xxyxz", xxyxz);
+                ds.Add("sxyxz", sxyxz);
+                ds.Add("zdjcz", zdjcz);
+                ds.Add("dzlqz", dzlqz);
+                ds.Add("zhclz", zhclz);
+                ds.Add("zhqlz", zhqlz);
+                ds.Add("kndbz", kndbz);
+                ds.Add("ddrwwc", ddrwwc);
+                ds.Add("ldqd", ldqd);
+                ds.Add("rkyxc", rkyxc);
+                ds.Add("rkyxq", rkyxq);
+                ds.Add("yxtd", yxtd);
+                ds.Add("zdjcyxtd", zdjcyxtd);
+                ds.Add("dzlqyxtd", dzlqyxtd);
+                ds.Add("zhclyxtd", zhclyxtd);
+                ds.Add("zhqlyxtd", zhqlyxtd);
+                ds.Add("kndbyxtd", kndbyxtd);
+                ds.Add("hydyx", hydyx);
+                ds.Add("msg", false);
+                return ds;
+                }
+                catch
+                {
+                    ds.Add("msg", true);
+                    return ds;
+                }           
         }
 
+        //使能
+        public static string PlcStrat(string IP) {
+            var client = Operation(IP, 1);
+            if (client != null)
+            {
+                try
+                {
+                    var writeBuffer = new byte[1];
+                    S7.SetBitAt(ref writeBuffer, 0, 0, true);
+                    int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
+                    if (writeResult == 0)
+                    {
+
+                        client.Disconnect();
+                        return "true";
+                    }
+                }
+                catch
+                {
+                    return "机器连接失败,请联系技术人员";
+                }
+            }
+            return "机器连接失败,请联系技术人员";
+        }
         ///<summary>
         /// 上位机调度
         /// </summary>
@@ -274,8 +254,6 @@ namespace WMS.ControlPlc
             try
             {
                 var client = Operation(IP, 40);
-
-             
                 if (client != null)
                 {
                     byte[] db1Buffer = new byte[40];

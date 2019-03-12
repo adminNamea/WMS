@@ -11,7 +11,7 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class PlcIn_Result
+    public partial class Strategy_Result
     {
         public string AID { get; set; }
         public string CID { get; set; }
@@ -22,9 +22,16 @@ namespace WMS.Models
         public Nullable<int> fy { get; set; }
         public Nullable<double> InQTY { get; set; }
         public string Statu { get; set; }
-        public string gname { get; set; }
-        public string pname { get; set; }
         public string IP { get; set; }
+        public string pname { get; set; }
+        public string gname { get; set; }
         public string speed { get; set; }
+        public string mo { get; set; }
+        public Nullable<int> z1 { get; set; }
+        public Nullable<int> y1 { get; set; }
+        public Nullable<int> qz { get; set; }
+        public Nullable<int> fz { get; set; }
+        public Nullable<System.DateTime> time { get; set; }
+        public int id { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using System.Text;
 using org.apache.pdfbox.pdmodel;
 using org.apache.pdfbox.util;
 using System.IO;
+using WMS.ControlPlc;
 
 namespace WMS.Controllers
 {
@@ -77,6 +78,26 @@ namespace WMS.Controllers
                 return Json(mSEntities.WCS_Comm.ToList(), JsonRequestBehavior.AllowGet);
             }
         }
+        //修改任务状态
+        public void UpTaskStatu(string aid,string status) {
+            using (WMSEntities wMS=new WMSEntities ()) {
+               var list= wMS.WH_Comm.Where(p => p.aid == aid).FirstOrDefault();
+                list.Status = status;
+                wMS.SaveChanges();
+            }
+        }
+        //清理完成任务
+        public void DelSuTask() {
+            using (WMSEntities wms =new WMSEntities()) {
+                wms.delSuTask();
+            }
+        }
+        //完成任务
+        public void SuTask(string aid) {
+            using (WMSEntities wMS = new WMSEntities()) {
+                wMS.CommSuccess(aid);
+            }
+        }
         //查询任务队列
         public ActionResult CheckTask() {
             using (WMSEntities wMS = new WMSEntities()) {
@@ -84,9 +105,23 @@ namespace WMS.Controllers
             }
         }
         //检查PLC情况
-        public ActionResult CheckPlc() {
+        public ActionResult CheckPlc(string ip) {
+            Dictionary<string, bool> map = Controls.CheckPLCDate(ip);
+            return Json(map,JsonRequestBehavior.AllowGet);
+        }
+        //运行下个指令
+        public string NextComm(List<string> list) {
 
-            return Json(JsonRequestBehavior.AllowGet);
+            return "";
+        }
+        //完成命令
+        public string Success() {
+
+            return "";
+        }
+        //故障处理
+        public void Error() {
+
         }
         #endregion
         #region 命令分解

@@ -9,12 +9,14 @@
     <link rel="stylesheet" href="~/layui/css/layui.css">
     <script type="text/javascript" src="~/layui/layui.js"></script>
     <script type="text/javascript" src="~/js/AddAll.js"></script>
+ 
     <title>AddAll</title>
     <style type="text/css">
         .layui-form-pane .layui-form-label {
             display: inline-block;
             width: 125px;
         }
+
         .layui-form-pane .layui-input {
             display: inline-block;
             width: 98%
@@ -143,21 +145,27 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">货位大小：</label>
+            <label class="layui-form-label">货位限制：</label>
             <div class="layui-input-block">
                 <input type="text" name="Size" required lay-verify="required|number" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">x坐标（m）</label>
+            <label class="layui-form-label">x坐标（mm）</label>
             <div class="layui-input-block">
                 <input type="text" name="x" required lay-verify="required|number" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">y坐标（m）</label>
+            <label class="layui-form-label">y坐标（mm）</label>
             <div class="layui-input-block">
                 <input type="text" name="y" required lay-verify="required|number" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">货位高度（mm）</label>
+            <div class="layui-input-block">
+                <input type="text" name="height" required lay-verify="required|number" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">

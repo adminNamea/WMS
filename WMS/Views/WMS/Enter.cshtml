@@ -12,8 +12,8 @@
     <link href="~/layui/css/layui.css" rel="stylesheet" />
     <script type="text/javascript" src="~/js/Enter.js"></script>
     <script type="text/javascript" src="~/js/vue.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link href="~/StyleSheet1.css" rel="stylesheet" />
+    <script src="~/js/elemenui.js"></script>
     <title>入库</title>
     <style type="text/css">
         .layui-input {
@@ -32,6 +32,7 @@
             width: 200px;
             display: inline-block;
         }
+
         .text {
             font-size: 14px;
         }
@@ -59,44 +60,38 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">物料类别</label>
                 <div class="layui-input-block">
-                    <select lay-search class="Category1" lay-filter="Category1" required lay-verify="required"></select>
+                    <select lay-search class="Category1" lay-filter="Category1" required lay-verify="required|notnull"></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物料名称</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PartName" class="PartName" lay-filter="PartName" required lay-verify="required"><option value='-1'>请选择物料类型</option></select>
+                    <select lay-search name="PartName" class="PartName" lay-filter="PartName" required lay-verify="required|notnull"><option value='-1'>请选择物料类型</option></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物料规格</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PartSpec" class="PartSpec" lay-filter="PartSpec" required lay-verify="required"><option value='-1'>请选择物料名称</option></select>
+                    <select lay-search name="PartSpec" class="PartSpec" lay-filter="PartSpec" required lay-verify="required|notnull"><option value='-1'>请选择物料名称</option></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物料材质</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PartMaterial" class="PartMaterial" lay-filter="PartMaterial" required lay-verify="required"><option value='-1'>请选择物料规格</option></select>
+                    <select lay-search name="PartMaterial" class="PartMaterial" lay-filter="PartMaterial" required lay-verify="required|notnull"><option value='-1'>请选择物料规格</option></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">入库数量</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="InQTY" required lay-verify="required|number" class="layui-input InQTY" value="100">
+                    <input type="text" name="InQTY" required lay-verify="required|number|size" class="layui-input InQTY" value="3">
                 </div>
                 <div class="layui-form-mid layui-word-aux" style="margin-left:250px">PCS</div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">托盘数量</label>
-                <div class="layui-input-block">
-                    <input type="text" name="QTYperPallet" required lay-verify="required|number" class="layui-input QTYperPallet" readonly placeholder="请选择物料材质">
-                </div>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">入货口</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PlaceID" class="Place" required lay-verify="required"></select>
+                    <select lay-search name="PlaceID" class="Place" required lay-verify="required|notnull"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -114,25 +109,25 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">物料类别</label>
                 <div class="layui-input-block">
-                    <select lay-search class="Category1" lay-filter="Category1" required lay-verify="required"></select>
+                    <select lay-search class="Category1" lay-filter="Category1" required lay-verify="required|notnull"></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物料名称</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PartName" class="PartName" lay-filter="PartName" required lay-verify="required"><option value='-1'>请选择物料类型</option></select>
+                    <select lay-search name="PartName" class="PartName" lay-filter="PartName" required lay-verify="required|notnull"><option value='-1'>请选择物料类型</option></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物料规格</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PartSpec" class="PartSpec" lay-filter="PartSpec" required lay-verify="required"><option value='-1'>请选择物料名称</option></select>
+                    <select lay-search name="PartSpec" class="PartSpec" lay-filter="PartSpec" required lay-verify="required|notnull"><option value='-1'>请选择物料名称</option></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物料材质</label>
                 <div class="layui-input-block">
-                    <select lay-search name="PartMaterial" class="PartMaterial" lay-filter="PartMaterial" required lay-verify="required"><option value='-1'>请选择物料规格</option></select>
+                    <select lay-search name="PartMaterial" class="PartMaterial" lay-filter="PartMaterial" required lay-verify="required|notnull"><option value='-1'>请选择物料规格</option></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -142,16 +137,17 @@
                 </div>
                 <div class="layui-form-mid layui-word-aux" style="margin-left:250px">PCS</div>
             </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">托盘数量</label>
-                <div class="layui-input-block">
-                    <input type="text" name="QTYperPallet" required lay-verify="required|number" class="layui-input QTYperPallet" readonly placeholder="请选择物料材质">
-                </div>
-            </div>
+         
             <div class="layui-form-item">
                 <label class="layui-form-label">货位</label>
                 <div class="layui-input-block">
-                    <select lay-search name="GoodsAllocationID" class="GoodsAllocationID" required lay-verify="required"></select>
+                    <select lay-search name="GoodsAllocationID" class="GoodsAllocationID" required lay-verify="required|notnull"></select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">出货口</label>
+                <div class="layui-input-block">
+                    <select lay-search name="PlaceID" class="Place" required lay-verify="required"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -168,14 +164,16 @@
                 <span>位置调整</span>
             </div>
             <div class="text item">
-                <el-form ref="form" :model="form" status-icon :rules="rules" label-width="80px">
+                <el-form ref="form" :model="form" status-icon :rules="rules" label-width="100px">
                     <el-form-item label="物料选择" prop="selectedOptions">
                         <el-cascader :options="options"
                                      v-model="form.selectedOptions"
                                      filterable
                                      show-all-levels
                                      placeholder="名称/规格/材质"
-                                     @@active-item-change="selectChange">
+                                     @@active-item-change="selectChange"
+                                     @@change="selectChange_a"
+                                     >
                         </el-cascader>
                     </el-form-item>
                     <el-form-item label="取料点" prop="PlaceID">
@@ -196,8 +194,8 @@
                             </el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item prop="InQTY">
-                        <el-input v-model.number="form.InQTY" placeholder="请输入数量"></el-input>
+                    <el-form-item prop="InQTY" label="数量">
+                        <el-input v-model.number="form.InQTY" placeholder="请输入数量" style="width:217px"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @@click="onSubmit('form')">立即提交</el-button>

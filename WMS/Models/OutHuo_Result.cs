@@ -11,14 +11,9 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class CeckHCount_Result
+    public partial class OutHuo_Result
     {
-        public int value { get; set; }
-        public string label { get; set; }
-        public string size { get; set; }
-        public Nullable<double> stockQTY { get; set; }
-        public string PartName { get; set; }
-        public string PartSpec { get; set; }
-        public string PartMaterial { get; set; }
+        public string Name { get; set; }
+        public int ID { get; set; }
     }
 }

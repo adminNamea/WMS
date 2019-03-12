@@ -30,5 +30,6 @@ namespace WMS.Models
         public Nullable<System.DateTime> UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public string StatusID { get; set; }
+        public string height { get; set; }
     }
 }

@@ -29,5 +29,8 @@ namespace WMS.Models
         public string Status { get; set; }
         public string IP { get; set; }
         public Nullable<int> WHAreaID { get; set; }
+        public string TaskAid { get; set; }
+        public Nullable<System.DateTime> Time { get; set; }
+        public Nullable<int> Plate { get; set; }
     }
 }

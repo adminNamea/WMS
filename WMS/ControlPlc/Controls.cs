@@ -145,6 +145,7 @@ namespace WMS.ControlPlc
         /// <param name="zhqlyxtd">载货取料允许调度</param>
         /// <param name="kndbyxtd">库内叠板允许调度</param>
         /// <param name="hydyx">回原点允许</param>
+        /// <param name="zdyxz">自动运行中</param>
 
         public static Dictionary<string, Boolean> CheckPLCDate(string IP)
         {
@@ -183,6 +184,7 @@ namespace WMS.ControlPlc
                 Boolean zhqlyxtd = S7.GetBitAt(buffer, 44, 7);
                 Boolean kndbyxtd = S7.GetBitAt(buffer, 45, 0);
                 Boolean hydyx = S7.GetBitAt(buffer, 45, 1);
+                Boolean zdyxz = S7.GetBitAt(buffer, 45, 2);
                 ds.Add("ldms", ldms);
                 ds.Add("sdms", sdms);
                 ds.Add("ddjzc", ddjzc);
@@ -209,7 +211,9 @@ namespace WMS.ControlPlc
                 ds.Add("zhqlyxtd", zhqlyxtd);
                 ds.Add("kndbyxtd", kndbyxtd);
                 ds.Add("hydyx", hydyx);
+                ds.Add("zdyxz", zdyxz);
                 ds.Add("msg", false);
+                client.Disconnect();
                 return ds;
                 }
                 catch
@@ -243,6 +247,7 @@ namespace WMS.ControlPlc
             }
             return "机器连接失败,请联系技术人员";
         }
+        
         ///<summary>
         /// 上位机调度
         /// </summary>

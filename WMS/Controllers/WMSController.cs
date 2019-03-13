@@ -25,21 +25,37 @@ namespace WMS.Controllers
             return View();
         }
         //PLC交互
-        public ActionResult PlcIn(string aid)
+        public ActionResult PlcIn(string aid,string wcs)
         {
             string msgg = "无可用机器";
+            WCS_Comm w = new WCS_Comm();
             Dictionary<string, object> map = new Dictionary<string, object>();
+            var boo = false;
+            List<WCS_Comm> list;
             using (WMSEntities wMS =new WMSEntities ()) {
-                wMS.PlcIn(aid);
-                List<WCS_Comm> list = wMS.WCS_Comm.Where(p=>p.AID==aid).ToList();
                 try
                 {
+                   
+                    wMS.PlcIn(aid);
+                    if (wcs != null)
+                    {
+                        if (wcs == "8") {
+                            boo = true;
+                        }
+                            list = wMS.WCS_Comm.Where(p => p.AID == aid && p.ids == wcs).ToList();
+                    }
+                    else {
+                        list = wMS.WCS_Comm.Where(p => p.AID==aid).ToList();
+                    }
+                    
                     msgg = Controls.WholePileInOut(list[0].IP,false,
-                    false,false,false,false, Convert.ToByte(list[0].mo), Convert.ToInt32(list[0].qx),
+                    boo, false,false,false, Convert.ToByte(list[0].mo), Convert.ToInt32(list[0].qx),
                     Convert.ToInt32(list[0].qy), Convert.ToInt32(list[0].qz),
                     Convert.ToInt32(list[0].fx), Convert.ToInt32(list[0].fy),
                     Convert.ToInt32(list[0].fz), Convert.ToInt32(list[0].InQTY),
                     Convert.ToInt32(list[0].y1), Convert.ToInt32(list[0].z1));
+                    map.Add("data", list);
+                   
                 }
                 catch
                 {
@@ -47,7 +63,7 @@ namespace WMS.Controllers
                     return Json(map, JsonRequestBehavior.AllowGet);
                 }
                 map.Add("msg", msgg);
-                map.Add("data", list);
+                
                 return Json(map, JsonRequestBehavior.AllowGet);
             }
                

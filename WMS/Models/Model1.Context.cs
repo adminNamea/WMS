@@ -343,6 +343,20 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DelAll", typeParameter, idParameter);
         }
     
+        public virtual int delSuTask()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("delSuTask");
+        }
+    
+        public virtual int Error(string aid)
+        {
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Error", aidParameter);
+        }
+    
         public virtual int HowToPick(string aid, string height, Nullable<int> inqty)
         {
             var aidParameter = aid != null ?
@@ -403,6 +417,11 @@ namespace WMS.Models
                 new ObjectParameter("GoodsAllocationID", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter, qTYperPalletParameter, toParameter, goodsAllocationIDParameter);
+        }
+    
+        public virtual ObjectResult<OutHuo_Result> OutHuo()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<OutHuo_Result>("OutHuo");
         }
     
         public virtual int PickMany(Nullable<int> iD, Nullable<int> qTY, Nullable<int> plateThickness, Nullable<int> cargoHeight, Nullable<int> cargoPlateQTY, Nullable<int> loadingTableHeight, Nullable<int> loadingTablePlateQTY, Nullable<int> maxHeightDifference, Nullable<int> minHeightDifference)
@@ -766,23 +785,9 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WcsUpAll", nameParameter, iDParameter, machineTypeIDParameter, placeTypeIDParameter, x_interceptParameter, y_interceptParameter, z_interceptParameter, runingSpeedParameter, descriptionParameter, createdByParameter, statusParameter, updatedTimeParameter, updatedByParameter, typeParameter, sortParameter, iPParameter);
         }
     
-        public virtual int delSuTask()
+        public virtual int Zhzy()
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("delSuTask");
-        }
-    
-        public virtual int Error(string aid)
-        {
-            var aidParameter = aid != null ?
-                new ObjectParameter("aid", aid) :
-                new ObjectParameter("aid", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Error", aidParameter);
-        }
-    
-        public virtual ObjectResult<OutHuo_Result> OutHuo()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<OutHuo_Result>("OutHuo");
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Zhzy");
         }
     }
 }

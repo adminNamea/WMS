@@ -20,7 +20,7 @@
             var layer = layui.layer;
             var util = layui.util;
             var $ = layui.jquery;
-     
+
             function render() {
                 $.get("/WCS/CheckTask", function (data) {
                     v.timelineList = []
@@ -68,10 +68,9 @@
                     if (data.length > 0) {
                         layui.each(data, function (index, value) {
                             var TaskAid = value.TaskAid == null ? "无" : value.TaskAid
-                            var Time =
                             v.machine.push({
                                 task: TaskAid,
-                                    time: value.Time == null ? 0 : util.toDateString(parseInt(value.Time.substring(value.Time.indexOf("(") + 1, value.Time.indexOf(")"))), "HH:mm:ss"),
+                                time: value.Time == null ? 0 : util.toDateString(parseInt(value.Time.substring(value.Time.indexOf("(") + 1, value.Time.indexOf(")"))), "HH:mm:ss"),
                                 name: value.Name,
                                 status: value.Status
                             })
@@ -95,16 +94,7 @@
                 $.get("/WCS/CheckWcsComm", function (data) {
                     v.wcsComm = [];
                     if (data.length > 0) {
-                        layui.each(data, function (index, value) {
-                            var Time = value.time == null ? 0 : value.time.substring(value.time.indexOf("(") + 1, value.time.indexOf(")"))
-                            v.wcsComm.push({
-                                time: parseInt(Time),
-                                name: value.Name,
-                                AID: value.AID,
-                                id: value.id,
-                                statu: value.Statu
-                            })
-                        })
+                        v.wcsComm = data
                     }
 
                 })
@@ -132,7 +122,11 @@
                     }, {
                         value: 3,
                         label: '调整'
-                    }],
+                    }, {
+                        value: 4,
+                        label: '展会'
+                        }],
+                    i: false,
                     value: 1,
                     machine: [],
                     goods: [],
@@ -156,44 +150,46 @@
                         switchValue: false,
                         removeTask: false,
                         MonitoringTime: 5,
-                    }
+                    },
+                    wcsLength: 0
                 },
                 methods: {
                     run(boo, aid) {
-                                if (boo) {
-                                    v.timelineList.find(function (x) {
-                                        if (x.aid == aid) {
-                                            const loading = v.$loading({
-                                                lock: true,
-                                                text: '机器连接中',
-                                                spinner: 'el-icon-loading',
-                                                background: 'rgba(0, 0, 0, 0.7)'
-                                            });
-                                            setTimeout(() => {
-                                                $.get("/WMS/PlcIn", { aid: aid }, function (res) {
-                                                    if (res.msg == "true") {
-                                                        $.get("/WCS/UpTaskStatu", { aid: aid, status: "正在执行" }, function () {
-                                                            render()
-                                                        })
-                                                        loading.close();
-                                                        v.$message({
-                                                            message: "任务" + x.aid + '开始执行',
-                                                            type: 'success'
-                                                        });
-                                                    } else {
-                                                        loading.close();
-                                                        $.get("/WCS/UpTaskStatu", { aid: aid, status: "错误" }, function () {
-                                                            render()
-                                                        })
-                                                        v.no = res.msg
-                                                        v.$message.error("任务" + x.aid + '执行失败,原因:' + res.msg);
-                                                    }
+                        if (boo) {
+                            v.timelineList.find(function (x) {
+                                if (x.aid == aid) {
+                                    const loading = v.$loading({
+                                        lock: true,
+                                        text: '机器连接中',
+                                        spinner: 'el-icon-loading',
+                                        background: 'rgba(0, 0, 0, 0.7)'
+                                    });
+                                    setTimeout(() => {
+                                        $.get("/WMS/PlcIn", { aid: aid }, function (res) {
+                                            if (res.msg == "true") {
+                                                $.get("/WCS/UpTaskStatu", { aid: aid, status: "正在执行" }, function () {
+                                                    render()
                                                 })
-                                            }, 500);
-                                        }
-                                    })
+                                                loading.close();
+                                                v.$message({
+                                                    message: "任务" + x.aid + '开始执行',
+                                                    type: 'success'
+                                                });
+                                                v.setTime()
+                                            } else {
+                                                loading.close();
+                                                $.get("/WCS/UpTaskStatu", { aid: aid, status: "错误" }, function () {
+                                                    render()
+                                                })
+                                                v.no = res.msg
+                                                v.$message.error("任务" + x.aid + '执行失败,原因:' + res.msg);
+                                            }
+                                        })
+                                    }, 500);
                                 }
-                            
+                            })
+                        }
+
                     },
                     addClass(type, status) {
                         switch (status) {
@@ -235,25 +231,31 @@
                         }
                     },
                     onSubmit() {
-                        layer.open({
-                            type: 2,
-                            title: false,
-                            area: ['610px', '650px'],
-                            content: '/WMS/Enter',
-                            success: function (layero, index) {
-                                var type = ".in";
-                                if (v.value == 2) {
-                                    type = ".out";
-                                } else if (v.value == 3) {
-                                    type = ".tiao";
-                                }
-                                var frame = layer.getChildFrame(type, index);
-                                frame.show()
-                            },
-                            end: function () {
+                        if (v.value == 4) {
+                            $.get("/WCS/ZH", function () {
                                 render()
-                            }
-                        });
+                            })
+                        } else {
+                            layer.open({
+                                type: 2,
+                                title: false,
+                                area: ['610px', '650px'],
+                                content: '/WMS/Enter',
+                                success: function (layero, index) {
+                                    var type = ".in";
+                                    if (v.value == 2) {
+                                        type = ".out";
+                                    } else if (v.value == 3) {
+                                        type = ".tiao";
+                                    }
+                                    var frame = layer.getChildFrame(type, index);
+                                    frame.show()
+                                },
+                                end: function () {
+                                    render()
+                                }
+                            });
+                        }
                         return false
                     },
                     progress(aid) {
@@ -263,65 +265,65 @@
                             } else {
                                 if (!data.ddjzc) {
                                     v.$message.error("堆垛机不正常");
-                                } else { 
-                        var boo = true
-                        var booo = true
-                        var a = this.itemStatus
-                        if (a.bo3 != null) { 
-                            layui.each(a.bo3, function (i,va) {
-                            if (va.aid == aid) {
-                                booo = false;
-                                return false;
-                            }
-                            })
-                        }
-                        if (booo) {
-                            if (a.boo != null) {
-                                v.$message({
-                                    message: '请等待任务完成',
-                                    type: 'warning'
-                                });
-                                boo = false;
-                                return false;
-                            }
-                            if (a.bo1 != null) {
-                                var t = false
-                                layui.each(a.bo1, function (i, va) {
-                                    if (va.aid == aid) {
-                                        t = true;
-                                        return false;
-                                    }
-                                })
-                                if (t) {
-                                    this.$confirm('已确保机器信息正确？, 是否重试?', '提示', {
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '取消',
-                                        type: 'warning',
-                                        center: true
-                                    }).then(() => {
-                                        boo = true
-                                        this.$message({
-                                            type: 'success',
-                                            message: '开始重试!'
-                                        });
-                                        this.run(boo, aid)
-                                    }).catch(() => {
-                                        this.$message({
-                                            type: 'info',
-                                            message: '已取消重试'
-                                        });
-                                    });
                                 } else {
-                                    this.run(boo, aid)
-                                }
-                            } else {
-                                this.run(boo, aid)
-                            }
-                        } else {
-                            v.$message({
-                                message: '任务已完成',
-                                type: 'warning'
-                            });
+                                    var boo = true
+                                    var booo = true
+                                    var a = v.itemStatus
+                                    if (a.bo3 != null) {
+                                        layui.each(a.bo3, function (i, va) {
+                                            if (va.aid == aid) {
+                                                booo = false;
+                                                return false;
+                                            }
+                                        })
+                                    }
+                                    if (booo) {
+                                        if (a.boo != null) {
+                                            v.$message({
+                                                message: '请等待任务完成',
+                                                type: 'warning'
+                                            });
+                                            boo = false;
+                                            return false;
+                                        }
+                                        if (a.bo1 != null) {
+                                            var t = false
+                                            layui.each(a.bo1, function (i, va) {
+                                                if (va.aid == aid) {
+                                                    t = true;
+                                                    return false;
+                                                }
+                                            })
+                                            if (t) {
+                                                v.$confirm('已确保机器信息正确？, 是否重试?', '提示', {
+                                                    confirmButtonText: '确定',
+                                                    cancelButtonText: '取消',
+                                                    type: 'warning',
+                                                    center: true
+                                                }).then(() => {
+                                                    boo = true
+                                                    v.$message({
+                                                        type: 'success',
+                                                        message: '开始重试!'
+                                                    });
+                                                    v.run(boo, aid)
+                                                }).catch(() => {
+                                                    v.$message({
+                                                        type: 'info',
+                                                        message: '已取消重试'
+                                                    });
+                                                });
+                                            } else {
+                                                v.run(boo, aid)
+                                            }
+                                        } else {
+                                            v.run(boo, aid)
+                                        }
+                                    } else {
+                                        v.$message({
+                                            message: '任务已完成',
+                                            type: 'warning'
+                                        });
                                     }
                                 }
                             }
@@ -429,7 +431,7 @@
                         }
                         v.centerDialogVisible = false
                         v.taskSetData = layui.data('taskSet').taskSetData
-                     
+
                     },
                     delSuTask() {
                         var a = this.itemStatus
@@ -449,16 +451,24 @@
                         if (this.timelineList.length == 0) {
                             render()
                         }
-                        if (a.bo2.length > 0) { 
+                        if (a.bo2.length > 0) {
                             if (v.taskSetData.switchValue) {
-                            v.progress(a.bo2[0].aid)
+                                v.progress(a.bo2[0].aid)
                             }
                         }
                     },
                     setTime() {
                         setTimeout(function () {
-                            v.percentage = v.percentage + 1    
+                        
                             $.get("/WCS/CheckPlc", { ip: "192.168.3.30" }, function (data) {
+                                console.log(data)
+                                var du = data.ddrwwc
+                                if (v.wcsLength == 0) {
+                                    du = false
+                                }
+                                if (data.zdyxz) {
+                                    v.i = true
+                                }
                                 if (data.msg) {
                                     v.su = "无";
                                     v.no = "信息读取失败"
@@ -471,7 +481,7 @@
                                     v.itemStatus.boo.status = "exception"
                                     v.itemStatus.boo.statu = "错误"
 
-                                }
+                                } else
                                 if (data.gzbj) {
                                     $.get("/WCS/Error", { aid: v.thisTask }, function () {
                                         v.$notify.error({
@@ -482,82 +492,102 @@
                                         render()
                                         v.no = "机器故障"
                                     })
-                                }
-                                if (v.su == "机器检测中...") { 
-                                    if (data.yxtu) {
-                                    if (v.itemStatus.boo.type == "入库" || v.itemStatus.boo.type == "出库") {
-                                        if (data.zdjcyxtd) {
-                                            $.get("/WCS/PlcSn", { ip: "192.168.3.30" }, function (data) {
-                                                if (data == "true") {
-                                                    v.su = "机器正在运行"
-                                                    v.setTime()
+                                } else
+                                if (v.su == "机器检测中...") {
+                                    if (data.yxtd) {
+                                        $.get("/WMS/PlcIn", { aid: v.itemStatus.boo.aid, wcs: new String(v.wcsLength) }, function (res) {
+                                                $.get("/WMS/PlcSn", { ip: "192.168.3.30" }, function (data) {
+                                                    console.log(data)
+                                                    if (data=="true") {
+                                                        v.su = "机器正在运行"
+                                                        v.setTime()
+                                                        v.wcsLength++
+                                                        i = false
+                                                    }
+                                                })
+                                        })
+                                    } else {
+                                        v.setTime()
+                                    }
+                                } else if (du) {
+                                    if (v.i) {
+                                        var count = v.wcsComm.length - v.wcsLength
+                                        console.log(v.wcsLength)
+                                        if (count > 0) {
+                                            var hui = true
+                                            if (v.wcsLength == 8) {
+                                                hui = false
+                                                if (data.hydyx) {
+                                                    hui = true
                                                 }
-                                            })
+                                            }
+                                            if (hui) {
+                                            $.get("/WMS/PlcIn", { aid: v.thisTask, wcs: new String(v.wcsLength) }, function (res) {
+                                                if (res.msg == "true") {
+                                                    v.setTime()
+                                                    v.su = "机器检测中...";
+                                                    v.i = false;
+                                                }
+                                                })
+                                            }
+                                        } else {
+                                            v.$message({
+                                                message: "任务" + v.thisTask + '完成',
+                                                type: 'success'
+                                            });
+                                            $.get("/WCS/SuTask", { aid: v.thisTask })
+                                            v.itemStatus.boo.percentage = 100
+                                            v.itemStatus.boo.status = "success"
+                                            v.itemStatus.boo.statu = "完成"
+                                            setTimeout(function () {
+                                                v.delSuTask()
+                                            }, 1000)
                                         }
+                                    } else {
+                                        v.setTime()
                                     }
-                                    }
-                                }
-                                if (data.ddrwwc) {
-                                  
-                                    v.$message({
-                                        message: "任务" + v.thisTask + '完成',
-                                        type: 'success'
-                                    });
-                                    $.get("/WCS/SuTask", { aid: v.thisTask })
-                                    v.itemStatus.boo.percentage = 100
-                                    v.itemStatus.boo.status = "success"
-                                    v.itemStatus.boo.statu = "完成"
-                                    setTimeout(function () { 
-                                        v.delSuTask()
-                                    },1000)
-                                }
-                                if (data.xzyxz) {
+                                } else if (data.xzyxz) {
                                     v.su = "行走运行中"
                                     v.setTime()
-                                }
-                                if (data.tsyxz) {
+                                    v.itemStatus.boo.percentage = 10
+                                } else if (data.tsyxz) {
                                     v.su = "提升运行中"
                                     v.setTime()
-                                }
-                                if (data.xpyxz) {
+                                    v.itemStatus.boo.percentage = 20
+                                } else if (data.xpyxz) {
                                     v.su = "吸盘运行中"
                                     v.setTime()
-                                }
-                                if (data.xxyxz) {
+                                    v.itemStatus.boo.percentage = 20
+                                } else if (data.xxyxz) {
                                     v.su = "下叉运行中"
                                     v.setTime()
-                                }
-                                if (data.sxyxz) {
+                                    v.itemStatus.boo.percentage = 20
+                                } else if (data.sxyxz) {
                                     v.su = "上叉运行中"
                                     v.setTime()
-                                }
-                                if (data.zdjcz) {
+                                    v.itemStatus.boo.percentage = 20
+                                } else if (data.zdjcz) {
                                     v.su = "整垛进出中"
                                     v.setTime()
-                                }
-                                if (data.dzlqz) {
+                                } else if (data.dzlqz) {
                                     v.su = "单张量取中"
                                     v.setTime()
-                                }
-                                if (data.zhclz) {
+                                    v.itemStatus.boo.percentage = 30
+                                } else if (data.zhclz) {
                                     v.su = "载货出料中"
                                     v.setTime()
-                                }
-                                if (data.zhqlz) {
+                                } else if (data.zhqlz) {
                                     v.su = "载货取料中"
                                     v.setTime()
-                                }
-                                if (data.kndbz) {
+                                } else if (data.kndbz) {
                                     v.su = "库内叠板中"
                                     v.setTime()
+                                    v.itemStatus.boo.percentage = 50
+                                } else {
+                                    v.setTime()
                                 }
-                             
-
                             })
-                        }, v.MoniTime)
-
-                    },
-                    start() {
+                        },1000)
 
                     }
                 },
@@ -641,7 +671,7 @@
                 watch: {
                     thisTask() {
                         if (v.itemStatus.boo != null) {
-                            this.setTime()
+                            v.setTime()
                         }
                     },
                     taskSetData() {
@@ -653,7 +683,7 @@
             setInterval(() => {
                 v.date = util.toDateString(new Date())
             }, 1000);
-            if (layui.data('taskSet').taskSetData != undefined) { 
+            if (layui.data('taskSet').taskSetData != undefined) {
                 v.taskSetData = layui.data('taskSet').taskSetData
             }
         })
@@ -683,7 +713,7 @@
                                                   :type="itemStatu(item.statu).types">
                                     <el-card>
                                         <i :class="itemStatu(item.statu).icon" style=" float:right;cursor:pointer" @@click="cofp(item.statu,item.aid)"></i>
-                                        
+
                                         <div style="display:inline-block">
                                             <h3>创建任务：{{item.aid}}</h3>
                                             <p>创建类型：{{item.type}}</p>

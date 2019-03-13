@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Category">
           <Key>
             <PropertyRef Name="ID" />
@@ -104,6 +104,7 @@
           <Property Name="fz" Type="int" />
           <Property Name="time" Type="datetime" />
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ids" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="WCS_DecomposedCommand">
           <Key>
@@ -572,6 +573,7 @@
           <Parameter Name="Sort" Type="varchar" Mode="In" />
           <Parameter Name="IP" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="Zhzy" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="WMSModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
@@ -633,7 +635,8 @@
     FROM [dbo].[WH_Defect] AS [WH_Defect]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="WMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -724,6 +727,7 @@
           <Property Name="fz" Type="Int32" />
           <Property Name="time" Type="DateTime" Precision="3" />
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ids" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="WCS_DecomposedCommand">
           <Key>
@@ -1019,7 +1023,7 @@
           <EntitySet Name="WH_Applier" EntityType="Self.WH_Applier" />
           <EntitySet Name="WH_Defect" EntityType="Self.WH_Defect" />
           <FunctionImport Name="StrToTable" IsComposable="true" ReturnType="Collection(WMSModel.StrToTable_Result)">
-          <Parameter Name="str" Mode="In" Type="String" />
+            <Parameter Name="str" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AddStorage">
             <Parameter Name="name" Mode="In" Type="String" />
@@ -1052,7 +1056,7 @@
           </FunctionImport>
           <FunctionImport Name="CeckHCount" ReturnType="Collection(WMSModel.CeckHCount_Result)" />
           <FunctionImport Name="checkComm" ReturnType="Collection(WMSModel.checkComm_Result)">
-          <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Name" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="checkHuo" ReturnType="Collection(WMSModel.checkHuo_Result)">
             <Parameter Name="StorageLocationID" Mode="In" Type="String" />
@@ -1093,12 +1097,16 @@
             <Parameter Name="Category" Mode="In" Type="String" />
             <Parameter Name="ID" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="CommSuccess" >
-          <Parameter Name="aid" Mode="In" Type="String" />
+          <FunctionImport Name="CommSuccess">
+            <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="DelAll">
             <Parameter Name="type" Mode="In" Type="String" />
             <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="delSuTask" />
+          <FunctionImport Name="Error">
+            <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="HowToPick">
             <Parameter Name="aid" Mode="In" Type="String" />
@@ -1117,6 +1125,7 @@
             <Parameter Name="To" Mode="In" Type="String" />
             <Parameter Name="GoodsAllocationID" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="OutHuo" ReturnType="Collection(WMSModel.OutHuo_Result)" />
           <FunctionImport Name="PickMany">
             <Parameter Name="ID" Mode="In" Type="Int32" />
             <Parameter Name="QTY" Mode="In" Type="Int32" />
@@ -1134,10 +1143,10 @@
             <Parameter Name="height" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PlcIn">
-          <Parameter Name="aid" Mode="In" Type="String" />
+            <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="Strategy" ReturnType="Collection(WMSModel.Strategy_Result)">
-          <Parameter Name="aid" Mode="In" Type="String" />
+            <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="SystemSe">
             <Parameter Name="x" Mode="In" Type="String" />
@@ -1214,11 +1223,7 @@
             <Parameter Name="Sort" Mode="In" Type="String" />
             <Parameter Name="IP" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="delSuTask" />
-          <FunctionImport Name="Error">
-          <Parameter Name="aid" Mode="In" Type="String" />
-          </FunctionImport>
-          <FunctionImport Name="OutHuo" ReturnType="Collection(WMSModel.OutHuo_Result)" />
+          <FunctionImport Name="Zhzy" />
         </EntityContainer>
         <ComplexType Name="CeckHCount_Result">
           <Property Type="Int32" Name="value" Nullable="false" />
@@ -1353,6 +1358,10 @@
           <Property Type="String" Name="type" Nullable="false" MaxLength="4" />
           <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
         </ComplexType>
+        <ComplexType Name="OutHuo_Result">
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+        </ComplexType>
         <ComplexType Name="Strategy_Result">
           <Property Type="String" Name="AID" Nullable="false" MaxLength="20" />
           <Property Type="String" Name="CID" Nullable="false" MaxLength="10" />
@@ -1374,10 +1383,7 @@
           <Property Type="Int32" Name="fz" Nullable="true" />
           <Property Type="DateTime" Name="time" Nullable="true" Precision="23" />
           <Property Type="Int32" Name="id" Nullable="false" />
-        </ComplexType>
-        <ComplexType Name="OutHuo_Result">
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
-          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="ids" Nullable="true" MaxLength="10" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1473,6 +1479,7 @@
                 <ScalarProperty Name="fz" ColumnName="fz" />
                 <ScalarProperty Name="time" ColumnName="time" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="ids" ColumnName="ids" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1944,6 +1951,8 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="CommSuccess" FunctionName="WMSModel.Store.CommSuccess" />
           <FunctionImportMapping FunctionImportName="DelAll" FunctionName="WMSModel.Store.DelAll" />
+          <FunctionImportMapping FunctionImportName="delSuTask" FunctionName="WMSModel.Store.delSuTask" />
+          <FunctionImportMapping FunctionImportName="Error" FunctionName="WMSModel.Store.Error" />
           <FunctionImportMapping FunctionImportName="HowToPick" FunctionName="WMSModel.Store.HowToPick" />
           <FunctionImportMapping FunctionImportName="InOutMaterial" FunctionName="WMSModel.Store.InOutMaterial">
             <ResultMapping>
@@ -1959,6 +1968,14 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="OutHuo" FunctionName="WMSModel.Store.OutHuo">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.OutHuo_Result">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -1988,6 +2005,7 @@
                 <ScalarProperty Name="fz" ColumnName="fz" />
                 <ScalarProperty Name="time" ColumnName="time" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="ids" ColumnName="ids" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -1996,16 +2014,7 @@
           <FunctionImportMapping FunctionImportName="WcsAddAll" FunctionName="WMSModel.Store.WcsAddAll" />
           <FunctionImportMapping FunctionImportName="WcsDelAll" FunctionName="WMSModel.Store.WcsDelAll" />
           <FunctionImportMapping FunctionImportName="WcsUpAll" FunctionName="WMSModel.Store.WcsUpAll" />
-          <FunctionImportMapping FunctionImportName="delSuTask" FunctionName="WMSModel.Store.delSuTask" />
-          <FunctionImportMapping FunctionImportName="Error" FunctionName="WMSModel.Store.Error" />
-          <FunctionImportMapping FunctionImportName="OutHuo" FunctionName="WMSModel.Store.OutHuo">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="WMSModel.OutHuo_Result">
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Zhzy" FunctionName="WMSModel.Store.Zhzy" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

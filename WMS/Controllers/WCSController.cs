@@ -77,6 +77,11 @@ namespace WMS.Controllers
             {
                 return Json(mSEntities.WCS_Comm.ToList(), JsonRequestBehavior.AllowGet);
             }
+        }//展会专用
+        public void ZH() {
+            using (WMSEntities wMS=new WMSEntities()) {
+                wMS.Zhzy();
+            }
         }
         //修改任务状态
         public void UpTaskStatu(string aid,string status) {
@@ -120,8 +125,10 @@ namespace WMS.Controllers
             return "";
         }
         //故障处理
-        public void Error() {
-
+        public void Error(string aid) {
+            using (WMSEntities wMS=new WMSEntities()) {
+                wMS.Error(aid);
+            }
         }
         #endregion
         #region 命令分解

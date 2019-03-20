@@ -146,6 +146,9 @@ namespace WMS.ControlPlc
         /// <param name="kndbyxtd">库内叠板允许调度</param>
         /// <param name="hydyx">回原点允许</param>
         /// <param name="zdyxz">自动运行中</param>
+        /// <param name="rgvzdclz">RGV自动出料中</param>
+        /// <param name="rgvzdclqd">RGV自动出料启动</param>
+        /// <param name="rgvzdclwc">RGV自动出料完成</param>
 
         public static Dictionary<string, Boolean> CheckPLCDate(string IP)
         {
@@ -185,6 +188,8 @@ namespace WMS.ControlPlc
                 Boolean kndbyxtd = S7.GetBitAt(buffer, 45, 0);
                 Boolean hydyx = S7.GetBitAt(buffer, 45, 1);
                 Boolean zdyxz = S7.GetBitAt(buffer, 45, 2);
+                Boolean rgvzdclz = S7.GetBitAt(buffer, 45, 3);
+                Boolean rgvzdclwc = S7.GetBitAt(buffer, 45, 5);
                 ds.Add("ldms", ldms);
                 ds.Add("sdms", sdms);
                 ds.Add("ddjzc", ddjzc);
@@ -212,6 +217,8 @@ namespace WMS.ControlPlc
                 ds.Add("kndbyxtd", kndbyxtd);
                 ds.Add("hydyx", hydyx);
                 ds.Add("zdyxz", zdyxz);
+                ds.Add("rgvzdclz", rgvzdclz);
+                ds.Add("rgvzdclwc", rgvzdclwc);
                 ds.Add("msg", false);
                 client.Disconnect();
                 return ds;
@@ -247,7 +254,30 @@ namespace WMS.ControlPlc
             }
             return "机器连接失败,请联系技术人员";
         }
-        
+        //启动RGV
+        public static string StratRGV(string IP)
+        {
+            var client = Operation(IP, 46);
+            if (client != null)
+            {
+                try
+                {
+                    var writeBuffer = new byte[46];
+                    S7.SetBitAt(ref writeBuffer, 45, 4,true);
+                    int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
+                    if (writeResult == 0)
+                    {
+                        client.Disconnect();
+                        return "true";
+                    }
+                }
+                catch
+                {
+                    return "机器连接失败,请联系技术人员";
+                }
+            }
+            return "机器连接失败,请联系技术人员";
+        }
         ///<summary>
         /// 上位机调度
         /// </summary>

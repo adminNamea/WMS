@@ -16,7 +16,7 @@ namespace WMS
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "WCS", action = "WarehouseState", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Observation", id = UrlParameter.Optional }
             );
         }
     }

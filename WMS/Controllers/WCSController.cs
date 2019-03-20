@@ -22,11 +22,57 @@ namespace WMS.Controllers
             return View();
         }
         #region 仓库实时运行状况
+        //启动RGV
+        public string StratRGV(string ip) {
+            return Controls.StratRGV(ip);
+        }
         public ActionResult WarehouseState()
         {
-
-
             return View();
+        }
+        //物料统计
+        public ActionResult CheckHousCount() {
+            using (WMSEntities wm=new WMSEntities ()) {
+                return Json(wm.CheckHousCount().ToList(),JsonRequestBehavior.AllowGet);
+            }
+        }
+        //库存统计
+        public ActionResult CheckHousSum(WH_Material data) {
+            using (WMSEntities wMS=new WMSEntities ()) {
+                return Json(wMS.CheckHousSum(data.PartName,data.PartSpec,data.PartMaterial).FirstOrDefault(),JsonRequestBehavior.AllowGet);
+            }
+
+        }
+        //懒得注释了
+        public ActionResult CheckCounts() {
+
+            using (WMSEntities w=new WMSEntities ()) {
+                return Json(w.CheckCounts().ToList(),JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult CheckMQTY() {
+            using (WMSEntities w = new WMSEntities())
+            {
+                return Json(w.CheckMQTY().ToList(), JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult CheckAll(WH_Material data) {
+            using (WMSEntities w=new WMSEntities()) {
+                Dictionary<string, object> map = new Dictionary<string, object>
+                {
+                    { "MQTY", w.CheckMQTY().ToList() },
+                    { "Counts", w.CheckCounts().ToList() },
+                    { "HousCount", w.CheckHousCount().ToList() },
+                    { "Task", w.WH_Comm.ToList() },
+                    { "Place", w.WCS_Place.ToList() },
+                    { "WcsComm", w.WCS_Comm.ToList() },
+                    { "Huos", w.CheckHuos().ToList() },
+                    { "HousSum", w.CheckHousSum(data.PartName, data.PartSpec, data.PartMaterial).FirstOrDefault() },
+                    { "WCount", w.CheckWCount().FirstOrDefault() },
+                    { "WhMaterial", w.CheckWhMaterial().ToList() }
+                };
+                return Json(map,JsonRequestBehavior.AllowGet);
+            }
         }
         //public ActionResult pdf2txt(HttpPostedFileBase file)
         //{
@@ -332,5 +378,13 @@ namespace WMS.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
         #endregion
+        //入库命令生成
+        public ActionResult InComm(Dictionary<string,string> wc) {
+            using (WMSEntities wm=new WMSEntities()) {
+
+
+            }
+                return Json(wc, JsonRequestBehavior.AllowGet);
+        }
     }
 }

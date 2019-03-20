@@ -11,19 +11,13 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class CheckHuos_Result
+    public partial class CheckCounts_Result
     {
-        public string Name { get; set; }
-        public string PartName { get; set; }
-        public string PartSpec { get; set; }
-        public Nullable<double> StockQTY { get; set; }
-        public int ID { get; set; }
-        public string Type { get; set; }
-        public Nullable<int> z { get; set; }
-        public string PartMaterial { get; set; }
+        public string hname { get; set; }
         public int hid { get; set; }
+        public string aname { get; set; }
         public int aid { get; set; }
+        public string gname { get; set; }
         public int gid { get; set; }
-        public string height { get; set; }
     }
 }

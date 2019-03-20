@@ -35,5 +35,6 @@ namespace WMS.Models
         public Nullable<System.DateTime> time { get; set; }
         public int id { get; set; }
         public string ids { get; set; }
+        public string type { get; set; }
     }
 }

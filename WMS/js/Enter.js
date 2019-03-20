@@ -15,6 +15,7 @@ function newFunction() {
             var c2 = {};
             form.verify({
                 notnull: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    
                     if (value == "" || value == "-1" || value == null || value == undefined) {
                         return '请选择一项';
                     }

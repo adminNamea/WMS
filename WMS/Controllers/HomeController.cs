@@ -93,6 +93,11 @@ namespace WMS.Controllers
                 return Json(list,JsonRequestBehavior.AllowGet);
         }
         //基本资料
+        //观察页i
+        public ActionResult Observation() {
+
+            return View();
+        }
         public ActionResult UserData() {
             return View();
         }

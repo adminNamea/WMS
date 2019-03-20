@@ -235,6 +235,7 @@ namespace WMS.Controllers
             }
         }
         //查询货位信息
+       
         public ActionResult checkhuo(string id, string value, Dictionary<string, string> data, string type)
         {
             List<WH_GoodsAllocation> list;
@@ -276,7 +277,7 @@ namespace WMS.Controllers
 
                 }
             }
-        }
+        } 
         //删除单个
         public string DelSingle(string id, string type)
         {
@@ -398,7 +399,7 @@ namespace WMS.Controllers
                         }
                         else
                         {
-                            list1 = mSEntities.WH_Material.Distinct().ToList();
+                            list1 = mSEntities.WH_Material.ToList();
                         }
 
                         return Json(list1, JsonRequestBehavior.AllowGet);
@@ -407,6 +408,13 @@ namespace WMS.Controllers
 
             }
 
+        }
+        public ActionResult CheckWhMaterial() {
+            using (WMSEntities wMS=new WMSEntities ()) {
+
+                return Json(wMS.CheckWhMaterial().ToList(),JsonRequestBehavior.AllowGet);
+
+            }
         }
 
         //查询出入库详情

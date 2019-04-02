@@ -1,193 +1,10 @@
 ﻿
 !function () {
     "use strict";
-    layui.use(['layer', 'util'], function () {
-        var layer = layui.layer;
+    window.onload = function () {
         var util = layui.util;
         var $ = layui.jquery;
         Vue.prototype.$echarts = echarts
-        Vue.nextTick(function () {
-            render()
-        })
-        function render() {
-            $.get("/WCS/CheckAll", function (data) {
-                v.mqty = data.MQTY
-                v.Place = [];
-                v.vals = []
-                v.options1 = []
-                v.datas.name = []
-                v.datas.count = []
-                v.Place = data.Place
-                v.options = data.Huos;
-                v.wcsComm = data.WcsComm;
-                v.optionss = data.Huos;
-                v.timelineList = []
-                if (data.Task.length > 0) {
-                    layui.each(data.Task, function (index, x) {
-                        var date = x.CreatedTime.substring(x.CreatedTime.indexOf("(") + 1, x.CreatedTime.indexOf(")"))
-                        var status = "text"
-                        var percentage = 0;
-                        switch (x.Status) {
-                            case "完成":
-                                status = "success"
-                                percentage = 100;
-                                break;
-                            case "错误":
-                                status = "exception"
-                                break;
-                            case "正在执行":
-                                v.thisTask = x.aid
-                                break;
-                        }
-                        v.timelineList.push({
-                            aid: x.aid,
-                            statu: x.Status,
-                            type: x.type,
-                            date: parseInt(date),
-                            status: status,
-                            percentage: percentage,
-                            qty: x.QTY
-                        })
-                    })
-                }
-                if (data.WCount != null) {
-                    v.gQuantity.q1 = Number(data.WCount.yse)
-                    v.gQuantity.q2 = Number(data.WCount.no)
-                    v.gQuantity.q3 = Number(data.WCount.nos)
-                }
-                if (data.WhMaterial.length > 0) {
-                    layui.each(data.WhMaterial, function (index, val) {
-                        var d = true
-                        if (v.vals.length > 0) {
-                            v.vals.find(function (v1) {
-                                var q = true
-                                if (v1.value == val.PartName) {
-                                    d = false
-                                    v1.children.find(function (x) {
-                                        if (x.value == val.PartSpec) {
-                                            q = false
-                                            x.children.push({
-                                                value: val.PartMaterial,
-                                                label: val.PartMaterial
-                                            })
-                                        }
-                                    })
-                                    if (q) {
-                                        v1.children.push({
-                                            value: val.PartSpec, label: val.PartSpec, children: [
-                                                {
-                                                    value: val.PartMaterial,
-                                                    label: val.PartMaterial
-                                                }
-                                            ]
-                                        })
-                                    }
-                                }
-                            })
-                            if (d) {
-                                v.vals.push({
-                                    value: val.PartName,
-                                    label: val.PartName,
-                                    children: [{
-                                        value: val.PartSpec,
-                                        label: val.PartSpec,
-                                        children: [{
-                                            value: val.PartMaterial,
-                                            label: val.PartMaterial,
-                                        }]
-                                    }]
-
-                                })
-                            }
-                        } else {
-                            v.vals.push({
-                                value: val.PartName,
-                                label: val.PartName,
-                                children: [{
-                                    value: val.PartSpec,
-                                    label: val.PartSpec,
-                                    children: [{
-                                        value: val.PartMaterial,
-                                        label: val.PartMaterial,
-                                    }]
-                                }]
-                            })
-                        }
-                    })
-                }
-                if (data.Counts.length > 0) {
-                    layui.each(data.Counts, function (index, val) {
-                        var d = true
-                        if (v.options1.length > 0) {
-                            v.options1.find(function (v1) {
-                                var q = true
-                                if (v1.value == val.hid) {
-                                    d = false
-                                    v1.children.find(function (x) {
-
-                                        if (x.value == val.aid) {
-                                            q = false
-                                            x.children.push({
-                                                value: val.gid,
-                                                label: val.gname
-                                            })
-                                        }
-                                    })
-                                    if (q) {
-                                        v1.children.push({
-                                            value: val.aid, label: val.aname, children: [
-                                                {
-                                                    value: val.gid,
-                                                    label: val.gname
-                                                }
-                                            ]
-                                        })
-                                    }
-                                }
-                            })
-                            if (d) {
-                                v.options1.push({
-                                    value: val.hid,
-                                    label: val.hname,
-                                    children: [{
-                                        value: val.aid,
-                                        label: val.aname,
-                                        children: [{
-                                            value: val.gid,
-                                            label: val.gname,
-                                        }]
-                                    }]
-                                })
-                            }
-                        } else {
-                            v.options1.push({
-                                value: val.hid,
-                                label: val.hname,
-                                children: [{
-                                    value: val.aid,
-                                    label: val.aname,
-                                    children: [{
-                                        value: val.gid,
-                                        label: val.gname,
-                                    }]
-                                }]
-                            })
-                        }
-                    })
-                }
-                if (data.HousSum != null) {
-                    v.counts[0].value = new String(data.HousSum.sum)
-                    v.counts[0].percentage = 100
-                }
-                if (data.HousCount.length > 0) {
-                    data.HousCount.forEach(function (value, i) {
-                        v.datas.name.push(value.PartName)
-                        v.datas.count.push(value.count)
-                    })
-
-                }
-            })
-        }
         var CheckTo = (rule, value, callback) => {
             if (!value) {
                 return callback(new Error('请选择放料点'));
@@ -207,11 +24,11 @@
                     if (x.ID == v.form.To) {
                         b = x
                     }
-                } 
-                    if (x.ID == v.form.PlaceID) {
-                        a = x
-                    }
-                
+                }
+                if (x.ID == v.form.PlaceID) {
+                    a = x
+                }
+
             })
             if (v.form.selectedOptions3.length > 0) {
                 var h = v.form.selectedOptions3[1];
@@ -243,19 +60,20 @@
                 } else {
                     callback();
                 }
-            }else {
+            } else {
                 callback();
             }
         }
         var v = new Vue({
             el: "#app",
             data: {
+                whComm: {},
                 gQuantity: {
                     q1: 0,
                     q2: 0,
                     q3: 0
                 },
-                huoType: 1,
+                centerDialogVisible1: false,
                 title: "",
                 optionss: [],
                 wcsComm: [],
@@ -263,6 +81,7 @@
                 su: "机器检测中...",
                 no: "无",
                 thisTask: "",
+               
                 wcsLength: 0,
                 date: '',
                 Place: [],
@@ -290,27 +109,28 @@
                         percentage: 0
                     },
                     {
-                        name: '入库总数',
-                        value: "0",
+                        name: '已用空间',
+                        value: "",
                         type: "danger",
                         percentage: 0
                     },
                     {
-                        name: '出库总数',
-                        value: "0"
+                        name: '剩余空间',
+                        value: ""
                         , type: "danger"
+                        , percentage: 0
                     },
                     {
                         name: '今日入库',
                         value: "0"
                         , type: "warning",
-                        percentage: 0
+                        percentage: 60
                     },
                     {
                         name: '今日出库',
                         value: "0"
                         , type: "warning",
-                        percentage: 0
+                        percentage: 60
                     }
                 ],
                 remind: [{
@@ -342,16 +162,23 @@
                     removeTask: false,
                     MonitoringTime: 1,
                     InventoryQty: 0,
-                    MaterialQty: 0
+                    MaterialQty: 0,
+                    huoType: 1
                 },
                 rules: {
                     selectedOptions3: [
                         { required: true, message: '请选择物料', trigger: 'change' }],
                     InQTY: [{ validator: CheckQTY, trigger: 'blur' }],
                     To: [{ validator: CheckTo, trigger: 'change' }]
-                }
+                },
+                rgv: false
             },
             methods: {
+                zhzy() {
+                    this.$http.get("/WCS/zhzy").then(function (res) {
+                        v.get();
+                    })
+                },
                 resetForm() {
                     this.$refs['form'].resetFields();
                 },
@@ -386,20 +213,46 @@
                     this.form.InType = this.title
                     this.dialogFormVisible = true
                 },
-                huoTypeComm(c) {
-                    this.huoType = c
+                houPercentage(o) {
+                    var a = o.PartSpec
+                    if (a != "空") {
+                        var qty = o.StockQTY
+                        if (typeof (qty) == "string") {
+                            qty = qty.substring(qty.indexOf(">") + 1, qty.lastIndexOf(""));
+                        }
+                        var he = Number(a.substring(a.lastIndexOf("*") + 1, a.lastIndexOf("")));
+                        if (qty * he + he > o.height) {
+                            qty = 100
+                        } else {
+                            qty = (((qty * he) / o.height) * 100).toFixed(0)
+                        }
+                        return Number(qty)
+                    } else {
+                        return 0
+                    }
                 },
-                selected(e) {
+                huoTypeComm(c) {
+                    this.taskSetData.huoType = c
+                    layui.data("taskSet", {
+                        key: 'taskSetData'
+                        , value: this.taskSetData
+                    })
+                },
+                selected(e, fu) {
                     v.selects = []
                     v.form.selectedOptions3 = []
                     v.form.PlaceID = e.ID
-                    if (e.PartName != null) {
+                    if (e.PartName != "空") {
                         v.selectd = true
                         v.form.selectedOptions3 = [e.PartName, e.PartSpec, e.PartMaterial]
                     } else {
                         v.selectd = false
                     }
-                    $.get("/WMS/CheckWhMaterial", function (data) {
+                    if (fu != undefined) {
+                        fu
+                    }
+                    v.$http.get("/WMS/CheckWhMaterial").then(function (res) {
+                        var data = res.body
                         if (data.length > 0) {
                             layui.each(data, function (index, val) {
                                 var d = true
@@ -469,7 +322,7 @@
                         this.options.find(function (x) {
                             if (x.PartName == value[0] && x.PartSpec == value[1] && x.PartMaterial == value[2]) {
                                 newOption.push(x)
-                            } else if (x.Type == value) {
+                            } else if (x.Type == value || "总数" == value) {
                                 newOption.push(x)
                             } else if (x.hid == value[0] && x.aid == value[1] && x.gid == value[2]) {
                                 newOption.push(x)
@@ -491,7 +344,8 @@
                         b.PartSpec = value[1];
                         b.PartMaterial = value[2]
                     }
-                    $.get("/WCS/CheckHousSum", b, function (data) {
+                    v.$http.get("/WCS/CheckHousSum",{ params: b }).then(function (res) {
+                        var data = res.body
                         v.counts[1].value = data.suQty
 
                         if (data.sumQty != null) {
@@ -510,13 +364,13 @@
                     this.$refs['form'].validate((valid) => {
                         if (valid) {
                             this.form.selectedOptions3 != undefined ? delete this.form.selectedOptions3 : "";
-                            $.post("/WMS/InMaterial", { data: this.form }, function (s) {
+                            this.$http.post("/WMS/InMaterial", { data: this.form }, { emulateJSON: true }).then( function () {
                                 v.dialogFormVisible = false
                                 v.$message({
                                     type: 'success',
                                     message: '提交成功!'
                                 });
-                                render()
+                                v.get()
                             })
                         } else {
                             return false;
@@ -526,7 +380,7 @@
                 disabled(o, t) {
                     switch (o.Type) {
                         case "可用":
-                            if (o.PartName == null) {
+                            if (o.PartName == "空") {
                                 if (t == "出库" || t == "调整") {
                                     return "disabled"
                                 }
@@ -553,21 +407,25 @@
                                     background: 'rgba(0, 0, 0, 0.7)'
                                 });
                                 setTimeout(() => {
-                                    $.get("/WMS/PlcIn", { aid: aid }, function (res) {
+                                    v.$http.get("/WMS/PlcIn", { params: { aid: aid } }).then(function (data) {
+                                        var res=data.body
                                         if (res.msg == "true") {
-                                            $.get("/WCS/UpTaskStatu", { aid: aid, status: "正在执行" }, function () {
-                                                render()
+                                            v.$http.get("/WCS/UpTaskStatu", {
+                                                params: { aid: aid, status: "正在执行" }
+                                            }).then( function () {
+                                                v.get()
                                             })
                                             loading.close();
                                             v.$message({
                                                 message: "任务" + x.aid + '开始执行',
                                                 type: 'success'
                                             });
-                                            v.setTime()
                                         } else {
                                             loading.close();
-                                            $.get("/WCS/UpTaskStatu", { aid: aid, status: "错误" }, function () {
-                                                render()
+                                            v.$http.get("/WCS/UpTaskStatu", {
+                                                params: { aid: aid, status: "错误" }
+                                            }).then( function () {
+                                                v.get()
                                             })
                                             v.no = res.msg
                                             v.$message.error("任务" + x.aid + '执行失败,原因:' + res.msg);
@@ -580,7 +438,8 @@
 
                 },
                 progress(aid) {
-                    $.get("/WCS/CheckPlc", function (data) {
+                    v.$http.get("/WCS/CheckPlc").then(function (res) {
+                        var data = res.body
                         if (!data.ldms) {
                             v.$message.error("非联动模式，请更改模式");
                         } else {
@@ -651,31 +510,31 @@
                     })
                 },
                 setTime() {
-                    setTimeout(function () {
+                   var st= setTimeout(function () {
                         if (v.wcsComm.length < 2) {
-                            v.itemStatus.boo.percentage = v.itemStatus.boo.percentage + 5
+                            v.itemStatus.boo.percentage += 2
                             if (v.itemStatus.boo.percentage > 99) {
                                 v.itemStatus.boo.percentage = 100
                             }
                         }
-                        $.get("/WCS/CheckPlc", { ip: "192.168.3.30" }, function (data) {
-                            console.log(data)
-                            var rgv = false;
+                        v.$http.get("/WCS/CheckPlc", {
+                            params: { ip: "192.168.3.30" }
+                        }).then(function (res) {
+                            var data = res.body
                             if (data.zdyxz) {
                                 v.i = true
                             }
                             if (v.wcsComm[v.wcsLength].type == "入库") {
                                 if (data.rkyxq) {
-                                    rgv = true
+                                    v.rgv = true
                                 }
                             } else if (v.wcsComm[v.wcsLength].type == "出库") {
-
                                 if (data.rkyxc) {
                                     v.stratRgv = true
-                                    rgv = true
+                                    v.rgv = true
                                 }
                             } else {
-                                rgv = true
+                                v.rgv = true
                             }
                             if (data.msg) {
                                 v.su = "无";
@@ -685,12 +544,14 @@
                                     message: '连接信息读取失败',
                                     duration: 0
                                 });
-                                $.get("/WCS/UpTaskStatu", { aid: v.thisTask, status: "错误" })
+                                v.$http.get("/WCS/UpTaskStatu", { params: { aid: v.thisTask, status: "错误" } })
                                 v.itemStatus.boo.status = "exception"
                                 v.itemStatus.boo.statu = "错误"
 
                             } else if (data.gzbj) {
-                                $.get("/WCS/Error", { aid: v.thisTask }, function () {
+                                v.$http.get("/WCS/Error", {
+                                    params: { aid: v.thisTask }
+                                }).then( function () {
                                     v.$notify.error({
                                         title: '错误',
                                         message: '机器出现故障请及时处理',
@@ -702,26 +563,41 @@
                                 })
                             } else if (v.su == "机器检测中...") {
                                 if (data.yxtd) {
-                                    $.get("/WMS/PlcIn", { aid: v.itemStatus.boo.aid, wcs: new String(v.wcsLength) }, function (res) {
-                                        if (rgv) {
-                                            $.get("/WMS/PlcSn", { ip: "192.168.3.30" }, function (data) {
-
-                                                if (data == "true") {
-                                                    v.su = "机器正在运行"
-                                                    v.setTime()
+                                    $.get("/WMS/PlcIn", {
+                                        aid:v.itemStatus.boo.aid,wcs: new String(v.wcsLength)
+                                    }, function (data) {
+                                        if (data.msg == "true") {
+                                            if (v.wcsComm[v.wcsLength].type != "回原点") {
+                                                if (v.rgv) {
+                                                    v.$http.get("/WMS/PlcSn", {
+                                                        params: { ip: "192.168.3.30" }
+                                                    }).then(function (res) {
+                                                        var data = res.body
+                                                        if (data == "true") {
+                                                            v.su = "机器正在运行"
+                                                            v.setTime()
+                                                        } else {
+                                                            v.su = "无";
+                                                            v.no = "信息读取失败"
+                                                            v.$notify.error({
+                                                                title: '错误',
+                                                                message: '连接信息读取失败',
+                                                                duration: 0
+                                                            });
+                                                            v.$http.get("/WCS/UpTaskStatu", { params: { aid: v.thisTask, status: "错误" } })
+                                                            v.itemStatus.boo.status = "exception"
+                                                            v.itemStatus.boo.statu = "错误"
+                                                        }
+                                                    })
                                                 } else {
-                                                    v.su = "无";
-                                                    v.no = "信息读取失败"
-                                                    v.$notify.error({
-                                                        title: '错误',
-                                                        message: '连接信息读取失败',
-                                                        duration: 0
-                                                    });
-                                                    $.get("/WCS/UpTaskStatu", { aid: v.thisTask, status: "错误" })
-                                                    v.itemStatus.boo.status = "exception"
-                                                    v.itemStatus.boo.statu = "错误"
+                                                    v.setTime()
                                                 }
-                                            })
+                                            } else {
+                                                v.su = "机器正在运行"
+                                                v.setTime()
+                                            }
+                                        } else {
+                                            v.setTime()
                                         }
                                     })
                                 } else {
@@ -729,47 +605,63 @@
                                 }
                             } else if (v.i) {
                                 if (data.ddrwwc) {
-                                    v.wcsLength++
+                                    v.wcsLength++;
                                     var count = v.wcsComm.length - v.wcsLength
-
                                     if (v.stratRgv) {
-                                        $.get("/WCS/StratRGV", { ip: "192.168.3.30" }, function (data) {
-
+                                        v.$http.get("/WCS/StratRGV", {
+                                            params: { ip: "192.168.3.30" }
+                                        }).then(function() {
                                             v.stratRgv = false
-
-                                        })
+                                           })
                                     }
                                     if (count > 0) {
                                         var hui = true
-                                        if (v.wcsLength == 8) {
+                                        if (v.wcsComm[v.wcsLength].type=="回原点") {
                                             hui = false
                                             if (data.hydyx) {
                                                 hui = true
                                             }
                                         }
                                         if (hui) {
-                                            $.get("/WMS/PlcIn", { aid: v.thisTask, wcs: new String(v.wcsLength) }, function (res) {
-                                                v.itemStatus.boo.percentage = parseInt(v.itemStatus.boo.percentage + 100 / v.wcsComm.length)
-                                                if (res.msg == "true") {
+                                            var jd = 0;
+                                            if (v.wcsLength > 0) {
+                                                jd = parseInt(v.itemStatus.boo.percentage + 100 / v.wcsComm.length)
+                                                v.itemStatus.boo.percentage = jd
+                                            }
+                                            layui.data("wcs", {
+                                                key: 'wcsLength'
+                                                , value: v.wcsLength
+                                            })
+                                            layui.data("wcs", {
+                                                key: 'percentage'
+                                                , value: jd
+                                            })
                                                     v.su = "机器检测中...";
                                                     v.i = false;
                                                     v.setTime()
-                                                } else {
-                                                    v.setTime()
-                                                }
-                                            })
                                         }
                                     } else {
                                         v.$message({
                                             message: "任务" + v.thisTask + '完成',
                                             type: 'success'
                                         });
-                                        $.get("/WCS/SuTask", { aid: v.thisTask }, function () {
-                                            render()
-                                        })
+                                        v.$http.get("/WCS/SuTask", {
+                                            params: { aid: v.thisTask }
+                                        }).then( function () {
+                                            v.get()
+                                            })
+                                        if (v.wcsLength > 0) {
+                                            layui.data("wcs", null)
+                                        }
+                                        v.rgv = false;
+                                        v.thisTask = "";
+                                        v.su = "机器检测中...";
                                         v.itemStatus.boo.percentage = 100
                                         v.itemStatus.boo.status = "success"
                                         v.itemStatus.boo.statu = "完成"
+                                        v.wcsLength = 0;
+                                        v.i = false
+                                        clearTimeout(st)
                                         setTimeout(function () {
                                             v.delSuTask()
                                         }, 1000)
@@ -777,49 +669,11 @@
                                 } else {
                                     v.setTime()
                                 }
-                            } else if (data.xzyxz) {
-                                v.su = "行走运行中"
-                                v.setTime()
-
-                            } else if (data.tsyxz) {
-                                v.su = "提升运行中"
-                                v.setTime()
-
-                            } else if (data.xpyxz) {
-                                v.su = "吸盘运行中"
-                                v.setTime()
-
-                            } else if (data.xxyxz) {
-                                v.su = "下叉运行中"
-                                v.setTime()
-
-                            } else if (data.sxyxz) {
-                                v.su = "上叉运行中"
-                                v.setTime()
-
-                            } else if (data.zdjcz) {
-                                v.su = "整垛进出中"
-                                v.setTime()
-                            } else if (data.dzlqz) {
-                                v.su = "单张量取中"
-                                v.setTime()
-
-                            } else if (data.zhclz) {
-                                v.su = "载货出料中"
-                                v.setTime()
-                            } else if (data.zhqlz) {
-                                v.su = "载货取料中"
-                                v.setTime()
-                            } else if (data.kndbz) {
-                                v.su = "库内叠板中"
-                                v.setTime()
-
-                            } else {
+                            } else  {
                                 v.setTime()
                             }
                         })
                     }, v.MoniTime)
-
                 },
                 itemStatu(statu, percentage) {
                     var text = "";
@@ -869,8 +723,9 @@
                             type: 'warning',
                             center: true
                         }).then(() => {
-                            $.get("/WCS/WcsDelSingle", { id: aid, type: "task" }, function (data) {
-                                render();
+                            v.$http.get("/WCS/WcsDelSingle", { params: { id: aid, type: "task" } }).then(function (res) {
+                                var data = res.body
+                                v.get();
                                 if (data == "true") {
                                     v.$message({
                                         type: 'success',
@@ -885,8 +740,9 @@
                             });
                         });
                     } else {
-                        $.get("/WCS/WcsDelSingle", { id: aid, type: "task" }, function (data) {
-                            render();
+                        v.$http.get("/WCS/WcsDelSingle", { params: { id: aid, type: "task" } }).then(function (res) {
+                            v.get();
+                            var data = res.body
                             if (data == "true") {
                                 v.$message({
                                     type: 'success',
@@ -917,7 +773,7 @@
                 delSuTask() {
                     var a = this.itemStatus
                     var New = [];
-
+                    
                     if (v.taskSetData.removeTask) {
                         $.ajax({
                             url: "/WCS/DelSuTask"
@@ -929,7 +785,6 @@
                         })
                         this.timelineList = New
                     }
-
                     if (a.bo2.length > 0) {
                         if (v.taskSetData.switchValue) {
                             v.progress(a.bo2[0].aid)
@@ -942,34 +797,255 @@
                         content: '/Home/Index',
                         maxmin: true,
                         end: function () {
-                            render()
+                            v.get()
                         }
                     });
                     layer.full(i)
-                }
+                },
+                get: function () {
+                    this.$http.get("/WCS/CheckAll").then(function (res) {
+                        var data=res.body
+                        this.mqty = data.MQTY
+                        var k = 0;
+                        var h = 0;
+                        this.Place = [];
+                        this.vals = []
+                        this.options1 = []
+                        this.datas.name = []
+                        this.datas.count = []
+                        this.Place = data.Place
+                        this.wcsComm = data.WcsComm;
+                        this.timelineList = []
+                        data.Huos.find(function (x) {
+                            h++;
+                            if (x.StockQTY > 0) {
+                                k++;
+                            }
+                        })
+                        if (data.WCount != null) {
+                            v.gQuantity.q1 = Number(data.WCount.yse)
+                            v.gQuantity.q2 = Number(data.WCount.no)
+                            v.gQuantity.q3 = Number(data.WCount.nos)
+                        }
+                        if (data.WhMaterial.length > 0) {
+                            layui.each(data.WhMaterial, function (index, val) {
+                                var d = true
+                                if (v.vals.length > 0) {
+                                    v.vals.find(function (v1) {
+                                        var q = true
+                                        if (v1.value == val.PartName) {
+                                            d = false
+                                            v1.children.find(function (x) {
+                                                if (x.value == val.PartSpec) {
+                                                    q = false
+                                                    x.children.push({
+                                                        value: val.PartMaterial,
+                                                        label: val.PartMaterial
+                                                    })
+                                                }
+                                            })
+                                            if (q) {
+                                                v1.children.push({
+                                                    value: val.PartSpec, label: val.PartSpec, children: [
+                                                        {
+                                                            value: val.PartMaterial,
+                                                            label: val.PartMaterial
+                                                        }
+                                                    ]
+                                                })
+                                            }
+                                        }
+                                    })
+                                    if (d) {
+                                        v.vals.push({
+                                            value: val.PartName,
+                                            label: val.PartName,
+                                            children: [{
+                                                value: val.PartSpec,
+                                                label: val.PartSpec,
+                                                children: [{
+                                                    value: val.PartMaterial,
+                                                    label: val.PartMaterial,
+                                                }]
+                                            }]
 
-            },
-            computed: {
+                                        })
+                                    }
+                                } else {
+                                    v.vals.push({
+                                        value: val.PartName,
+                                        label: val.PartName,
+                                        children: [{
+                                            value: val.PartSpec,
+                                            label: val.PartSpec,
+                                            children: [{
+                                                value: val.PartMaterial,
+                                                label: val.PartMaterial,
+                                            }]
+                                        }]
+                                    })
+                                }
+                            })
+                        }
+                        if (data.Counts.length > 0) {
+                            layui.each(data.Counts, function (index, val) {
+                                var d = true
+                                if (v.options1.length > 0) {
+                                    v.options1.find(function (v1) {
+                                        var q = true
+                                        if (v1.value == val.hid) {
+                                            d = false
+                                            v1.children.find(function (x) {
 
-                timelineStatu() {
-                    return this.timelineList.length > 0 ? true : false
+                                                if (x.value == val.aid) {
+                                                    q = false
+                                                    x.children.push({
+                                                        value: val.gid,
+                                                        label: val.gname
+                                                    })
+                                                }
+                                            })
+                                            if (q) {
+                                                v1.children.push({
+                                                    value: val.aid, label: val.aname, children: [
+                                                        {
+                                                            value: val.gid,
+                                                            label: val.gname
+                                                        }
+                                                    ]
+                                                })
+                                            }
+                                        }
+                                    })
+                                    if (d) {
+                                        v.options1.push({
+                                            value: val.hid,
+                                            label: val.hname,
+                                            children: [{
+                                                value: val.aid,
+                                                label: val.aname,
+                                                children: [{
+                                                    value: val.gid,
+                                                    label: val.gname,
+                                                }]
+                                            }]
+                                        })
+                                    }
+                                } else {
+                                    v.options1.push({
+                                        value: val.hid,
+                                        label: val.hname,
+                                        children: [{
+                                            value: val.aid,
+                                            label: val.aname,
+                                            children: [{
+                                                value: val.gid,
+                                                label: val.gname,
+                                            }]
+                                        }]
+                                    })
+                                }
+                            })
+                        }
+                        if (data.HousSum != null) {
+                            v.counts[0].value = new String(data.HousSum.sum)
+                            v.counts[0].percentage = 100
+                        }
+                        if (data.HousCount.length > 0) {
+                            data.HousCount.forEach(function (value, i) {
+                                v.datas.name.push(value.PartName)
+                                v.datas.count.push(value.count)
+                            })
+
+                        }
+                        this.options = data.Huos;
+                        this.optionss = data.Huos;
+                        v.counts[2].percentage = Number((k / h * 100).toFixed(0))
+                        v.counts[3].percentage = Number(((h - k) / h * 100).toFixed(0))
+                        if (data.MaterialStatistics.length > 0) {
+                            data.MaterialStatistics.forEach(function (val, i) {
+                                if (val.InType == '出库') {
+                                    v.counts[5].value = val.thisQty
+                                } else {
+                                    v.counts[4].value = val.thisQty
+                                }
+                            })
+                        }
+                        if (data.Task.length > 0) {
+                            layui.each(data.Task, function (index, x) {
+                                var date = x.CreatedTime.substring(x.CreatedTime.indexOf("(") + 1, x.CreatedTime.indexOf(")"))
+                                var status = "text"
+                                var percentage = 0;
+                                switch (x.Status) {
+                                    case "完成":
+                                        status = "success"
+                                        percentage = 100;
+                                        break;
+                                    case "错误":
+                                        status = "exception"
+                                        break;
+                                    case "正在执行":
+                                        v.thisTask = x.aid
+                                        break;
+                                }
+                                v.timelineList.push({
+                                    aid: x.aid,
+                                    statu: x.Status,
+                                    type: x.type,
+                                    date: parseInt(date),
+                                    status: status,
+                                    percentage: percentage,
+                                    qty: x.QTY
+                                })
+                                if (x.Status != "完成") {
+                                    data.Huos.find(function (x1) {
+
+                                        if (x.ToID == x1.ID) {
+                                            var q = x1.StockQTY + x.QTY
+                                            x1.PartName = x.PartName
+                                            x1.PartSpec = x.PartSpec
+                                            x1.Category = '板'
+                                            x1.PartMaterial = x.PartMaterial
+                                            x1.StockQTY = x1.StockQTY + "=>" + q
+                                        } else if (x.FromID == x1.ID) {
+                                            var q = x1.StockQTY - x.QTY
+                                            x1.StockQTY = x1.StockQTY + "=>" + q
+                                            x1.Category = '板'
+                                        }
+
+                                    })
+                                }
+                                if (x.Status == '正在执行') {
+                                    v.whComm = x
+                                }
+                            })
+                        }
+                    })
                 },
                 option() {
                     var a = []
                     if (v.form.selectedOptions3 != undefined) {
-                    this.options.find(function (x) {
-                        if (v.form.selectedOptions3[0] == x.PartName) {
-                            if (v.form.selectedOptions3[1] == x.PartSpec) {
-                                if (v.form.selectedOptions3[2] == x.PartMaterial) {
-                                    a.push(x)
+                        this.options.find(function (x) {
+                            if (v.form.selectedOptions3[0] == x.PartName) {
+                                if (v.form.selectedOptions3[1] == x.PartSpec) {
+                                    if (v.form.selectedOptions3[2] == x.PartMaterial) {
+                                        a.push(x)
+                                    }
                                 }
+                            } else if (x.PartName == "空") {
+                                a.push(x)
                             }
-                        } else if (x.PartName == null) {
-                            a.push(x)
-                        }
                         })
                     }
                     return a
+                }
+            },
+            created: function () {
+                    this.get()
+            },
+            computed: {
+                timelineStatu() {
+                    return this.timelineList.length > 0 ? true : false
                 },
                 goodsStatus() {
                     return [{
@@ -1023,7 +1099,9 @@
             },
             watch: {
                 thisTask() {
-
+                    if (this.thisTask != "") {
+                            this.setTime()
+                    }
                 },
                 taskSetData() {
                     v.delSuTask()
@@ -1061,7 +1139,7 @@
                         if (a != "") {
                             v.remind[1].name = ""
                         }
-                        v.remind[1].text = a
+                        v.remind[1].text = "当前物料充足"
                     },
                     deep: true
                 },
@@ -1122,5 +1200,11 @@
         if (layui.data('taskSet').taskSetData != undefined) {
             v.taskSetData = layui.data('taskSet').taskSetData
         }
-    })
+        //if (layui.data('wcs').wcsLength != undefined) {
+        //    if (layui.data('wcs').wcsLength > 0) {
+        //    v.wcsLength = layui.data('wcs').wcsLength;
+        //        v.itemStatus.boo.percentage = layui.data('wcs').percentage;
+        //    }
+        //}
+    }
 }()

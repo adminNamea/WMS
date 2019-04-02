@@ -8,7 +8,7 @@ function newFunction() {
         var boos = false;
         var a, b, c,s;
         form.verify({
-            pass: [
+            pass:[
                 /^[1-2]$/
                 , '请输入1或2'
             ],

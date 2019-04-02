@@ -14,6 +14,7 @@ namespace WMS.Controllers
     public class WMSController : Controller
     {
         // GET: WMS
+     
         public ActionResult Index()
         {
             return View();
@@ -28,7 +29,6 @@ namespace WMS.Controllers
         public ActionResult PlcIn(string aid,string wcs)
         {
             string msgg = "无可用机器";
-            WCS_Comm w = new WCS_Comm();
             Dictionary<string, object> map = new Dictionary<string, object>();
             var boo = false;
             List<WCS_Comm> list;
@@ -39,15 +39,16 @@ namespace WMS.Controllers
                     wMS.PlcIn(aid);
                     if (wcs != null)
                     {
-                        if (wcs == "8") {
+                         list = wMS.WCS_Comm.Where(p => p.AID == aid && p.ids == wcs).ToList();
+                        list[0].Statu = "2";
+                        if (list[0].type == "回原点") {
                             boo = true;
                         }
-                            list = wMS.WCS_Comm.Where(p => p.AID == aid && p.ids == wcs).ToList();
+                        wMS.SaveChanges();
                     }
                     else {
                         list = wMS.WCS_Comm.Where(p => p.AID==aid).ToList();
                     }
-                    
                     msgg = Controls.WholePileInOut(list[0].IP,false,
                     boo, false,false,false, Convert.ToByte(list[0].mo), Convert.ToInt32(list[0].qx),
                     Convert.ToInt32(list[0].qy), Convert.ToInt32(list[0].qz),

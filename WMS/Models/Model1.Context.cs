@@ -52,6 +52,7 @@ namespace WMS.Models
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
         public virtual DbSet<goid> goid { get; set; }
+        public virtual DbSet<MaterialStatistics> MaterialStatistics { get; set; }
     
         [DbFunction("WMSEntities", "StrToTable")]
         public virtual IQueryable<StrToTable_Result> StrToTable(string str)
@@ -826,6 +827,11 @@ namespace WMS.Models
         public virtual ObjectResult<CheckMQTY_Result> CheckMQTY()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckMQTY_Result>("CheckMQTY");
+        }
+    
+        public virtual ObjectResult<CheckMaterialStatistics_Result> CheckMaterialStatistics()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckMaterialStatistics_Result>("CheckMaterialStatistics");
         }
     }
 }

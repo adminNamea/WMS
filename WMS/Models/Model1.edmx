@@ -23,6 +23,17 @@
           <Property Name="StatusID" Type="varchar" MaxLength="2" Nullable="false" />
           <Property Name="Tel" Type="varchar" MaxLength="40" />
         </EntityType>
+        <EntityType Name="MaterialStatistics">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InType" Type="varchar" MaxLength="20" />
+          <Property Name="QTY" Type="varchar" MaxLength="20" />
+          <Property Name="CreationTime" Type="datetime" />
+          <Property Name="FromID" Type="int" />
+          <Property Name="ToID" Type="int" />
+        </EntityType>
         <!--生成过程中发现错误:
 警告 6002: 表/视图“WMS.dbo.PickUpOne”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
         <EntityType Name="PickUpOne">
@@ -438,6 +449,7 @@
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="MachineTypeID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="CheckMaterialStatistics" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="CheckMQTY" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="checkPlace" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ID" Type="varchar" Mode="In" />
@@ -595,6 +607,7 @@
         <EntityContainer Name="WMSModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MaterialStatistics" EntityType="Self.MaterialStatistics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Position" EntityType="Self.Position" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PurchaseOrder" EntityType="Self.PurchaseOrder" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SystemSet" EntityType="Self.SystemSet" Schema="dbo" store:Type="Tables" />
@@ -1263,6 +1276,8 @@
           </FunctionImport>
           <FunctionImport Name="CheckCounts" ReturnType="Collection(WMSModel.CheckCounts_Result)" />
           <FunctionImport Name="CheckMQTY" ReturnType="Collection(WMSModel.CheckMQTY_Result)" />
+          <EntitySet Name="MaterialStatistics" EntityType="WMSModel.MaterialStatistics" />
+          <FunctionImport Name="CheckMaterialStatistics" ReturnType="Collection(WMSModel.CheckMaterialStatistics_Result)" />
         </EntityContainer>
         <ComplexType Name="CeckHCount_Result">
           <Property Type="Int32" Name="value" Nullable="false" />
@@ -1308,6 +1323,7 @@
           <Property Type="Int32" Name="aid" Nullable="false" />
           <Property Type="Int32" Name="gid" Nullable="false" />
           <Property Type="String" Name="height" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="Category" Nullable="true" MaxLength="50" />
         </ComplexType>
         <ComplexType Name="checkKq_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1456,6 +1472,23 @@
         <ComplexType Name="CheckMQTY_Result">
           <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
           <Property Type="Double" Name="qty" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="MaterialStatistics">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="QTY" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreationTime" Type="DateTime" Precision="3" />
+          <Property Name="FromID" Type="Int32" />
+          <Property Name="ToID" Type="Int32" />
+        </EntityType>
+        <ComplexType Name="CheckMaterialStatistics_Result">
+          <Property Type="String" Name="InType" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="qty" Nullable="true" />
+          <Property Type="String" Name="thisInType" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="thisQty" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1915,6 +1948,7 @@
                 <ScalarProperty Name="aid" ColumnName="aid" />
                 <ScalarProperty Name="gid" ColumnName="gid" />
                 <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -2145,6 +2179,28 @@
               <ComplexTypeMapping TypeName="WMSModel.CheckMQTY_Result">
                 <ScalarProperty Name="PartName" ColumnName="PartName" />
                 <ScalarProperty Name="qty" ColumnName="qty" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="MaterialStatistics">
+            <EntityTypeMapping TypeName="WMSModel.MaterialStatistics">
+              <MappingFragment StoreEntitySet="MaterialStatistics">
+                <ScalarProperty Name="ToID" ColumnName="ToID" />
+                <ScalarProperty Name="FromID" ColumnName="FromID" />
+                <ScalarProperty Name="CreationTime" ColumnName="CreationTime" />
+                <ScalarProperty Name="QTY" ColumnName="QTY" />
+                <ScalarProperty Name="InType" ColumnName="InType" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="CheckMaterialStatistics" FunctionName="WMSModel.Store.CheckMaterialStatistics">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckMaterialStatistics_Result">
+                <ScalarProperty Name="InType" ColumnName="InType" />
+                <ScalarProperty Name="qty" ColumnName="qty" />
+                <ScalarProperty Name="thisInType" ColumnName="thisInType" />
+                <ScalarProperty Name="thisQty" ColumnName="thisQty" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

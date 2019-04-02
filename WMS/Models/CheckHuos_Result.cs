@@ -25,5 +25,6 @@ namespace WMS.Models
         public int aid { get; set; }
         public int gid { get; set; }
         public string height { get; set; }
+        public string Category { get; set; }
     }
 }

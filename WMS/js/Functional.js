@@ -33,7 +33,7 @@ function newFunction() {
                     content: $("" + i + "")
                     , success: function () {
                         if (i == "#go") {
-                            sub("formDemo1", "go");
+                            sub("formDemo1","go");
                         } else {
                             sub("formDemo","golei");
                         }

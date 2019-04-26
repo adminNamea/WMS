@@ -68,6 +68,7 @@
             el: "#app",
             data: {
                 whComm: {},
+                rizi: false,
                 gQuantity: {
                     q1: 0,
                     q2: 0,
@@ -75,6 +76,7 @@
                 },
                 centerDialogVisible1: false,
                 title: "",
+                guz: true,
                 optionss: [],
                 wcsComm: [],
                 timelineList: [],
@@ -171,13 +173,25 @@
                     InQTY: [{ validator: CheckQTY, trigger: 'blur' }],
                     To: [{ validator: CheckTo, trigger: 'change' }]
                 },
-                rgv: false
+                rgv: false,
+                Logging: [],
+                sDate:""
             },
             methods: {
                 zhzy() {
                     this.$http.get("/WCS/zhzy").then(function (res) {
                         v.get();
                     })
+                },
+                Loggings(type) {
+                    if (localStorage.Logging != undefined) {
+                        Logging = JSON.parse(localStorage.Logging)
+                        Logging.push({ name: v.itemStatus.boo.Name, sDate: sDate, eDate: util.toDateString(new Date()), type: type })
+                        localStorage.Logging = JSON.stringify(aa)
+                    } else {
+                        Logging.push({ name: v.itemStatus.boo.Name, sDate: sDate, eDate: util.toDateString(new Date()), type: type })
+                        localStorage.Logging = JSON.stringify(aa)
+                    }
                 },
                 resetForm() {
                     this.$refs['form'].resetFields();
@@ -510,7 +524,9 @@
                     })
                 },
                 setTime() {
-                   var st= setTimeout(function () {
+                    v.wcsLength == 0 ? sDate = util.toDateString(new Date()):""
+                    var st = setTimeout( ()=> {
+                        this.guz = true
                         if (v.wcsComm.length < 2) {
                             v.itemStatus.boo.percentage += 2
                             if (v.itemStatus.boo.percentage > 99) {
@@ -519,7 +535,7 @@
                         }
                         v.$http.get("/WCS/CheckPlc", {
                             params: { ip: "192.168.3.30" }
-                        }).then(function (res) {
+                        }).then((res) =>{
                             var data = res.body
                             if (data.zdyxz) {
                                 v.i = true
@@ -547,11 +563,10 @@
                                 v.$http.get("/WCS/UpTaskStatu", { params: { aid: v.thisTask, status: "错误" } })
                                 v.itemStatus.boo.status = "exception"
                                 v.itemStatus.boo.statu = "错误"
-
                             } else if (data.gzbj) {
                                 v.$http.get("/WCS/Error", {
                                     params: { aid: v.thisTask }
-                                }).then( function () {
+                                }).then( ()=> {
                                     v.$notify.error({
                                         title: '错误',
                                         message: '机器出现故障请及时处理',
@@ -560,18 +575,19 @@
                                     v.no = "机器故障"
                                     v.itemStatus.boo.status = "exception"
                                     v.itemStatus.boo.statu = "错误"
+                                    v.Loggings("机器故障")
                                 })
                             } else if (v.su == "机器检测中...") {
                                 if (data.yxtd) {
                                     $.get("/WMS/PlcIn", {
                                         aid:v.itemStatus.boo.aid,wcs: new String(v.wcsLength)
-                                    }, function (data) {
+                                    }, (data)=> {
                                         if (data.msg == "true") {
                                             if (v.wcsComm[v.wcsLength].type != "回原点") {
                                                 if (v.rgv) {
                                                     v.$http.get("/WMS/PlcSn", {
                                                         params: { ip: "192.168.3.30" }
-                                                    }).then(function (res) {
+                                                    }).then( (res)=> {
                                                         var data = res.body
                                                         if (data == "true") {
                                                             v.su = "机器正在运行"
@@ -587,6 +603,7 @@
                                                             v.$http.get("/WCS/UpTaskStatu", { params: { aid: v.thisTask, status: "错误" } })
                                                             v.itemStatus.boo.status = "exception"
                                                             v.itemStatus.boo.statu = "错误"
+                                                            v.Loggings("连接信息读取失败")
                                                         }
                                                     })
                                                 } else {
@@ -628,43 +645,44 @@
                                                 jd = parseInt(v.itemStatus.boo.percentage + 100 / v.wcsComm.length)
                                                 v.itemStatus.boo.percentage = jd
                                             }
-                                            layui.data("wcs", {
-                                                key: 'wcsLength'
-                                                , value: v.wcsLength
-                                            })
-                                            layui.data("wcs", {
-                                                key: 'percentage'
-                                                , value: jd
-                                            })
+                                            //layui.data("wcs", {
+                                            //    key: 'wcsLength'
+                                            //    , value: v.wcsLength
+                                            //})
+                                            //layui.data("wcs", {
+                                            //    key: 'percentage'
+                                            //    , value: jd
+                                            //})
                                                     v.su = "机器检测中...";
                                                     v.i = false;
                                                     v.setTime()
                                         }
                                     } else {
-                                        v.$message({
-                                            message: "任务" + v.thisTask + '完成',
-                                            type: 'success'
-                                        });
-                                        v.$http.get("/WCS/SuTask", {
-                                            params: { aid: v.thisTask }
-                                        }).then( function () {
-                                            v.get()
-                                            })
-                                        if (v.wcsLength > 0) {
-                                            layui.data("wcs", null)
-                                        }
-                                        v.rgv = false;
-                                        v.thisTask = "";
-                                        v.su = "机器检测中...";
-                                        v.itemStatus.boo.percentage = 100
-                                        v.itemStatus.boo.status = "success"
-                                        v.itemStatus.boo.statu = "完成"
-                                        v.wcsLength = 0;
-                                        v.i = false
-                                        clearTimeout(st)
+                                        //v.$message({
+                                        //    message: "任务" + v.thisTask + '完成',
+                                        //    type: 'success'
+                                        //});
+                                        //v.$http.get("/WCS/SuTask", {
+                                        //    params: { aid: v.thisTask }
+                                        //}).then( function () {
+                                        //    v.get()
+                                        //    })
+                                        //if (v.wcsLength > 0) {
+                                        //    layui.data("wcs", null)
+                                        //}
+                                        //v.rgv = false;
+                                        //v.thisTask = "";
+                                        //v.su = "机器检测中...";
+                                        //v.itemStatus.boo.percentage = 100
+                                        //v.itemStatus.boo.status = "success"
+                                        //v.itemStatus.boo.statu = "完成"
+                                        //v.wcsLength = 0;
+                                        //v.i = false
+                                        //clearTimeout(st)
+                                        v.Loggings("正常运行")
                                         setTimeout(function () {
-                                            v.delSuTask()
-                                        }, 1000)
+                                            location.reload()
+                                        },20000)
                                     }
                                 } else {
                                     v.setTime()
@@ -807,6 +825,7 @@
                         var data=res.body
                         this.mqty = data.MQTY
                         var k = 0;
+                        
                         var h = 0;
                         this.Place = [];
                         this.vals = []
@@ -815,6 +834,11 @@
                         this.datas.count = []
                         this.Place = data.Place
                         this.wcsComm = data.WcsComm;
+                        if (this.wcsComm.length > 0) {
+                            this.guz = true
+                        } else {
+                            this.guz = false
+                        }
                         this.timelineList = []
                         data.Huos.find(function (x) {
                             h++;
@@ -972,6 +996,7 @@
                             })
                         }
                         if (data.Task.length > 0) {
+                           
                             layui.each(data.Task, function (index, x) {
                                 var date = x.CreatedTime.substring(x.CreatedTime.indexOf("(") + 1, x.CreatedTime.indexOf(")"))
                                 var status = "text"

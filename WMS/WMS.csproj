@@ -329,7 +329,6 @@
     <Content Include="css\ht.css" />
     <Content Include="css\StyleSheet1.css" />
     <Content Include="fen.jpg" />
-    <Content Include="js\server.js" />
     <Content Include="js\vue-resource.js" />
     <Content Include="tiankong.jpg" />
     <Content Include="xingkong.jpg" />
@@ -492,6 +491,7 @@
     <Content Include="Models\Model1.edmx.diagram">
       <DependentUpon>Model1.edmx</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />

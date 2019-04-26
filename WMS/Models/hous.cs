@@ -10,8 +10,9 @@
 namespace WMS.Models
 {
     using System;
+    using System.Collections.Generic;
     
-    public partial class CheckHuos_Result
+    public partial class hous
     {
         public string Category { get; set; }
         public string Name { get; set; }

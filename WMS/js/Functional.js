@@ -139,11 +139,12 @@ function newFunction() {
                 }
             });
             table.on('edit(table)', function (obj) {
+                var t=0
                 if (obj.field != "Name" && obj.field != "Status") {
                     if (isNaN(obj.value)) {
                         layer.msg("只可以输入数字", { icon: 5 })
                         var ind = $("tbody tr").index(obj.tr)
-                        table.cache.laytable[ind]["" + obj.field + ""] = 0;
+                        table.cache.laytable[ind][obj.field] = t.toFixed(2);
                         tableIns3.reload({
                             url: "",
                             data: table.cache.laytable,

@@ -7,9 +7,6 @@ using System.Web.Mvc;
 using WMS.Models;
 using System.Data.SqlClient;
 using System.Text;
-using org.apache.pdfbox.pdmodel;
-using org.apache.pdfbox.util;
-using System.IO;
 using WMS.ControlPlc;
 
 
@@ -396,47 +393,6 @@ namespace WMS.Controllers
             }
                 return Json(wc, JsonRequestBehavior.AllowGet);
         }
-        public static bool ExcelToPdf(string sourcePath, string targetPath)
-        {
-            bool result = false;
-            XlFixedFormatType xlTypePDF = XlFixedFormatType.xlTypePDF;//转换成pdf
-            object missing = Type.Missing;
-            Microsoft.Office.Interop.Excel.ApplicationClass applicationClass = null;
-            Workbook workbook = null;
-            try
-            {
-                applicationClass = new Microsoft.Office.Interop.Excel.ApplicationClass();
-                string inputfileName = sourcePath;//需要转格式的文件路径
-                string outputFileName = targetPath;//转换完成后PDF文件的路径和文件名名称
-                XlFixedFormatType xlFixedFormatType = xlTypePDF;//导出文件所使用的格式
-                XlFixedFormatQuality xlFixedFormatQuality = XlFixedFormatQuality.xlQualityStandard;//1.xlQualityStandard:质量标准，2.xlQualityMinimum;最低质量
-                bool includeDocProperties = true;//如果设置为True，则忽略在发布时设置的任何打印区域。
-                bool openAfterPublish = false;//发布后不打开
-                workbook = applicationClass.Workbooks.Open(inputfileName, missing, missing, missing, missing, missing, missing, missing, missing, missing, missing, missing, missing, missing, missing);
-                if (workbook != null)
-                {
-                    workbook.ExportAsFixedFormat(xlFixedFormatType, outputFileName, xlFixedFormatQuality, includeDocProperties, openAfterPublish, missing, missing, missing, missing);
-                }
-                result = true;
-            }
-            catch
-            {
-                result = false;
-            }
-            finally
-            {
-                if (workbook != null)
-                {
-                    workbook.Close(true, missing, missing);
-                    workbook = null;
-                }
-                if (applicationClass != null)
-                {
-                    applicationClass.Quit();
-                    applicationClass = null;
-                }
-            }
-            return result;
-        }
+       
     }
 }

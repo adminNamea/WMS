@@ -25,6 +25,7 @@
             <el-menu class="el-menu-demo" mode="horizontal">
                 <el-menu-item index="1" @@click="Background">后台管理</el-menu-item>
                 <el-menu-item index="2" @@click="centerDialogVisible=true">基本设置</el-menu-item>
+                <el-menu-item index="3" @@click="rizi=true">日志报告</el-menu-item>
             </el-menu>
             <el-container>
                 <el-header>
@@ -68,7 +69,7 @@
                                     </el-dropdown-menu>
                                 </el-dropdown>
                                 <el-button type="success" icon="el-icon-tickets" @@click="centerDialogVisible1 = true" plain>执行信息</el-button>
-                                <el-button type="success" icon="el-icon-tickets" @@click="zhzy" plain>智能操作</el-button>
+                                <el-button type="success" icon="el-icon-tickets" @@click="zhzy" :disabled="guz" plain>智能操作</el-button>
                             </div>
                         </el-col>
                     </el-row>
@@ -429,39 +430,18 @@
                     <el-button type="primary" @@click="centerDialogVisible1 = false">确 定</el-button>
                 </span>
             </el-dialog>
-
-            <el-dialog title="执行信息"
-                       :visible.sync="centerDialogVisible1"
-                       width="40%"
-                       center>
-                <hr />
-                <el-row :gutter="20" style="text-align:center">
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">
-                            <el-tag type="danger">物料</el-tag>
-                            <h1>{{whComm.PartName}}</h1>
-                        </div>
-                    </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">
-                            <el-tag type="danger">规格</el-tag>
-                            <h1>{{whComm.PartSpec}}</h1>
-                        </div>
-                    </el-col>
-                    <el-col :span="8">
-                        <div class="grid-content bg-purple">
-                            <el-tag type="danger">材质</el-tag>
-                            <h1>{{whComm.PartMaterial}}</h1>
-                        </div>
-                    </el-col>
-                </el-row>
-                <hr />
-                <h1 style="text-align:center">{{whComm.type}}中</h1>
-
-                <span slot="footer" class="dialog-footer">
-                    <el-button @@click="centerDialogVisible1 = false">取 消</el-button>
-                    <el-button type="primary" @@click="centerDialogVisible1 = false">确 定</el-button>
-                </span>
+            <el-dialog title="日志报告" :visible.sync="rizi">
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">任务执行总次数</el-tag><span>{{Logging.length}}</span></div>
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">今日执行次数</el-tag><span>{{Logging.filter(x=>toStringDate(x.sDate,"yyyy-MM-dd")==toStringDate(new Date(),"yyyy-MM-dd")).length}}</span></div>
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="danger">机器故障总次数</el-tag><span>{{Logging.filter(x=>x.type=="机器故障").length}}</span></div>
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="danger">今日故障次数</el-tag><span>{{Logging.filter(x=>x.type=="机器故障"&&toStringDate(x.sDate,"yyyy-MM-dd")==toStringDate(new Date(),"yyyy-MM-dd")).length}}</span></div>
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="warning">连接失败总次数</el-tag><span>{{Logging.filter(x=>x.type=="连接信息读取失败").length}}</span></div>
+                <el-table :data="Logging">
+                    <el-table-column property="Name" label="机器名称"></el-table-column>
+                    <el-table-column property="sDate" sortable label="开始时间"></el-table-column>
+                    <el-table-column property="eDate" sortable label="结束时间"></el-table-column>
+                    <el-table-column property="type" label="状态"></el-table-column>
+                </el-table>
             </el-dialog>
         </template>
     </div>

@@ -432,12 +432,12 @@
             </el-dialog>
             <el-dialog title="日志报告" :visible.sync="rizi">
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">任务执行总次数</el-tag><span>{{Logging.length}}</span></div>
-                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">今日执行次数</el-tag><span>{{Logging.filter(x=>toStringDate(x.sDate,"yyyy-MM-dd")==toStringDate(new Date(),"yyyy-MM-dd")).length}}</span></div>
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">今日执行次数</el-tag><span>{{lo.jlo}}</span></div>
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="danger">机器故障总次数</el-tag><span>{{Logging.filter(x=>x.type=="机器故障").length}}</span></div>
-                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="danger">今日故障次数</el-tag><span>{{Logging.filter(x=>x.type=="机器故障"&&toStringDate(x.sDate,"yyyy-MM-dd")==toStringDate(new Date(),"yyyy-MM-dd")).length}}</span></div>
+                <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="danger">今日故障次数</el-tag><span>{{lo.jg}}</span></div>
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="warning">连接失败总次数</el-tag><span>{{Logging.filter(x=>x.type=="连接信息读取失败").length}}</span></div>
                 <el-table :data="Logging">
-                    <el-table-column property="Name" label="机器名称"></el-table-column>
+                    <el-table-column property="name" label="机器名称"></el-table-column>
                     <el-table-column property="sDate" sortable label="开始时间"></el-table-column>
                     <el-table-column property="eDate" sortable label="结束时间"></el-table-column>
                     <el-table-column property="type" label="状态"></el-table-column>

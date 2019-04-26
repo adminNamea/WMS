@@ -185,11 +185,12 @@
                 },
                 Loggings(type) {
                     if (localStorage.Logging != undefined) {
-                        Logging = JSON.parse(localStorage.Logging)
-                        Logging.push({ name: v.itemStatus.boo.Name, sDate: sDate, eDate: util.toDateString(new Date()), type: type })
+                        var aa = JSON.parse(localStorage.Logging)
+                        aa.push({ name: this.itemStatus.boo.Name, sDate: this.sDate, eDate: this.toDateString(new Date()), type: type })
                         localStorage.Logging = JSON.stringify(aa)
                     } else {
-                        Logging.push({ name: v.itemStatus.boo.Name, sDate: sDate, eDate: util.toDateString(new Date()), type: type })
+                        var aa = []
+                        aa.push({ name: this.itemStatus.boo.Name, sDate: this.sDate, eDate: this.toDateString(new Date()), type: type })
                         localStorage.Logging = JSON.stringify(aa)
                     }
                 },
@@ -524,6 +525,7 @@
                     })
                 },
                 setTime() {
+                    
                     v.wcsLength == 0 ? this.sDate = util.toDateString(new Date()):""
                     var st = setTimeout( ()=> {
                         this.guz = true
@@ -825,7 +827,9 @@
                         var data=res.body
                         this.mqty = data.MQTY
                         var k = 0;
-                        
+                        if (localStorage.Logging != undefined) {
+                            this.Logging = JSON.parse(localStorage.Logging)
+                        }
                         var h = 0;
                         this.Place = [];
                         this.vals = []
@@ -1066,11 +1070,18 @@
                 }
             },
             created: function () {
+                localStorage.clear()
                     this.get()
             },
             computed: {
                 timelineStatu() {
                     return this.timelineList.length > 0 ? true : false
+                },
+                lo() {
+                    return {
+                        jlo: this.Logging.filter(x => this.toDateString(x.sDate, "yyyy-MM-dd") == this.toDateString(new Date(), "yyyy-MM-dd")).length,
+                        jg: this.Logging.filter(x => x.type == "机器故障" && this.toDateString(x.sDate, "yyyy-MM-dd") == this.toDateString(new Date(), "yyyy-MM-dd")).length
+                    }
                 },
                 goodsStatus() {
                     return [{

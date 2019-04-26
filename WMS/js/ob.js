@@ -1069,7 +1069,7 @@
                     return a
                 }
             },
-            created: function () 
+            created: function () {
                     this.get()
             },
             computed: {

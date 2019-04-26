@@ -1069,8 +1069,7 @@
                     return a
                 }
             },
-            created: function () {
-                localStorage.clear()
+            created: function () 
                     this.get()
             },
             computed: {

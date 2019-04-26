@@ -212,6 +212,9 @@
     <Compile Include="Models\goid.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\hous.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\InOutMaterial_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -330,9 +333,6 @@
     <Content Include="css\StyleSheet1.css" />
     <Content Include="fen.jpg" />
     <Content Include="js\vue-resource.js" />
-    <Content Include="tiankong.jpg" />
-    <Content Include="xingkong.jpg" />
-    <Content Include="js\ob.js" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -343,6 +343,9 @@
       <DependentUpon>Model1.edmx</DependentUpon>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
+    <Content Include="tiankong.jpg" />
+    <Content Include="xingkong.jpg" />
+    <Content Include="js\ob.js" />
     <Content Include="css\index.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -492,6 +495,7 @@
       <DependentUpon>Model1.edmx</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />

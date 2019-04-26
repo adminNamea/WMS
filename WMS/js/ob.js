@@ -524,7 +524,7 @@
                     })
                 },
                 setTime() {
-                    v.wcsLength == 0 ? sDate = util.toDateString(new Date()):""
+                    v.wcsLength == 0 ? this.sDate = util.toDateString(new Date()):""
                     var st = setTimeout( ()=> {
                         this.guz = true
                         if (v.wcsComm.length < 2) {

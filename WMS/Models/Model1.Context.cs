@@ -29,6 +29,7 @@ namespace WMS.Models
     
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Employee> Employee { get; set; }
+        public virtual DbSet<MaterialStatistics> MaterialStatistics { get; set; }
         public virtual DbSet<Position> Position { get; set; }
         public virtual DbSet<PurchaseOrder> PurchaseOrder { get; set; }
         public virtual DbSet<SystemSet> SystemSet { get; set; }
@@ -52,7 +53,7 @@ namespace WMS.Models
         public virtual DbSet<WH_Applier> WH_Applier { get; set; }
         public virtual DbSet<WH_Defect> WH_Defect { get; set; }
         public virtual DbSet<goid> goid { get; set; }
-        public virtual DbSet<MaterialStatistics> MaterialStatistics { get; set; }
+        public virtual DbSet<hous> hous { get; set; }
     
         [DbFunction("WMSEntities", "StrToTable")]
         public virtual IQueryable<StrToTable_Result> StrToTable(string str)
@@ -188,6 +189,33 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkComm_Result>("checkComm", nameParameter);
         }
     
+        public virtual ObjectResult<CheckCounts_Result> CheckCounts()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckCounts_Result>("CheckCounts");
+        }
+    
+        public virtual ObjectResult<CheckHousCount_Result> CheckHousCount()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHousCount_Result>("CheckHousCount");
+        }
+    
+        public virtual ObjectResult<CheckHousSum_Result> CheckHousSum(string partName, string partSpec, string partMaterial)
+        {
+            var partNameParameter = partName != null ?
+                new ObjectParameter("PartName", partName) :
+                new ObjectParameter("PartName", typeof(string));
+    
+            var partSpecParameter = partSpec != null ?
+                new ObjectParameter("PartSpec", partSpec) :
+                new ObjectParameter("PartSpec", typeof(string));
+    
+            var partMaterialParameter = partMaterial != null ?
+                new ObjectParameter("PartMaterial", partMaterial) :
+                new ObjectParameter("PartMaterial", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHousSum_Result>("CheckHousSum", partNameParameter, partSpecParameter, partMaterialParameter);
+        }
+    
         public virtual ObjectResult<checkHuo_Result> checkHuo(string storageLocationID, string wHAreaID, string wHID, string tempPlate, string type)
         {
             var storageLocationIDParameter = storageLocationID != null ?
@@ -274,6 +302,16 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkMachine_Result>("checkMachine", iDParameter, machineTypeIDParameter);
         }
     
+        public virtual ObjectResult<CheckMaterialStatistics_Result> CheckMaterialStatistics()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckMaterialStatistics_Result>("CheckMaterialStatistics");
+        }
+    
+        public virtual ObjectResult<CheckMQTY_Result> CheckMQTY()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckMQTY_Result>("CheckMQTY");
+        }
+    
         public virtual ObjectResult<checkPlace_Result> checkPlace(string iD, string placeTypeID)
         {
             var iDParameter = iD != null ?
@@ -295,6 +333,11 @@ namespace WMS.Models
         public virtual ObjectResult<CheckWCount_Result> CheckWCount()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckWCount_Result>("CheckWCount");
+        }
+    
+        public virtual ObjectResult<CheckWhMaterial_Result> CheckWhMaterial()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckWhMaterial_Result>("CheckWhMaterial");
         }
     
         public virtual ObjectResult<checkWo_Result> checkWo(string id, string type)
@@ -792,46 +835,13 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Zhzy");
         }
     
-        public virtual ObjectResult<CheckWhMaterial_Result> CheckWhMaterial()
+        public virtual ObjectResult<Nullable<int>> ZnIn(string aid)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckWhMaterial_Result>("CheckWhMaterial");
-        }
+            var aidParameter = aid != null ?
+                new ObjectParameter("aid", aid) :
+                new ObjectParameter("aid", typeof(string));
     
-        public virtual ObjectResult<CheckHousCount_Result> CheckHousCount()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHousCount_Result>("CheckHousCount");
-        }
-    
-        public virtual ObjectResult<CheckHousSum_Result> CheckHousSum(string partName, string partSpec, string partMaterial)
-        {
-            var partNameParameter = partName != null ?
-                new ObjectParameter("PartName", partName) :
-                new ObjectParameter("PartName", typeof(string));
-    
-            var partSpecParameter = partSpec != null ?
-                new ObjectParameter("PartSpec", partSpec) :
-                new ObjectParameter("PartSpec", typeof(string));
-    
-            var partMaterialParameter = partMaterial != null ?
-                new ObjectParameter("PartMaterial", partMaterial) :
-                new ObjectParameter("PartMaterial", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHousSum_Result>("CheckHousSum", partNameParameter, partSpecParameter, partMaterialParameter);
-        }
-    
-        public virtual ObjectResult<CheckCounts_Result> CheckCounts()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckCounts_Result>("CheckCounts");
-        }
-    
-        public virtual ObjectResult<CheckMQTY_Result> CheckMQTY()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckMQTY_Result>("CheckMQTY");
-        }
-    
-        public virtual ObjectResult<CheckMaterialStatistics_Result> CheckMaterialStatistics()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckMaterialStatistics_Result>("CheckMaterialStatistics");
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ZnIn", aidParameter);
         }
     }
 }

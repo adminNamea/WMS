@@ -6,11 +6,8 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <script src="~/layui/layui.js" type="text/javascript"></script>
-    <script src="~/layui/lay/modules/util.js"></script>
-    <script src="~/layui/lay/modules/layer.js"></script>
+    <link  rel="stylesheet" href="~/layui/css/layui.css"/>
     <script src="~/js/echarts.js"></script>
-    <link href="~/layui/css/layui.css" rel="stylesheet" />
     <script src="~/js/vue.js"></script>
     <script src="~/js/vue-resource.js"></script>
     <script src="~/js/elemenui.js"></script>
@@ -22,10 +19,18 @@
 <body>
     <div id="app">
         <template>
-            <el-menu class="el-menu-demo" mode="horizontal">
+            <el-menu class="el-menu-demo" mode="horizontal" menu-trigger="click">
                 <el-menu-item index="1" @@click="Background">后台管理</el-menu-item>
                 <el-menu-item index="2" @@click="centerDialogVisible=true">基本设置</el-menu-item>
                 <el-menu-item index="3" @@click="rizi=true">日志报告</el-menu-item>
+                <el-submenu index="4"  :show-timeout="100" :hide-timeout="100">
+                    <template slot="title">
+                        机器管理
+                    </template>
+                    <el-menu-item index="4-1" style="margin-bottom:10px"><el-button type="primary" style="width:100%" @@click="wcsControl('a')">启动</el-button></el-menu-item>
+                    <el-menu-item index="4-2" style="margin-bottom:10px"><el-button type="warning" style="width:100%" @@click="wcsControl('b')">复位</el-button></el-menu-item>
+                    <el-menu-item index="4-3" style="margin-bottom:10px"> <el-button type="danger" style="width:100%" @@click="wcsControl('c')">停止</el-button></el-menu-item>
+                </el-submenu>
             </el-menu>
             <el-container>
                 <el-header>

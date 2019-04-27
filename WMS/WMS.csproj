@@ -51,19 +51,7 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="fontbox-1.8.4">
-      <HintPath>..\..\..\..\Desktop\PDFBox.NET-1.8.4\bin\fontbox-1.8.4.dll</HintPath>
-    </Reference>
-    <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>..\..\..\..\Desktop\PDFBox.NET-1.8.4\bin\IKVM.OpenJDK.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="IKVM.Runtime">
-      <HintPath>..\..\..\..\Desktop\PDFBox.NET-1.8.4\bin\IKVM.Runtime.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="pdfbox-1.8.4">
-      <HintPath>..\..\..\..\Desktop\PDFBox.NET-1.8.4\bin\pdfbox-1.8.4.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />

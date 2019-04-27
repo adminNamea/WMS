@@ -2,8 +2,6 @@
 !function () {
     "use strict";
     window.onload = function () {
-        var util = layui.util;
-        var $ = layui.jquery;
         Vue.prototype.$echarts = echarts
         var CheckTo = (rule, value, callback) => {
             if (!value) {
@@ -83,9 +81,8 @@
                 su: "机器检测中...",
                 no: "无",
                 thisTask: "",
-               
                 wcsLength: 0,
-                date: '',
+                date: "",
                 Place: [],
                 mqty: [],
                 options: [],
@@ -178,19 +175,46 @@
                 sDate:""
             },
             methods: {
+                wcsControl(type) {
+                    switch (type) {
+                        case "a":
+                            break;
+                        case "b":
+                            break;
+                        case "c":
+                            break;
+                    }
+                },
                 zhzy() {
                     this.$http.get("/WCS/zhzy").then(function (res) {
                         v.get();
                     })
                 },
+                digit(t, e) {
+                    var i = "";
+                    t = String(t),
+                        e = e || 2;
+                    for (var a = t.length; a < e; a++)
+                        i += "0";
+                    return t < Math.pow(10, e) ? i + (0 | t) : t
+                },
+                toDateString(t, e, text) {
+                    var i = this
+                        , a = new Date(t || new Date)
+                        , n = [i.digit(a.getFullYear(), 4), i.digit(a.getMonth() + 1), i.digit(a.getDate())]
+                        , r = [i.digit(a.getHours()), i.digit(a.getMinutes()), i.digit(a.getSeconds())];
+                        e = e || "yyyy-MM-dd HH:mm:ss"
+                      var date= e.replace(/yyyy/g, n[0]).replace(/MM/g, n[1]).replace(/dd/g, n[2]).replace(/HH/g, r[0]).replace(/mm/g, r[1]).replace(/ss/g, r[2])
+                    return text == undefined ? date : text + date
+                },
                 Loggings(type) {
                     if (localStorage.Logging != undefined) {
                         var aa = JSON.parse(localStorage.Logging)
-                        aa.push({ name: this.itemStatus.boo.Name, sDate: this.sDate, eDate: this.toDateString(new Date()), type: type })
+                        aa.push({ name: this.itemStatus.boo.Name, sDate: this.sDate, eDate: this.toDateString(), type: type })
                         localStorage.Logging = JSON.stringify(aa)
                     } else {
                         var aa = []
-                        aa.push({ name: this.itemStatus.boo.Name, sDate: this.sDate, eDate: this.toDateString(new Date()), type: type })
+                        aa.push({ name: this.itemStatus.boo.Name, sDate: this.sDate, eDate: this.toDateString(), type: type })
                         localStorage.Logging = JSON.stringify(aa)
                     }
                 },
@@ -248,13 +272,9 @@
                 },
                 huoTypeComm(c) {
                     this.taskSetData.huoType = c
-                    layui.data("taskSet", {
-                        key: 'taskSetData'
-                        , value: this.taskSetData
-                    })
+                    localStorage.setItem("taskSet", JSON.stringify(this.taskSetData))
                 },
                 selected(e, fu) {
-                    v.selects = []
                     v.form.selectedOptions3 = []
                     v.form.PlaceID = e.ID
                     if (e.PartName != "空") {
@@ -266,69 +286,6 @@
                     if (fu != undefined) {
                         fu
                     }
-                    v.$http.get("/WMS/CheckWhMaterial").then(function (res) {
-                        var data = res.body
-                        if (data.length > 0) {
-                            layui.each(data, function (index, val) {
-                                var d = true
-                                if (v.selects.length > 0) {
-                                    v.selects.find(function (v1) {
-                                        var q = true
-                                        if (v1.value == val.PartName) {
-                                            d = false
-                                            v1.children.find(function (x) {
-                                                if (x.value == val.PartSpec) {
-                                                    q = false
-                                                    x.children.push({
-                                                        value: val.PartMaterial,
-                                                        label: val.PartMaterial
-                                                    })
-                                                }
-                                            })
-                                            if (q) {
-                                                v1.children.push({
-                                                    value: val.PartSpec, label: val.PartSpec, children: [
-                                                        {
-                                                            value: val.PartMaterial,
-                                                            label: val.PartMaterial
-                                                        }
-                                                    ]
-                                                })
-                                            }
-                                        }
-                                    })
-                                    if (d) {
-                                        v.selects.push({
-                                            value: val.PartName,
-                                            label: val.PartName,
-                                            children: [{
-                                                value: val.PartSpec,
-                                                label: val.PartSpec,
-                                                children: [{
-                                                    value: val.PartMaterial,
-                                                    label: val.PartMaterial,
-                                                }]
-                                            }]
-
-                                        })
-                                    }
-                                } else {
-                                    v.selects.push({
-                                        value: val.PartName,
-                                        label: val.PartName,
-                                        children: [{
-                                            value: val.PartSpec,
-                                            label: val.PartSpec,
-                                            children: [{
-                                                value: val.PartMaterial,
-                                                label: val.PartMaterial,
-                                            }]
-                                        }]
-                                    })
-                                }
-                            })
-                        }
-                    })
                 },
                 Change_a(value) {
                     var newOption = [];
@@ -465,7 +422,7 @@
                                 var booo = true
                                 var a = v.itemStatus
                                 if (a.bo3 != null) {
-                                    layui.each(a.bo3, function (i, va) {
+                                    a.bo3.forEach(va =>{
                                         if (va.aid == aid) {
                                             booo = false;
                                             return false;
@@ -483,7 +440,7 @@
                                     }
                                     if (a.bo1 != null) {
                                         var t = false
-                                        layui.each(a.bo1, function (i, va) {
+                                        a.bo1.forEach(va=> {
                                             if (va.aid == aid) {
                                                 t = true;
                                                 return false;
@@ -525,8 +482,8 @@
                     })
                 },
                 setTime() {
-                    
-                    v.wcsLength == 0 ? this.sDate = util.toDateString(new Date()):""
+
+                    v.wcsLength == 0 ? this.sDate = this.toDateString() : ""
                     var st = setTimeout( ()=> {
                         this.guz = true
                         if (v.wcsComm.length < 2) {
@@ -581,9 +538,10 @@
                                 })
                             } else if (v.su == "机器检测中...") {
                                 if (data.yxtd) {
-                                    $.get("/WMS/PlcIn", {
-                                        aid:v.itemStatus.boo.aid,wcs: new String(v.wcsLength)
-                                    }, (data)=> {
+                                    v.$http.get("/WMS/PlcIn", { params: {
+                                        aid: v.itemStatus.boo.aid, wcs: new String(v.wcsLength)
+                                    }
+                                   }).then(data=> {
                                         if (data.msg == "true") {
                                             if (v.wcsComm[v.wcsLength].type != "回原点") {
                                                 if (v.rgv) {
@@ -731,7 +689,7 @@
                 },
                 colse(aid) {
                     var boo = true
-                    layui.each(this.timelineList, function (index, x) {
+                    this.timelineList.forEach( x=> {
                         if (x.aid == aid) {
                             boo = x.statu == "完成" ? false : true
                         }
@@ -776,26 +734,19 @@
                     return statu == "正在执行" ? this.progress(aid) : this.colse(aid)
 
                 },
-                toDateString(d, f, text) {
-                    return text == undefined ? util.toDateString(d, f) : text + util.toDateString(d, f)
-                },
                 taskCancel(b) {
                     if (b) {
-                        layui.data("taskSet", {
-                            key: 'taskSetData'
-                            , value: v.taskSetData
-                        })
+                        localStorage.setItem("taskSet", JSON.stringify(v.taskSetData))
                     }
                     v.centerDialogVisible = false
-                    v.taskSetData = layui.data('taskSet').taskSetData
-
+                    v.taskSetData = JSON.parse(localStorage.getItem('taskSet'))
                 },
                 delSuTask() {
                     var a = this.itemStatus
                     var New = [];
                     
                     if (v.taskSetData.removeTask) {
-                        $.ajax({
+                        this.$http.get({
                             url: "/WCS/DelSuTask"
                         })
                         this.timelineList.forEach(function (va) {
@@ -822,7 +773,54 @@
                     });
                     layer.full(i)
                 },
+                arr(a) {
+                    var d = a[0];
+                    const ccc = [];
+                    a.forEach((x, index) => {
+                        if (x.children != undefined) {
+                            if (index > 0) {
+                                if (String(x.value) == String(d.value)) {
+                                    d.children = d.children.concat(x.children)
+                                    d.children = v.arr(d.children)
+                                    if (a.length - 1 == index) {
+                                        ccc.push(d)
+                                    }
+                                } else {
+                                    ccc.push(d)
+                                    d = x
+                                    if (a.length - 1 == index) {
+                                        ccc.push(d)
+                                    }
+                                }
+                            }
+                        } else {
+                            ccc.push(x)
+                        }
+                    })
+                    return ccc
+                },
                 get: function () {
+                    this.$http.get("/WMS/CheckWhMaterial").then(function (res) {
+                        v.selects = [];
+                        var data = res.body
+                        if (data.length > 0) {
+                            data.forEach(val => {
+                                v.selects.push({
+                                    value: val.PartName,
+                                    label: val.PartName,
+                                    children: [{
+                                        value: val.PartSpec,
+                                        label: val.PartSpec,
+                                        children: [{
+                                            value: val.PartMaterial,
+                                            label: val.PartMaterial,
+                                        }]
+                                    }]
+                                })
+                            })
+                            v.selects = v.arr(v.selects)
+                        }
+                    })
                     this.$http.get("/WCS/CheckAll").then(function (res) {
                         var data=res.body
                         this.mqty = data.MQTY
@@ -856,50 +854,8 @@
                             v.gQuantity.q3 = Number(data.WCount.nos)
                         }
                         if (data.WhMaterial.length > 0) {
-                            layui.each(data.WhMaterial, function (index, val) {
-                                var d = true
-                                if (v.vals.length > 0) {
-                                    v.vals.find(function (v1) {
-                                        var q = true
-                                        if (v1.value == val.PartName) {
-                                            d = false
-                                            v1.children.find(function (x) {
-                                                if (x.value == val.PartSpec) {
-                                                    q = false
-                                                    x.children.push({
-                                                        value: val.PartMaterial,
-                                                        label: val.PartMaterial
-                                                    })
-                                                }
-                                            })
-                                            if (q) {
-                                                v1.children.push({
-                                                    value: val.PartSpec, label: val.PartSpec, children: [
-                                                        {
-                                                            value: val.PartMaterial,
-                                                            label: val.PartMaterial
-                                                        }
-                                                    ]
-                                                })
-                                            }
-                                        }
-                                    })
-                                    if (d) {
-                                        v.vals.push({
-                                            value: val.PartName,
-                                            label: val.PartName,
-                                            children: [{
-                                                value: val.PartSpec,
-                                                label: val.PartSpec,
-                                                children: [{
-                                                    value: val.PartMaterial,
-                                                    label: val.PartMaterial,
-                                                }]
-                                            }]
-
-                                        })
-                                    }
-                                } else {
+                           
+                            data.WhMaterial.forEach(val => {
                                     v.vals.push({
                                         value: val.PartName,
                                         label: val.PartName,
@@ -912,54 +868,11 @@
                                             }]
                                         }]
                                     })
-                                }
                             })
+                            v.vals = v.arr(v.vals)
                         }
                         if (data.Counts.length > 0) {
-                            layui.each(data.Counts, function (index, val) {
-                                var d = true
-                                if (v.options1.length > 0) {
-                                    v.options1.find(function (v1) {
-                                        var q = true
-                                        if (v1.value == val.hid) {
-                                            d = false
-                                            v1.children.find(function (x) {
-
-                                                if (x.value == val.aid) {
-                                                    q = false
-                                                    x.children.push({
-                                                        value: val.gid,
-                                                        label: val.gname
-                                                    })
-                                                }
-                                            })
-                                            if (q) {
-                                                v1.children.push({
-                                                    value: val.aid, label: val.aname, children: [
-                                                        {
-                                                            value: val.gid,
-                                                            label: val.gname
-                                                        }
-                                                    ]
-                                                })
-                                            }
-                                        }
-                                    })
-                                    if (d) {
-                                        v.options1.push({
-                                            value: val.hid,
-                                            label: val.hname,
-                                            children: [{
-                                                value: val.aid,
-                                                label: val.aname,
-                                                children: [{
-                                                    value: val.gid,
-                                                    label: val.gname,
-                                                }]
-                                            }]
-                                        })
-                                    }
-                                } else {
+                            data.Counts.forEach(val=> {
                                     v.options1.push({
                                         value: val.hid,
                                         label: val.hname,
@@ -972,8 +885,8 @@
                                             }]
                                         }]
                                     })
-                                }
                             })
+                            v.options1 = v.arr(v.options1)
                         }
                         if (data.HousSum != null) {
                             v.counts[0].value = new String(data.HousSum.sum)
@@ -1000,8 +913,8 @@
                             })
                         }
                         if (data.Task.length > 0) {
-                           
-                            layui.each(data.Task, function (index, x) {
+
+                            data.Task.forEach(x => {
                                 var date = x.CreatedTime.substring(x.CreatedTime.indexOf("(") + 1, x.CreatedTime.indexOf(")"))
                                 var status = "text"
                                 var percentage = 0;
@@ -1109,7 +1022,7 @@
                     var bo1 = [];
                     var bo2 = [];
                     var bo3 = [];
-                    layui.each(this.timelineList, function (index, x) {
+                    this.timelineList.forEach((index, x)=> {
                         if (x.statu == "正在执行") {
                             boo = x
                         } else if (x.statu == "错误") {
@@ -1230,16 +1143,8 @@
             }
         })
         setInterval(() => {
-            v.date = util.toDateString(new Date())
+            v.date = v.toDateString()
         }, 1000);
-        if (layui.data('taskSet').taskSetData != undefined) {
-            v.taskSetData = layui.data('taskSet').taskSetData
-        }
-        //if (layui.data('wcs').wcsLength != undefined) {
-        //    if (layui.data('wcs').wcsLength > 0) {
-        //    v.wcsLength = layui.data('wcs').wcsLength;
-        //        v.itemStatus.boo.percentage = layui.data('wcs').percentage;
-        //    }
-        //}
+        v.taskSetData = JSON.parse( localStorage.getItem("taskSet"))
     }
 }()

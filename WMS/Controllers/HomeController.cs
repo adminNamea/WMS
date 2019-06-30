@@ -1,17 +1,15 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Collections;
 using System.Web.Mvc;
 using WMS.Models;
-using System.Data.SqlClient;
-using System.Text;
 
 namespace WMS.Controllers
 {
     public class HomeController : Controller
     {
+
+       
         public ActionResult Index()
         {
             return View();
@@ -52,7 +50,7 @@ namespace WMS.Controllers
             return "true";
         }
         //查询用户
-        public ActionResult checkUser(string value,string id) {
+        public ActionResult CheckUser(string value,string id) {
             List<Employee> employees;
             int ids = 0;
             if (id != null) {

@@ -10,23 +10,16 @@
 namespace WMS.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class WH_Material
+    public partial class CheckInventory_Result
     {
         public int ID { get; set; }
-        public string Category1 { get; set; }
         public string PartName { get; set; }
         public string PartSpec { get; set; }
         public string PartMaterial { get; set; }
-        public Nullable<int> QTYperPallet { get; set; }
-        public string Units { get; set; }
-        public string CreatedBy { get; set; }
-        public string CreatedTime { get; set; }
-        public Nullable<System.DateTime> UpdatedTime { get; set; }
-        public string UpdatedBy { get; set; }
-        public Nullable<int> StatusID { get; set; }
-        public Nullable<int> SumQty { get; set; }
+        public string Type { get; set; }
+        public Nullable<int> sum { get; set; }
+        public string upStatus { get; set; }
         public string NotQty { get; set; }
     }
 }

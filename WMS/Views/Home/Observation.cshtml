@@ -6,326 +6,49 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <link  rel="stylesheet" href="~/layui/css/layui.css"/>
     <script src="~/js/echarts.js"></script>
     <script src="~/js/vue.js"></script>
     <script src="~/js/vue-resource.js"></script>
     <script src="~/js/elemenui.js"></script>
-    <script src="~/js/ob.js"></script>
+    <script src="~/js/ob.js" type="module"></script>
+    <script src="~/js/vue-router.js"></script>
     <title>WarehouseState</title>
     <link href="~/css/index.css" rel="stylesheet" />
     <link href="~/css/StyleSheet1.css" rel="stylesheet" />
+    <style>
+        .slide-fade-enter-active {
+            transition: all .1s ease;
+        }
+
+
+        .slide-fade-leave-active {
+            transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+        }
+
+
+        .slide-fade-enter, .slide-fade-leave-to
+        /* .slide-slide-fade-leave-active for below version 2.1.8 */ {
+            transform: translateX(10px);
+            opacity: 0;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <template>
-            <el-menu class="el-menu-demo" mode="horizontal" menu-trigger="click">
-                <el-menu-item index="1" @@click="Background">后台管理</el-menu-item>
-                <el-menu-item index="2" @@click="centerDialogVisible=true">基本设置</el-menu-item>
-                <el-menu-item index="3" @@click="rizi=true">日志报告</el-menu-item>
-                <el-submenu index="4"  :show-timeout="100" :hide-timeout="100">
-                    <template slot="title">
-                        机器管理
-                    </template>
-                    <el-menu-item index="4-1" style="margin-bottom:10px"><el-button type="primary" style="width:100%" @@click="wcsControl('a')">启动</el-button></el-menu-item>
-                    <el-menu-item index="4-2" style="margin-bottom:10px"><el-button type="warning" style="width:100%" @@click="wcsControl('b')">复位</el-button></el-menu-item>
-                    <el-menu-item index="4-3" style="margin-bottom:10px"> <el-button type="danger" style="width:100%" @@click="wcsControl('c')">停止</el-button></el-menu-item>
-                </el-submenu>
+            <el-menu class="el-menu-demo" mode="horizontal" menu-trigger="click" :router="true"
+                     background-color="#545c64"
+                     text-color="#fff"
+                     active-text-color="#ffd04b">
+                <el-menu-item index="/">首页</el-menu-item>
+                <el-menu-item >货位管理</el-menu-item>
+                <el-menu-item v-if="pathStatus" @@click="centerDialogVisible=true">基本设置</el-menu-item>
+                <el-menu-item v-if="pathStatus"  @@click="rizi=true">日志报告</el-menu-item>
+                <el-menu-item index="/bar">机器管理</el-menu-item>
+                <el-menu-item index="/foo">库存管理</el-menu-item>
             </el-menu>
-            <el-container>
-                <el-header>
-                    <el-row>
-                        <el-col :span="8">
-                            <div class="grid-content bg-purple" style="height:50px;text-align:left">
-                                <div v-for="o in remind" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);height:100%;width:40%; display:inline-block;margin:5px">
-                                    <el-alert :title="o.name"
-                                              :type="o.type"
-                                              :closable="false"
-                                              :description="o.text"
-                                              show-icon style="height:100%;padding:0;overflow:auto;">
-                                    </el-alert>
-                                </div>
-                            </div>
-                        </el-col>
-                        <el-col :span="14" style="text-align:center;padding-top:15px">
-                            <div class="grid-content bg-purple">
-                                <el-tag type="warning">物料查询<i class="el-icon-search"></i></el-tag>
-                                <el-cascader :options="vals"
-                                             filterable
-                                             @@change="Change_a"
-                                             placeholder="名称/规格/材质"
-                                             :clearable="true">
-                                </el-cascader>
-                                <el-tag type="warning">位置查询<i class="el-icon-search"></i></el-tag>
-                                <el-cascader :options="options1"
-                                             filterable
-                                             :change-on-select="true"
-                                             @@change="Change_a"
-                                             placeholder="仓库/库区/库位"
-                                             :clearable="true">
-                                </el-cascader>
-                                <el-dropdown trigger="click" style="display:inline-block" @@command="huoTypeComm">
-                                    <el-button type="primary">
-                                        显示模式<i class="el-icon-arrow-down el-icon--right"></i>
-                                    </el-button>
-                                    <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item command="1">普通模式</el-dropdown-item>
-                                        <el-dropdown-item command="2">表格模式</el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </el-dropdown>
-                                <el-button type="success" icon="el-icon-tickets" @@click="centerDialogVisible1 = true" plain>执行信息</el-button>
-                                <el-button type="success" icon="el-icon-tickets" @@click="zhzy" :disabled="guz" plain>智能操作</el-button>
-                            </div>
-                        </el-col>
-                    </el-row>
-                </el-header>
-                <el-main>
-                    <el-row>
-                        <el-col :span="5">
-                            <div class="grid-content bg-purple">
-                                <div>
-                                    <div v-for="item in goodsStatus" class="text item" style="display:inline-block;margin:10px">
-                                        <el-badge :value="item.quantitys" class="item">
-                                            <el-tag type="warning">货位状态</el-tag>
-                                            <el-button :type="typeClass(item.status)" @@click="Change_a(item.status)">{{item.name}}</el-button>
-                                        </el-badge>
-                                    </div>
-                                </div>
-                                <div id="myChart" style="height:200px"></div>
-                                <el-tag type="warning">预计物料<i class="el-icon-search"></i></el-tag>
-                                <el-cascader :options="vals"
-                                             filterable
-                                             @@change="selectChange_b"
-                                             placeholder="名称/规格/材质"
-                                             :clearable="true">
-                                </el-cascader>
-                                <div v-for="o in counts" style=" box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);width:40%;height:100%;display:inline-block;margin:5px">
-                                    <el-tag :type="o.type" style="height:100%;width:100%;"><h1>{{o.name}}</h1></el-tag>
-                                    <el-progress v-if="o.value!=''" type="circle" :percentage="o.percentage" :color="o.type=='warning'?'#8e71c7':''" :width="100" status='text'><h1>{{o.value}}</h1></el-progress>
-                                    <el-progress v-else type="circle" :width="100" :percentage="o.percentage"></el-progress>
-                                </div>
-                            </div>
-                        </el-col>
-                        <el-col :span="15">
-                            <div class="grid-content bg-purple">
-                                <div v-if="taskSetData.huoType==1">
-                                    <div style="overflow:auto">
-                                        <el-card class="box-card" style="width:200px;display:inline-block" v-for="o in options" v-if="o.z==1" :key="o.ID">
-                                            <div slot="header" class="clearfix">
-                                                <span><el-tag :type="typeClass(o.Type)">{{o.Type}}</el-tag>货位：{{o.Name}}</span>
-                                                <el-dropdown trigger="click" style="float: right;" @@command="command">
-                                                    <el-button icon="el-icon-setting" style="float: right; padding:3px 0" type="primary" @@click="selected(o)" plain>操作</el-button>
-                                                    <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item command="1" :disabled="disabled(o,'入库')">入库</el-dropdown-item>
-                                                        <el-dropdown-item command="2" :disabled="disabled(o,'出库')">出库</el-dropdown-item>
-                                                        <el-dropdown-item command="3" :disabled="disabled(o,'调整')">调整</el-dropdown-item>
-                                                    </el-dropdown-menu>
-                                                </el-dropdown>
-                                            </div>
-                                            <div class="text item">
-                                                物料:{{o.PartName}}
-                                            </div>
-                                            <div class="text item">
-                                                规格:{{o.PartSpec}}
-                                            </div>
-                                            <div class="text item">
-                                                材质:{{o.PartMaterial}}
-                                            </div>
-                                            <div class="text item">
-                                                <h1>{{o.StockQTY}}</h1>
-                                            </div>
-                                        </el-card>
-                                    </div>
-                                    <div style="overflow:auto">
-                                        <el-card class="box-card" style="width:200px;display:inline-block" v-for="o in options" v-if="o.z==2" :key="o.ID">
-                                            <div slot="header" class="clearfix">
-                                                <span><el-tag :type="typeClass(o.Type)">{{o.Type}}</el-tag>货位：{{o.Name}}</span>
-                                                <el-dropdown trigger="click" style="float: right;" @@command="command">
-                                                    <el-button icon="el-icon-setting" style="float: right; padding:3px 0" type="primary" @@click="selected(o)" plain>操作</el-button>
-                                                    <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item command="1" :disabled="disabled(o,'入库')">入库</el-dropdown-item>
-                                                        <el-dropdown-item command="2" :disabled="disabled(o,'出库')">出库</el-dropdown-item>
-                                                        <el-dropdown-item command="3" :disabled="disabled(o,'调整')">调整</el-dropdown-item>
-                                                    </el-dropdown-menu>
-                                                </el-dropdown>
-                                            </div>
-                                            <div class="text item">
-                                                物料:{{o.PartName}}
-                                            </div>
-                                            <div class="text item">
-                                                规格:{{o.PartSpec}}
-                                            </div>
-                                            <div class="text item">
-                                                材质:{{o.PartMaterial}}
-                                            </div>
-                                            <div class="text item">
-                                                <h1>{{o.StockQTY}}</h1>
-                                            </div>
-                                        </el-card>
-                                    </div>
-                                </div>
-                                <div v-else-if="taskSetData.huoType==2">
-                                    <el-table :data="options"
-                                              style="width: 100%"
-                                              height="800">
-                                        <el-table-column type="expand">
-                                            <template slot-scope="props">
-                                                <el-form label-position="left" class="demo-table-expand">
-                                                    <el-form-item label="物料：">
-                                                        <span>{{props.row.PartName}}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="规格：">
-                                                        <span>{{props.row.PartSpec}}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="材质：">
-                                                        <span>{{props.row.PartMaterial}}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="已用空间：">
-                                                        <div style="width:200px;display:inline-block">
-                                                            <el-progress :text-inside="true"
-                                                                         :stroke-width="18"
-                                                                         :percentage="houPercentage(props.row)">
-                                                            </el-progress>
-                                                        </div>
-
-                                                    </el-form-item>
-                                                </el-form>
-
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="货位"
-                                                         prop="Name">
-                                        </el-table-column>
-                                        <el-table-column label="物料类型"
-                                                         prop='Category'>
-                                            <template slot-scope="scope">
-                                                <el-tag :type="scope.row.Category=='空'?'info':typeClass(scope.row.Type)"
-                                                        disable-transitions>{{scope.row.Category}}</el-tag>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="数量"
-                                                         prop='StockQTY'
-                                                         sortable>
-                                            <template slot-scope="scope">
-                                                <el-tag style="font-size:24px" :hit="true" :type="scope.row.StockQTY==0?'danger':''"
-                                                        disable-transitions>{{scope.row.StockQTY}}</el-tag>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="状态"
-                                                         prop="Type">
-                                            <template slot-scope="scope">
-                                                <el-tag :type="typeClass(scope.row.Type)"
-                                                        disable-transitions>{{scope.row.Type}}</el-tag>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column label="操作">
-                                            <template slot-scope="scope">
-                                                <el-button size="mini"
-                                                           :disabled="disabled(scope.row,'入库')"
-                                                           @@click="selected(scope.row,command(1))">入库</el-button>
-                                                <el-button size="mini"
-                                                           :disabled="disabled(scope.row,'出库')"
-                                                           @@click="selected(scope.row,command(2))">出库</el-button>
-                                                <el-button size="mini"
-                                                           type="primary"
-                                                           :disabled="disabled(scope.row,'调整')"
-                                                           @@click="selected(scope.row,command(3))">调整</el-button>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                </div>
-                                <div v-else>
-                                    <h2>敬请期待2</h2>
-                                </div>
-                            </div>
-                        </el-col>
-                        <el-col :span="4">
-                            <div class="grid-content bg-purple">
-                                <el-tabs tab-position="top">
-                                    <el-tab-pane>
-                                        <span slot="label"><i class="el-icon-date"></i>任务队列</span>
-                                        <div class="block" style="margin-left:5px">
-                                            <el-timeline>
-                                                <el-timeline-item v-if="timelineStatu" v-for="(item,index) in timelineList" placement="top"
-                                                                  :key="index"
-                                                                  :timestamp="toDateString(item.date,'yyyy-MM-dd','创建日期：')"
-                                                                  size="large"
-                                                                  :type="itemStatu(item.statu).types">
-                                                    <el-card>
-                                                        <i :class="itemStatu(item.statu).icon" style=" float:right;cursor:pointer" @@click="cofp(item.statu,item.aid)"></i>
-
-                                                        <div style="display:inline-block">
-                                                            <h3>任务编号：{{item.aid}}</h3>
-                                                            <p>任务类型：{{item.type}}</p>
-                                                            <p>任务状态：{{item.statu}}</p>
-                                                            <p>创建于：{{toDateString(item.date,'HH:mm:ss')}}</p>
-                                                        </div>
-                                                        <div style="display:inline-block;margin-left:150px">
-                                                            <p @@click="progress(item.aid)" style="cursor:pointer">
-                                                                <el-progress type="circle"
-                                                                             :percentage="item.percentage"
-                                                                             :status="item.status"
-                                                                             :width="100">{{itemStatu(item.statu,item.percentage).text}}</el-progress>
-                                                            </p>
-                                                        </div>
-                                                    </el-card>
-                                                </el-timeline-item>
-                                                <el-timeline-item v-if="!timelineStatu" :timestamp="date" size="large" placement="top" type="danger">
-                                                    <el-card>
-                                                        <h4>任务还没有创建</h4>
-                                                    </el-card>
-                                                </el-timeline-item>
-                                            </el-timeline>
-                                        </div>
-                                    </el-tab-pane>
-                                </el-tabs>
-                            </div>
-                        </el-col>
-                    </el-row>
-                </el-main>
-            </el-container>
-            <el-dialog :title="title"
-                       :visible.sync="dialogFormVisible"
-                       width="30%"
-                       @@closed="resetForm"
-                       center>
-                <el-form ref="form" :model="form" :rules="rules" status-icon>
-                    <el-form-item :label="title+'物料'" label-width="100px" prop="selectedOptions3">
-                        <el-cascader :options="selects"
-                                     v-model="form.selectedOptions3"
-                                     filterable
-                                     placeholder="名称/规格/材质"
-                                     :clearable="true"
-                                     :disabled="selectd">
-                        </el-cascader>
-                    </el-form-item>
-                    <el-form-item :label="title+'数量'" label-width="100px" prop="InQTY">
-                        <el-input v-model="form.InQTY" placeholder="请输入数量" style="width:51%"></el-input>
-                    </el-form-item>
-                    <el-form-item :label="title+'位置'" label-width="100px" v-if="title!='调整'" prop="To">
-                        <el-select v-model="form.To" placeholder="请选择位置">
-                            <el-option v-for="item in Place"
-                                       :key="item.ID"
-                                       :label="item.Name"
-                                       :value="item.ID">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="放置点" label-width="100px" v-if="title=='调整'" prop="To">
-                        <el-select v-model="form.To" placeholder="请选择位置">
-                            <el-option v-for="item in option()"
-                                       :key="item.ID"
-                                       :label="item.Name"
-                                       :value="item.ID">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @@click="dialogFormVisible = false">取 消</el-button>
-                    <el-button type="primary" @@click="submit">确 定</el-button>
-                </div>
-            </el-dialog>
+            <router-view></router-view>
+             
             <el-dialog title="基本设置"
                        :visible.sync="centerDialogVisible"
                        @@closed="taskCancel"
@@ -336,7 +59,7 @@
                         <div class="grid-content bg-purple">
                             <el-tag size="mini" type="danger">任务设置</el-tag>
                             <el-switch style="display: inline-block"
-                                       v-model="taskSetData.switchValue"
+                                       v-model="SetData.switchValue"
                                        active-color="#13ce66"
                                        inactive-color="#ff4949"
                                        active-text="开启自动执行"
@@ -348,7 +71,7 @@
                         <div class="grid-content bg-purple">
                             <el-tag size="mini" type="danger">任务设置</el-tag>
                             <el-switch style="display: inline-block"
-                                       v-model="taskSetData.removeTask"
+                                       v-model="SetData.removeTask"
                                        active-color="#13ce66"
                                        inactive-color="#ff4949"
                                        active-text="清理完成任务"
@@ -358,11 +81,11 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="10"><div class="grid-content bg-purple"><el-tag size="mini" type="danger">连接设置</el-tag><h3>信息读取时间（秒）：</h3></div></el-col>
-                    <el-col :span="14">
+                    <el-col :span="7" style="margin-top:8px"><div class="grid-content bg-purple"><el-tag size="mini" type="danger">连接设置</el-tag>信息读取时间(秒):</div></el-col>
+                    <el-col :span="17">
                         <div class="grid-content bg-purple">
                             <div class="block">
-                                <el-slider v-model="taskSetData.MonitoringTime"
+                                <el-slider v-model="SetData.MonitoringTime"
                                            :max="5"
                                            :min="1"
                                            show-input>
@@ -372,11 +95,11 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="10"><div class="grid-content bg-purple"><el-tag size="mini" type="danger">提示设置</el-tag><h3>物料最低数量（张）：</h3></div></el-col>
-                    <el-col :span="14">
+                    <el-col :span="7" style="margin-top:8px"><div class="grid-content bg-purple"><el-tag size="mini" type="danger">提示设置</el-tag>物料最低数量(张):</div></el-col>
+                    <el-col :span="17">
                         <div class="grid-content bg-purple">
                             <div class="block">
-                                <el-slider v-model="taskSetData.MaterialQty"
+                                <el-slider v-model="SetData.MaterialQty"
                                            show-input
                                            :max="20">
                                 </el-slider>
@@ -385,11 +108,11 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="10"><div class="grid-content bg-purple"><el-tag size="mini" type="danger">提示设置</el-tag><h3>库存最低数量（张）：</h3></div></el-col>
-                    <el-col :span="14">
+                    <el-col :span="7" style="margin-top:8px"><div class="grid-content bg-purple"><el-tag size="mini" type="danger">提示设置</el-tag>库存最低数量(张):</div></el-col>
+                    <el-col :span="17">
                         <div class="grid-content bg-purple">
                             <div class="block">
-                                <el-slider v-model="taskSetData.InventoryQty"
+                                <el-slider v-model="SetData.InventoryQty"
                                            show-input
                                            :max="150">
                                 </el-slider>
@@ -402,7 +125,7 @@
                     <el-button type="primary" @@click="taskCancel(true)">设置默认</el-button>
                 </span>
             </el-dialog>
-            <el-dialog title="执行信息"
+            @*<el-dialog title="执行信息"
                        :visible.sync="centerDialogVisible1"
                        width="40%"
                        center>
@@ -434,7 +157,7 @@
                     <el-button @@click="centerDialogVisible1 = false">取 消</el-button>
                     <el-button type="primary" @@click="centerDialogVisible1 = false">确 定</el-button>
                 </span>
-            </el-dialog>
+            </el-dialog>*@
             <el-dialog title="日志报告" :visible.sync="rizi">
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">任务执行总次数</el-tag><span>{{Logging.length}}</span></div>
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">今日执行次数</el-tag><span>{{lo.jlo}}</span></div>

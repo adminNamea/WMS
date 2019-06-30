@@ -1,27 +1,21 @@
-﻿
+﻿body {
+margin:0;
+}
 .el-header, .el-footer {
     text-align: center;
     line-height: 60px;
 }
-
+table .el-form-item {
+    margin: 0;
+}
 .el-main {
     text-align: center;
 }
-
-body > .el-container {
-    margin-bottom: 20px;
-}
 .el-row {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
-
-.el-col {
-    border-radius: 4px;
-}
-
 .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
+    min-height: 30px;
 }
 
 .row-bg {
@@ -62,16 +56,6 @@ html::-webkit-scrollbar-thumb {
     background: #aaa;
     border-radius: 2px;
 }
-    .demo-table-expand label {
-        width: 90px;
-        color: #99a9bf;
-    }
-
-    .demo-table-expand .el-form-item {
-        margin-right: 0;
-        margin-bottom: 0;
-        width: 100%;
-    }
 
     html::-webkit-scrollbar-thumb:hover {
         background: #747474;
@@ -104,4 +88,9 @@ div::-webkit-scrollbar-corner {
 .el-header {
     line-height:20px;
 }
-
+.task p {
+    margin:0 5px
+}
+.el-timeline {
+    padding:0 0 0 10px
+}

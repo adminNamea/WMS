@@ -1,15 +1,14 @@
 ﻿using Sharp7;
+using SuperSocket.WebSocket;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using WMS.Models;
 
 namespace WMS.ControlPlc
 {
     public class Controls
     {
         //连接PLC
+
         public static S7Client Operation(string IP, int array)
         {
             var client = new S7Client();
@@ -150,7 +149,7 @@ namespace WMS.ControlPlc
         /// <param name="rgvzdclqd">RGV自动出料启动</param>
         /// <param name="rgvzdclwc">RGV自动出料完成</param>
 
-        public static Dictionary<string, Boolean> CheckPLCDate(string IP)
+        public static Dictionary<string, Boolean> CheckPLCDate(string IP= "192.168.3.30")
         {
             Dictionary<string, Boolean> ds=new Dictionary<string, Boolean>();
             
@@ -158,7 +157,7 @@ namespace WMS.ControlPlc
                 try
                 {
                 var client = new S7Client();
-                int connectionresult = client.ConnectTo("192.168.3.30", 0, 1);             
+                int connectionresult = client.ConnectTo(IP, 0, 1);             
                 var buffer = new byte[46];
                 int readResult = client.DBRead(1, 0, buffer.Length, buffer);
                 Boolean ldms = S7.GetBitAt(buffer, 38, 0);
@@ -231,7 +230,7 @@ namespace WMS.ControlPlc
         }
 
         //使能
-        public static string PlcStrat(string IP) {
+        public static void PlcStrat(string IP) {
             var client = Operation(IP, 1);
             if (client != null)
             {
@@ -244,15 +243,15 @@ namespace WMS.ControlPlc
                     {
 
                         client.Disconnect();
-                        return "true";
+                        WS.SendJson("true");
                     }
                 }
                 catch
                 {
-                    return "机器连接失败,请联系技术人员";
+                    WS.SendJson ("机器连接失败,请联系技术人员");
                 }
             }
-            return "机器连接失败,请联系技术人员";
+            WS.SendJson("机器连接失败,请联系技术人员");
         }
         //启动RGV
         public static string StratRGV(string IP)
@@ -301,6 +300,38 @@ namespace WMS.ControlPlc
                 Console.WriteLine(ex.Message);
                 return false;
             }
+        }
+        public static void PlcOperation(string ip,string type) {
+            var client = Operation(ip,4);
+            if (client != null)
+            {
+                try
+                {
+                    var writeBuffer = new byte[4];
+                    switch (type) {
+                        case "a":
+                            S7.SetBitAt(ref writeBuffer, 1, 1, true);
+                            break;
+                        case "b":
+                            S7.SetBitAt(ref writeBuffer, 2, 1, true);
+                            break;
+                        case "c":
+                            S7.SetBitAt(ref writeBuffer, 3, 1, true);
+                            break;
+                    };
+                    int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
+                    if (writeResult == 0)
+                    {
+                        client.Disconnect();
+                        WS.SendJson("true");
+                    }
+                }
+                catch
+                {
+                    WS.SendJson("机器连接失败,请联系技术人员");
+                }
+            }
+            WS.SendJson("机器连接失败,请联系技术人员");
         }
     }
 }

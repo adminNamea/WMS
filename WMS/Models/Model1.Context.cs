@@ -246,6 +246,11 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHuos_Result>("CheckHuos");
         }
     
+        public virtual ObjectResult<CheckInventory_Result> CheckInventory()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckInventory_Result>("CheckInventory");
+        }
+    
         public virtual ObjectResult<checkKq_Result> checkKq(string wHAreaID, string wHID)
         {
             var wHAreaIDParameter = wHAreaID != null ?
@@ -675,6 +680,39 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpAll", iDParameter, nameParameter, x_interceptParameter, updatedByParameter, updatedTimeParameter, statusIDParameter, y_interceptParameter, z_interceptParameter, sizeParameter, descriptionParameter, tempPlateParameter, storageLocationIDParameter, wHAreaIDParameter, wHIDParameter, createdByParameter, createdTimeParameter, typeParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter, partNameParameter, category2Parameter, category3Parameter, widthParameter, heightParameter);
         }
     
+        public virtual int UpInventory(string qty, string iD, string partName, string partSpec, string partMaterial, string type, string wh)
+        {
+            var qtyParameter = qty != null ?
+                new ObjectParameter("qty", qty) :
+                new ObjectParameter("qty", typeof(string));
+    
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var partNameParameter = partName != null ?
+                new ObjectParameter("PartName", partName) :
+                new ObjectParameter("PartName", typeof(string));
+    
+            var partSpecParameter = partSpec != null ?
+                new ObjectParameter("PartSpec", partSpec) :
+                new ObjectParameter("PartSpec", typeof(string));
+    
+            var partMaterialParameter = partMaterial != null ?
+                new ObjectParameter("PartMaterial", partMaterial) :
+                new ObjectParameter("PartMaterial", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("Type", type) :
+                new ObjectParameter("Type", typeof(string));
+    
+            var whParameter = wh != null ?
+                new ObjectParameter("wh", wh) :
+                new ObjectParameter("wh", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpInventory", qtyParameter, iDParameter, partNameParameter, partSpecParameter, partMaterialParameter, typeParameter, whParameter);
+        }
+    
         public virtual int WcsAddAll(string name, string iD, string machineTypeID, string placeTypeID, string x_intercept, string y_intercept, string z_intercept, string runingSpeed, string description, string createdBy, string status, string type, string sort, string iP, string width, string height, string wHAreaID)
         {
             var nameParameter = name != null ?
@@ -842,6 +880,11 @@ namespace WMS.Models
                 new ObjectParameter("aid", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ZnIn", aidParameter);
+        }
+    
+        public virtual ObjectResult<CheckHw_Result> CheckHw()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHw_Result>("CheckHw");
         }
     }
 }

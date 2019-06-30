@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Collections;
 using System.Web.Mvc;
 using WMS.Models;
 using System.Data.SqlClient;
@@ -70,19 +68,11 @@ namespace WMS.Controllers
                
         }
         //plc使能
-        public string PlcSn(string IP) {
-          return Controls.PlcStrat(IP);
+        public void PlcSn(string IP) {
+           Controls.PlcStrat(IP);
         }
-        //plc停止
-        public void PlcStop()
-        {
 
-        }
-        //plc复位
-        public void PlcFw()
-        {
-
-        }
+       
         #endregion
         #region 出库
         public ActionResult Out()
@@ -129,7 +119,7 @@ namespace WMS.Controllers
             return "true";
         }
         //查询仓库信息
-        public ActionResult checkWo(string id, string value, string data)
+        public ActionResult CheckWo(string id, string value, string data)
         {
             using (WMSEntities wMS = new WMSEntities())
             {
@@ -162,7 +152,7 @@ namespace WMS.Controllers
             }
         }
         //查询库区信息
-        public ActionResult checkkq(string id, string value, Dictionary<string, string> data)
+        public ActionResult Checkkq(string id, string value, Dictionary<string, string> data)
         {
             List<WH_Area> list;
 
@@ -189,7 +179,7 @@ namespace WMS.Controllers
             }
         }
         //查询库位信息
-        public ActionResult checkkw(string id, string value, Dictionary<string, string> data)
+        public ActionResult Checkkw(string id, string value, Dictionary<string, string> data)
         {
             List<WH_StorageLocation> list;
             using (WMSEntities wMS = new WMSEntities())
@@ -237,7 +227,7 @@ namespace WMS.Controllers
         }
         //查询货位信息
        
-        public ActionResult checkhuo(string id, string value, Dictionary<string, string> data, string type)
+        public ActionResult Checkhuo(string id, string value, Dictionary<string, string> data, string type)
         {
             List<WH_GoodsAllocation> list;
             using (WMSEntities wMS = new WMSEntities())
@@ -376,7 +366,7 @@ namespace WMS.Controllers
 
         }
         //查询物料
-        public ActionResult checkwu(string id, Dictionary<string, string> data, int page, int limit, string type, string value)
+        public ActionResult Checkwu(string id, Dictionary<string, string> data, int page, int limit, string type, string value)
         {
             List<WH_Material> list1;
             using (WMSEntities mSEntities = new WMSEntities())
@@ -481,7 +471,7 @@ namespace WMS.Controllers
         }
         #endregion
         #region 员工登陆
-        public ActionResult login()
+        public ActionResult Login()
         {
             return View();
         }

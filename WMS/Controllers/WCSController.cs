@@ -1,14 +1,10 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Collections;
 using System.Web.Mvc;
 using WMS.Models;
-using System.Data.SqlClient;
 using System.Text;
 using WMS.ControlPlc;
-
 
 namespace WMS.Controllers
 {
@@ -19,6 +15,26 @@ namespace WMS.Controllers
         {
             return View();
         }
+        #region 库存管理
+        //库存查询
+        public static void CheckInventory() {
+            using (WMSEntities wm = new WMSEntities())
+            {
+
+                Dictionary<string, object> map = new Dictionary<string, object>()
+            {
+                {"Inventory",wm.CheckInventory().ToList() },
+                {"options",wm.CheckHw().ToList() },
+
+            };
+                WS.SendJson(map);
+            }
+        }
+        public static void UpInventory(Dictionary<string,string> data) {
+            //Tools<object>.SqlComm("exec UpInventory ", data);
+            CheckInventory();
+        }
+        #endregion
         #region 仓库实时运行状况
         //启动RGV
         public string StratRGV(string ip) {
@@ -35,7 +51,7 @@ namespace WMS.Controllers
             }
         }
         //zhzy
-        public string zhzy() {
+        public string Zhzy() {
             using (WMSEntities wMS=new WMSEntities ()) {
                 wMS.Zhzy();
             }
@@ -61,7 +77,7 @@ namespace WMS.Controllers
                 return Json(w.CheckMQTY().ToList(), JsonRequestBehavior.AllowGet);
             }
         }
-        public ActionResult CheckAll(WH_Material data) {
+        public static void CheckAll() {
             using (WMSEntities w=new WMSEntities()) {
                 Dictionary<string, object> map = new Dictionary<string, object>
                 {
@@ -72,12 +88,12 @@ namespace WMS.Controllers
                     { "Place", w.WCS_Place.ToList() },
                     { "WcsComm", w.WCS_Comm.ToList() },
                     { "Huos", w.CheckHuos().ToList() },
-                    { "HousSum", w.CheckHousSum(data.PartName, data.PartSpec, data.PartMaterial).FirstOrDefault() },
+                    { "HousSum", w.Database.SqlQuery<CheckHousSum_Result>("exec CheckHousSum").FirstOrDefault() },
                     { "WCount", w.CheckWCount().FirstOrDefault() },
                     { "WhMaterial", w.CheckWhMaterial().ToList() },
                     { "MaterialStatistics", w.CheckMaterialStatistics().ToList() }
             };
-                return Json(map,JsonRequestBehavior.AllowGet);
+                WS.SendJsons(map);
             }
         }
         //public ActionResult pdf2txt(HttpPostedFileBase file)
@@ -105,7 +121,7 @@ namespace WMS.Controllers
             }
         }
         //查询可用货位信息
-        public ActionResult CheckWCount(string name) {
+        public ActionResult CheckWCount() {
             using (WMSEntities wm = new WMSEntities()) {
                 return Json(wm.CheckWCount().FirstOrDefault(), JsonRequestBehavior.AllowGet);
             }
@@ -167,7 +183,7 @@ namespace WMS.Controllers
             return Json(map,JsonRequestBehavior.AllowGet);
         }
         //运行下个指令
-        public string NextComm(List<string> list) {
+        public string NextComm() {
 
             return "";
         }
@@ -188,7 +204,7 @@ namespace WMS.Controllers
             return View();
         }
         //查询命令
-        public ActionResult checkComm(string Name)
+        public ActionResult CheckComm(string Name)
         {
             using (WMSEntities wMS = new WMSEntities())
             {
@@ -215,7 +231,7 @@ namespace WMS.Controllers
             return View();
         }
         //查询机器类型
-        public ActionResult checkMachinType(string value) {
+        public ActionResult CheckMachinType(string value) {
             List<WCS_MachinType> list;
             using (WMSEntities ma = new WMSEntities()) {
                 if (value != null)
@@ -236,7 +252,7 @@ namespace WMS.Controllers
             }
         }
         //查询机器
-        public ActionResult checkMachine(string type, string id, Dictionary<string, string> data, string value) {
+        public ActionResult CheckMachine(string type, string id, Dictionary<string, string> data, string value) {
             List<WCS_Machine> list;
             using (WMSEntities wMS = new WMSEntities()) {
                 if (type != null)
@@ -339,7 +355,7 @@ namespace WMS.Controllers
             return View();
         }
         //查询功能位置类型
-        public ActionResult checkPlaceType(string value)
+        public ActionResult CheckPlaceType(string value)
         {
             List<WCS_PlaceType> list;
             using (WMSEntities ma = new WMSEntities())
@@ -356,7 +372,7 @@ namespace WMS.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
         //查询功能位置
-        public ActionResult checkPlace(string type, string id, Dictionary<string, string> data, string value)
+        public ActionResult CheckPlace(string type, string id, Dictionary<string, string> data, string value)
         {
             List<WCS_Place> list;
             using (WMSEntities wMS = new WMSEntities())

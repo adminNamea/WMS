@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="WMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Category">
           <Key>
             <PropertyRef Name="ID" />
@@ -323,8 +323,6 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Category1" Type="varchar" MaxLength="20" />
-          <Property Name="Category2" Type="varchar" MaxLength="20" />
-          <Property Name="Category3" Type="varchar" MaxLength="20" />
           <Property Name="PartName" Type="varchar" MaxLength="50" />
           <Property Name="PartSpec" Type="varchar" MaxLength="50" />
           <Property Name="PartMaterial" Type="varchar" MaxLength="50" />
@@ -335,6 +333,8 @@
           <Property Name="UpdatedTime" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="20" />
           <Property Name="StatusID" Type="int" />
+          <Property Name="SumQty" Type="int" />
+          <Property Name="NotQty" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="WH_MaterialList">
           <Key>
@@ -458,6 +458,8 @@
           <Parameter Name="type" Type="varchar" Mode="In" />
         </Function>
         <Function Name="CheckHuos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="CheckHw" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="CheckInventory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="checkKq" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WHAreaID" Type="varchar" Mode="In" />
           <Parameter Name="WHID" Type="varchar" Mode="In" />
@@ -587,6 +589,15 @@
           <Parameter Name="Category3" Type="varchar" Mode="In" />
           <Parameter Name="width" Type="varchar" Mode="In" />
           <Parameter Name="height" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="UpInventory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="qty" Type="varchar" Mode="In" />
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="PartName" Type="varchar" Mode="In" />
+          <Parameter Name="PartSpec" Type="varchar" Mode="In" />
+          <Parameter Name="PartMaterial" Type="varchar" Mode="In" />
+          <Parameter Name="Type" Type="varchar" Mode="In" />
+          <Parameter Name="wh" Type="varchar" Mode="In" />
         </Function>
         <Function Name="WcsAddAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Name" Type="varchar" Mode="In" />
@@ -718,8 +729,7 @@
     FROM [dbo].[hous] AS [hous]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="WMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -998,8 +1008,6 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Category1" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="Category2" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="Category3" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="PartName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PartSpec" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PartMaterial" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -1010,6 +1018,8 @@
           <Property Name="UpdatedTime" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="StatusID" Type="Int32" />
+          <Property Name="SumQty" Type="Int32" />
+          <Property Name="NotQty" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
         </EntityType>
         <EntityType Name="WH_MaterialList">
           <Key>
@@ -1151,7 +1161,7 @@
           <EntitySet Name="goid" EntityType="Self.goid" />
           <EntitySet Name="hous" EntityType="Self.hous" />
           <FunctionImport Name="StrToTable" IsComposable="true" ReturnType="Collection(WMSModel.StrToTable_Result)">
-            <Parameter Name="str" Mode="In" Type="String" />
+          <Parameter Name="str" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AddStorage">
             <Parameter Name="name" Mode="In" Type="String" />
@@ -1184,7 +1194,7 @@
           </FunctionImport>
           <FunctionImport Name="CeckHCount" ReturnType="Collection(WMSModel.CeckHCount_Result)" />
           <FunctionImport Name="checkComm" ReturnType="Collection(WMSModel.checkComm_Result)">
-            <Parameter Name="Name" Mode="In" Type="String" />
+          <Parameter Name="Name" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="CheckCounts" ReturnType="Collection(WMSModel.CheckCounts_Result)" />
           <FunctionImport Name="CheckHousCount" ReturnType="Collection(WMSModel.CheckHousCount_Result)" />
@@ -1201,6 +1211,7 @@
             <Parameter Name="type" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="CheckHuos" ReturnType="Collection(WMSModel.CheckHuos_Result)" />
+          <FunctionImport Name="CheckInventory" ReturnType="Collection(WMSModel.CheckInventory_Result)" />
           <FunctionImport Name="checkKq" ReturnType="Collection(WMSModel.checkKq_Result)">
             <Parameter Name="WHAreaID" Mode="In" Type="String" />
             <Parameter Name="WHID" Mode="In" Type="String" />
@@ -1236,7 +1247,7 @@
             <Parameter Name="ID" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="CommSuccess">
-            <Parameter Name="aid" Mode="In" Type="String" />
+          <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="DelAll">
             <Parameter Name="type" Mode="In" Type="String" />
@@ -1244,7 +1255,7 @@
           </FunctionImport>
           <FunctionImport Name="delSuTask" />
           <FunctionImport Name="Error">
-            <Parameter Name="aid" Mode="In" Type="String" />
+          <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="HowToPick">
             <Parameter Name="aid" Mode="In" Type="String" />
@@ -1281,10 +1292,10 @@
             <Parameter Name="height" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PlcIn">
-            <Parameter Name="aid" Mode="In" Type="String" />
+          <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="Strategy" ReturnType="Collection(WMSModel.Strategy_Result)">
-            <Parameter Name="aid" Mode="In" Type="String" />
+          <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="SystemSe">
             <Parameter Name="x" Mode="In" Type="String" />
@@ -1319,6 +1330,15 @@
             <Parameter Name="Category3" Mode="In" Type="String" />
             <Parameter Name="width" Mode="In" Type="String" />
             <Parameter Name="height" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="UpInventory">
+            <Parameter Name="qty" Mode="In" Type="String" />
+            <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="PartName" Mode="In" Type="String" />
+            <Parameter Name="PartSpec" Mode="In" Type="String" />
+            <Parameter Name="PartMaterial" Mode="In" Type="String" />
+            <Parameter Name="Type" Mode="In" Type="String" />
+            <Parameter Name="wh" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="WcsAddAll">
             <Parameter Name="Name" Mode="In" Type="String" />
@@ -1363,8 +1383,9 @@
           </FunctionImport>
           <FunctionImport Name="Zhzy" />
           <FunctionImport Name="ZnIn" ReturnType="Collection(Int32)">
-            <Parameter Name="aid" Mode="In" Type="String" />
+          <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="CheckHw" ReturnType="Collection(WMSModel.CheckHw_Result)" />
         </EntityContainer>
         <ComplexType Name="CeckHCount_Result">
           <Property Type="Int32" Name="value" Nullable="false" />
@@ -1429,6 +1450,16 @@
           <Property Type="String" Name="height" Nullable="true" MaxLength="20" />
           <Property Type="String" Name="Type" Nullable="true" MaxLength="4" />
           <Property Type="Int32" Name="mid" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="CheckInventory_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Type" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="sum" Nullable="true" />
+          <Property Type="String" Name="upStatus" Nullable="false" MaxLength="5" />
+          <Property Type="String" Name="NotQty" Nullable="false" MaxLength="10" />
         </ComplexType>
         <ComplexType Name="checkKq_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1567,6 +1598,13 @@
           <Property Type="Int32" Name="id" Nullable="false" />
           <Property Type="String" Name="ids" Nullable="true" MaxLength="10" />
           <Property Type="String" Name="type" Nullable="true" MaxLength="10" />
+        </ComplexType>
+        <ComplexType Name="CheckHw_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="Double" Name="height" Nullable="true" />
+          <Property Type="Int32" Name="mid" Nullable="true" />
+          <Property Type="Double" Name="StockQTY" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1862,8 +1900,6 @@
               <MappingFragment StoreEntitySet="WH_Material">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Category1" ColumnName="Category1" />
-                <ScalarProperty Name="Category2" ColumnName="Category2" />
-                <ScalarProperty Name="Category3" ColumnName="Category3" />
                 <ScalarProperty Name="PartName" ColumnName="PartName" />
                 <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
                 <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
@@ -1874,6 +1910,8 @@
                 <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="SumQty" ColumnName="SumQty" />
+                <ScalarProperty Name="NotQty" ColumnName="NotQty" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2093,6 +2131,20 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="CheckInventory" FunctionName="WMSModel.Store.CheckInventory">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckInventory_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PartName" ColumnName="PartName" />
+                <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
+                <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="sum" ColumnName="sum" />
+                <ScalarProperty Name="upStatus" ColumnName="upStatus" />
+                <ScalarProperty Name="NotQty" ColumnName="NotQty" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="checkKq" FunctionName="WMSModel.Store.checkKq">
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.checkKq_Result">
@@ -2301,11 +2353,23 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="SystemSe" FunctionName="WMSModel.Store.SystemSe" />
           <FunctionImportMapping FunctionImportName="UpAll" FunctionName="WMSModel.Store.UpAll" />
+          <FunctionImportMapping FunctionImportName="UpInventory" FunctionName="WMSModel.Store.UpInventory" />
           <FunctionImportMapping FunctionImportName="WcsAddAll" FunctionName="WMSModel.Store.WcsAddAll" />
           <FunctionImportMapping FunctionImportName="WcsDelAll" FunctionName="WMSModel.Store.WcsDelAll" />
           <FunctionImportMapping FunctionImportName="WcsUpAll" FunctionName="WMSModel.Store.WcsUpAll" />
           <FunctionImportMapping FunctionImportName="Zhzy" FunctionName="WMSModel.Store.Zhzy" />
           <FunctionImportMapping FunctionImportName="ZnIn" FunctionName="WMSModel.Store.ZnIn" />
+          <FunctionImportMapping FunctionImportName="CheckHw" FunctionName="WMSModel.Store.CheckHw">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckHw_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="mid" ColumnName="mid" />
+                <ScalarProperty Name="StockQTY" ColumnName="StockQTY" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -65,6 +65,68 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<StrToTable_Result>("[WMSEntities].[StrToTable](@str)", strParameter);
         }
     
+        public virtual int AddExcel(string iD, string partName, string partSpec, string partMaterial, string type, Nullable<int> sum, Nullable<int> priority)
+        {
+            var iDParameter = iD != null ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(string));
+    
+            var partNameParameter = partName != null ?
+                new ObjectParameter("PartName", partName) :
+                new ObjectParameter("PartName", typeof(string));
+    
+            var partSpecParameter = partSpec != null ?
+                new ObjectParameter("PartSpec", partSpec) :
+                new ObjectParameter("PartSpec", typeof(string));
+    
+            var partMaterialParameter = partMaterial != null ?
+                new ObjectParameter("PartMaterial", partMaterial) :
+                new ObjectParameter("PartMaterial", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("Type", type) :
+                new ObjectParameter("Type", typeof(string));
+    
+            var sumParameter = sum.HasValue ?
+                new ObjectParameter("sum", sum) :
+                new ObjectParameter("sum", typeof(int));
+    
+            var priorityParameter = priority.HasValue ?
+                new ObjectParameter("Priority", priority) :
+                new ObjectParameter("Priority", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddExcel", iDParameter, partNameParameter, partSpecParameter, partMaterialParameter, typeParameter, sumParameter, priorityParameter);
+        }
+    
+        public virtual int AddGoods(Nullable<int> x, Nullable<int> y, Nullable<int> z, string name, string height, Nullable<int> type)
+        {
+            var xParameter = x.HasValue ?
+                new ObjectParameter("x", x) :
+                new ObjectParameter("x", typeof(int));
+    
+            var yParameter = y.HasValue ?
+                new ObjectParameter("y", y) :
+                new ObjectParameter("y", typeof(int));
+    
+            var zParameter = z.HasValue ?
+                new ObjectParameter("z", z) :
+                new ObjectParameter("z", typeof(int));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("name", name) :
+                new ObjectParameter("name", typeof(string));
+    
+            var heightParameter = height != null ?
+                new ObjectParameter("height", height) :
+                new ObjectParameter("height", typeof(string));
+    
+            var typeParameter = type.HasValue ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddGoods", xParameter, yParameter, zParameter, nameParameter, heightParameter, typeParameter);
+        }
+    
         public virtual int AddStorage(string name, string iD, string description, string createdBy, string type, string whid, string arid, string storageLocationID, string size, string tempPlate, string z, string x, string y, string category1, string partSpec, string partMaterial, string qTYperPallet, string units, string height)
         {
             var nameParameter = name != null ?
@@ -194,6 +256,20 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckCounts_Result>("CheckCounts");
         }
     
+        public virtual ObjectResult<CheckDetails_Result> CheckDetails(string id)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckDetails_Result>("CheckDetails", idParameter);
+        }
+    
+        public virtual ObjectResult<CheckGoods_Result> CheckGoods()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckGoods_Result>("CheckGoods");
+        }
+    
         public virtual ObjectResult<CheckHousCount_Result> CheckHousCount()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHousCount_Result>("CheckHousCount");
@@ -244,6 +320,11 @@ namespace WMS.Models
         public virtual ObjectResult<CheckHuos_Result> CheckHuos()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHuos_Result>("CheckHuos");
+        }
+    
+        public virtual ObjectResult<CheckHw_Result> CheckHw()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHw_Result>("CheckHw");
         }
     
         public virtual ObjectResult<CheckInventory_Result> CheckInventory()
@@ -371,13 +452,79 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<checkwu_Result>("checkwu", categoryParameter, iDParameter);
         }
     
-        public virtual int CommSuccess(string aid)
+        public virtual int CommDetails(Nullable<bool> stu, Nullable<int> gid, string tid, string cid, Nullable<int> qty, string ip, Nullable<int> mid, Nullable<int> nqty)
         {
-            var aidParameter = aid != null ?
-                new ObjectParameter("aid", aid) :
-                new ObjectParameter("aid", typeof(string));
+            var stuParameter = stu.HasValue ?
+                new ObjectParameter("stu", stu) :
+                new ObjectParameter("stu", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CommSuccess", aidParameter);
+            var gidParameter = gid.HasValue ?
+                new ObjectParameter("gid", gid) :
+                new ObjectParameter("gid", typeof(int));
+    
+            var tidParameter = tid != null ?
+                new ObjectParameter("tid", tid) :
+                new ObjectParameter("tid", typeof(string));
+    
+            var cidParameter = cid != null ?
+                new ObjectParameter("cid", cid) :
+                new ObjectParameter("cid", typeof(string));
+    
+            var qtyParameter = qty.HasValue ?
+                new ObjectParameter("qty", qty) :
+                new ObjectParameter("qty", typeof(int));
+    
+            var ipParameter = ip != null ?
+                new ObjectParameter("ip", ip) :
+                new ObjectParameter("ip", typeof(string));
+    
+            var midParameter = mid.HasValue ?
+                new ObjectParameter("mid", mid) :
+                new ObjectParameter("mid", typeof(int));
+    
+            var nqtyParameter = nqty.HasValue ?
+                new ObjectParameter("nqty", nqty) :
+                new ObjectParameter("nqty", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CommDetails", stuParameter, gidParameter, tidParameter, cidParameter, qtyParameter, ipParameter, midParameter, nqtyParameter);
+        }
+    
+        public virtual ObjectResult<CommSuccess_Result> CommSuccess()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CommSuccess_Result>("CommSuccess");
+        }
+    
+        public virtual int CreateTask(string taskID, string partName, string partSpec, string partMaterial, Nullable<int> qty, Nullable<int> action, Nullable<int> priority)
+        {
+            var taskIDParameter = taskID != null ?
+                new ObjectParameter("taskID", taskID) :
+                new ObjectParameter("taskID", typeof(string));
+    
+            var partNameParameter = partName != null ?
+                new ObjectParameter("partName", partName) :
+                new ObjectParameter("partName", typeof(string));
+    
+            var partSpecParameter = partSpec != null ?
+                new ObjectParameter("partSpec", partSpec) :
+                new ObjectParameter("partSpec", typeof(string));
+    
+            var partMaterialParameter = partMaterial != null ?
+                new ObjectParameter("partMaterial", partMaterial) :
+                new ObjectParameter("partMaterial", typeof(string));
+    
+            var qtyParameter = qty.HasValue ?
+                new ObjectParameter("qty", qty) :
+                new ObjectParameter("qty", typeof(int));
+    
+            var actionParameter = action.HasValue ?
+                new ObjectParameter("action", action) :
+                new ObjectParameter("action", typeof(int));
+    
+            var priorityParameter = priority.HasValue ?
+                new ObjectParameter("priority", priority) :
+                new ObjectParameter("priority", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CreateTask", taskIDParameter, partNameParameter, partSpecParameter, partMaterialParameter, qtyParameter, actionParameter, priorityParameter);
         }
     
         public virtual int DelAll(string type, string id)
@@ -398,13 +545,18 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("delSuTask");
         }
     
-        public virtual int Error(string aid)
+        public virtual int Error()
         {
-            var aidParameter = aid != null ?
-                new ObjectParameter("aid", aid) :
-                new ObjectParameter("aid", typeof(string));
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Error");
+        }
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Error", aidParameter);
+        public virtual int ExecTask(string taskID)
+        {
+            var taskIDParameter = taskID != null ?
+                new ObjectParameter("taskID", taskID) :
+                new ObjectParameter("taskID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ExecTask", taskIDParameter);
         }
     
         public virtual int HowToPick(string aid, string height, Nullable<int> inqty)
@@ -424,7 +576,16 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("HowToPick", aidParameter, heightParameter, inqtyParameter);
         }
     
-        public virtual ObjectResult<InOutMaterial_Result> InOutMaterial(string partName, string partSpec, string partMaterial, string inQTY, string placeID, string type, string inType, string qTYperPallet, string to, string goodsAllocationID)
+        public virtual int InComm(string taskId)
+        {
+            var taskIdParameter = taskId != null ?
+                new ObjectParameter("taskId", taskId) :
+                new ObjectParameter("taskId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InComm", taskIdParameter);
+        }
+    
+        public virtual int InOutMaterial(string partName, string partSpec, string partMaterial, string inQTY, string placeID, string type, string inType, string qTYperPallet, string to, string goodsAllocationID)
         {
             var partNameParameter = partName != null ?
                 new ObjectParameter("PartName", partName) :
@@ -466,7 +627,16 @@ namespace WMS.Models
                 new ObjectParameter("GoodsAllocationID", goodsAllocationID) :
                 new ObjectParameter("GoodsAllocationID", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<InOutMaterial_Result>("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter, qTYperPalletParameter, toParameter, goodsAllocationIDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InOutMaterial", partNameParameter, partSpecParameter, partMaterialParameter, inQTYParameter, placeIDParameter, typeParameter, inTypeParameter, qTYperPalletParameter, toParameter, goodsAllocationIDParameter);
+        }
+    
+        public virtual int OutComm(string taskId)
+        {
+            var taskIdParameter = taskId != null ?
+                new ObjectParameter("taskId", taskId) :
+                new ObjectParameter("taskId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("OutComm", taskIdParameter);
         }
     
         public virtual ObjectResult<OutHuo_Result> OutHuo()
@@ -541,13 +711,13 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PlcIn", aidParameter);
         }
     
-        public virtual ObjectResult<Strategy_Result> Strategy(string aid)
+        public virtual int Strategy(string aid)
         {
             var aidParameter = aid != null ?
                 new ObjectParameter("aid", aid) :
                 new ObjectParameter("aid", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Strategy_Result>("Strategy", aidParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Strategy", aidParameter);
         }
     
         public virtual int SystemSe(string x, string y, string z)
@@ -680,11 +850,40 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpAll", iDParameter, nameParameter, x_interceptParameter, updatedByParameter, updatedTimeParameter, statusIDParameter, y_interceptParameter, z_interceptParameter, sizeParameter, descriptionParameter, tempPlateParameter, storageLocationIDParameter, wHAreaIDParameter, wHIDParameter, createdByParameter, createdTimeParameter, typeParameter, category1Parameter, partSpecParameter, partMaterialParameter, qTYperPalletParameter, unitsParameter, partNameParameter, category2Parameter, category3Parameter, widthParameter, heightParameter);
         }
     
-        public virtual int UpInventory(string qty, string iD, string partName, string partSpec, string partMaterial, string type, string wh)
+        public virtual int UpGoods(Nullable<int> x, Nullable<int> y, Nullable<int> z, string name, Nullable<int> iD, string height)
         {
-            var qtyParameter = qty != null ?
+            var xParameter = x.HasValue ?
+                new ObjectParameter("x", x) :
+                new ObjectParameter("x", typeof(int));
+    
+            var yParameter = y.HasValue ?
+                new ObjectParameter("y", y) :
+                new ObjectParameter("y", typeof(int));
+    
+            var zParameter = z.HasValue ?
+                new ObjectParameter("z", z) :
+                new ObjectParameter("z", typeof(int));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("name", name) :
+                new ObjectParameter("name", typeof(string));
+    
+            var iDParameter = iD.HasValue ?
+                new ObjectParameter("ID", iD) :
+                new ObjectParameter("ID", typeof(int));
+    
+            var heightParameter = height != null ?
+                new ObjectParameter("height", height) :
+                new ObjectParameter("height", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpGoods", xParameter, yParameter, zParameter, nameParameter, iDParameter, heightParameter);
+        }
+    
+        public virtual int UpInventory(Nullable<int> qty, string iD, string partName, string partSpec, string partMaterial, string type, Nullable<int> wh)
+        {
+            var qtyParameter = qty.HasValue ?
                 new ObjectParameter("qty", qty) :
-                new ObjectParameter("qty", typeof(string));
+                new ObjectParameter("qty", typeof(int));
     
             var iDParameter = iD != null ?
                 new ObjectParameter("ID", iD) :
@@ -706,9 +905,9 @@ namespace WMS.Models
                 new ObjectParameter("Type", type) :
                 new ObjectParameter("Type", typeof(string));
     
-            var whParameter = wh != null ?
+            var whParameter = wh.HasValue ?
                 new ObjectParameter("wh", wh) :
-                new ObjectParameter("wh", typeof(string));
+                new ObjectParameter("wh", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpInventory", qtyParameter, iDParameter, partNameParameter, partSpecParameter, partMaterialParameter, typeParameter, whParameter);
         }
@@ -873,18 +1072,35 @@ namespace WMS.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Zhzy");
         }
     
-        public virtual ObjectResult<Nullable<int>> ZnIn(string aid)
+        public virtual int ZnIn(string aid)
         {
             var aidParameter = aid != null ?
                 new ObjectParameter("aid", aid) :
                 new ObjectParameter("aid", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ZnIn", aidParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ZnIn", aidParameter);
         }
     
-        public virtual ObjectResult<CheckHw_Result> CheckHw()
+        public virtual int DelTask(string taid, string type)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckHw_Result>("CheckHw");
+            var taidParameter = taid != null ?
+                new ObjectParameter("taid", taid) :
+                new ObjectParameter("taid", typeof(string));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("type", type) :
+                new ObjectParameter("type", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DelTask", taidParameter, typeParameter);
+        }
+    
+        public virtual int RunComm(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RunComm", idParameter);
         }
     }
 }

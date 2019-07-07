@@ -1,7 +1,6 @@
 ﻿using Sharp7;
-using SuperSocket.WebSocket;
 using System;
-using System.Collections.Generic;
+using WMS.Controllers;
 
 namespace WMS.ControlPlc
 {
@@ -33,31 +32,6 @@ namespace WMS.ControlPlc
         }
 
         /// <summary>
-        ///  联动启动按钮
-        /// </summary>
-        ///  <param name="ldqd">联动启动</param>
-        public static string  WholePileInOut(string IP, Boolean ldqd)
-        {
-            var client = Operation(IP, 48);
-            if (client != null)
-            {
-                var writeBuffer = new byte[48];
-                S7.SetBitAt(ref writeBuffer, 44, 0, ldqd);
-                int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
-                if (writeResult == 0)
-                {
-                    client.Disconnect();
-                    return "true";
-                }
-                else
-                {
-                    return "机器连接失败,请联系技术人员";
-                }
-            }
-            return "机器连接失败,请联系技术人员";
-        }
-
-        /// <summary>
         ///  写进出
         /// </summary>
         /// <param name="IP">地址</param>
@@ -77,18 +51,14 @@ namespace WMS.ControlPlc
         /// <param name="xpjzb">吸盘架坐标</param>
         /// <param name="sxzb">升叉坐标</param>     
         /// <param name="ccbh">存取板厚</param>  
-        public static string WholePileInOut(string IP,bool sn,bool hydqd,bool swjjt,bool swjtz,bool swgzfw,byte ms,
-            int qx,int qy,int qz,int cx,int cy,int cz,int cqbs,int xpjzb,int sxzb)
+        public static void WholePileInOut(string IP,byte ms,
+            int qx,int qy,int qz,int cx,int cy,int cz)
         {
-               var client = Operation(IP, 38);
+               var client = Operation(IP, 24);
                 if (client != null)
                 {
                 try {
-                    var writeBuffer = new byte[38];
-                    S7.SetBitAt(ref writeBuffer, 0, 1, hydqd);
-                    S7.SetBitAt(ref writeBuffer, 0, 2, swjjt);
-                    S7.SetBitAt(ref writeBuffer, 0, 3, swjtz);
-                    S7.SetBitAt(ref writeBuffer, 0, 4, swgzfw);
+                    var writeBuffer = new byte[24];
                     S7.SetByteAt(writeBuffer, 1, ms);
                     S7.SetDIntAt(writeBuffer, 2, qx);
                     S7.SetDIntAt(writeBuffer, 6, qy);
@@ -96,22 +66,14 @@ namespace WMS.ControlPlc
                     S7.SetDIntAt(writeBuffer, 14, cx);
                     S7.SetDIntAt(writeBuffer, 18, cy);
                     S7.SetDIntAt(writeBuffer, 22, cz);
-                    S7.SetDIntAt(writeBuffer, 26, cqbs);
-                    S7.SetDIntAt(writeBuffer, 30, xpjzb);
-                    S7.SetDIntAt(writeBuffer, 34, sxzb);
-                    S7.SetBitAt(ref writeBuffer, 0, 0, sn);
                     int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
                     if (writeResult == 0)
                     {
-                        
                         client.Disconnect();
-                        return "true";
                     }
                 } catch{
-                    return "机器连接失败,请联系技术人员";
                 }
                 }
-            return "机器连接失败,请联系技术人员";
         }
 
         ///<summary>
@@ -149,83 +111,70 @@ namespace WMS.ControlPlc
         /// <param name="rgvzdclqd">RGV自动出料启动</param>
         /// <param name="rgvzdclwc">RGV自动出料完成</param>
 
-        public static Dictionary<string, Boolean> CheckPLCDate(string IP= "192.168.3.30")
+        public static int CheckPLCDate(string IP= "192.168.3.30") 
         {
-            Dictionary<string, Boolean> ds=new Dictionary<string, Boolean>();
-            
-            
                 try
                 {
                 var client = new S7Client();
-                int connectionresult = client.ConnectTo(IP, 0, 1);             
-                var buffer = new byte[46];
-                int readResult = client.DBRead(1, 0, buffer.Length, buffer);
-                Boolean ldms = S7.GetBitAt(buffer, 38, 0);
-                Boolean sdms = S7.GetBitAt(buffer, 38, 1);
-                Boolean ddjzc = S7.GetBitAt(buffer, 38, 2);
-                Boolean gzbj = S7.GetBitAt(buffer, 38, 3);
-                Boolean jtz = S7.GetBitAt(buffer, 38, 4);
-                Boolean xzyxz = S7.GetBitAt(buffer, 38, 5);
-                Boolean tsyxz = S7.GetBitAt(buffer, 38, 6);
-                Boolean xpyxz = S7.GetBitAt(buffer, 38, 7);
-                Boolean xxyxz = S7.GetBitAt(buffer, 39, 0);
-                Boolean sxyxz = S7.GetBitAt(buffer, 39, 1);
-                Boolean zdjcz = S7.GetBitAt(buffer, 39, 2);
-                Boolean dzlqz = S7.GetBitAt(buffer, 39, 3);
-                Boolean zhclz = S7.GetBitAt(buffer, 39, 4);
-                Boolean zhqlz = S7.GetBitAt(buffer, 39, 5);
-                Boolean kndbz = S7.GetBitAt(buffer, 39, 6);
-                Boolean ddrwwc = S7.GetBitAt(buffer, 39, 7);
-                Boolean ldqd = S7.GetBitAt(buffer, 44, 0);
-                Boolean rkyxc = S7.GetBitAt(buffer, 44, 1);
-                Boolean rkyxq = S7.GetBitAt(buffer, 44, 2);
-                Boolean yxtd = S7.GetBitAt(buffer, 44, 3);
-                Boolean zdjcyxtd = S7.GetBitAt(buffer, 44, 4);
-                Boolean dzlqyxtd = S7.GetBitAt(buffer, 44, 5);
-                Boolean zhclyxtd = S7.GetBitAt(buffer, 44, 6);
-                Boolean zhqlyxtd = S7.GetBitAt(buffer, 44, 7);
-                Boolean kndbyxtd = S7.GetBitAt(buffer, 45, 0);
-                Boolean hydyx = S7.GetBitAt(buffer, 45, 1);
-                Boolean zdyxz = S7.GetBitAt(buffer, 45, 2);
-                Boolean rgvzdclz = S7.GetBitAt(buffer, 45, 3);
-                Boolean rgvzdclwc = S7.GetBitAt(buffer, 45, 5);
-                ds.Add("ldms", ldms);
-                ds.Add("sdms", sdms);
-                ds.Add("ddjzc", ddjzc);
-                ds.Add("gzbj", gzbj);
-                ds.Add("jtz", jtz);
-                ds.Add("xzyxz", xzyxz);
-                ds.Add("tsyxz", tsyxz);
-                ds.Add("xpyxz", xpyxz);
-                ds.Add("xxyxz", xxyxz);
-                ds.Add("sxyxz", sxyxz);
-                ds.Add("zdjcz", zdjcz);
-                ds.Add("dzlqz", dzlqz);
-                ds.Add("zhclz", zhclz);
-                ds.Add("zhqlz", zhqlz);
-                ds.Add("kndbz", kndbz);
-                ds.Add("ddrwwc", ddrwwc);
-                ds.Add("ldqd", ldqd);
-                ds.Add("rkyxc", rkyxc);
-                ds.Add("rkyxq", rkyxq);
-                ds.Add("yxtd", yxtd);
-                ds.Add("zdjcyxtd", zdjcyxtd);
-                ds.Add("dzlqyxtd", dzlqyxtd);
-                ds.Add("zhclyxtd", zhclyxtd);
-                ds.Add("zhqlyxtd", zhqlyxtd);
-                ds.Add("kndbyxtd", kndbyxtd);
-                ds.Add("hydyx", hydyx);
-                ds.Add("zdyxz", zdyxz);
-                ds.Add("rgvzdclz", rgvzdclz);
-                ds.Add("rgvzdclwc", rgvzdclwc);
-                ds.Add("msg", false);
-                client.Disconnect();
-                return ds;
+                int connectionresult = client.ConnectTo(IP, 0, 1);
+                if (connectionresult == 0)
+                {
+                    var buffer = new byte[46];
+                    int readResult = client.DBRead(1, 0, buffer.Length, buffer);
+                    Boolean ldms = S7.GetBitAt(buffer, 38, 0);
+                    Boolean sdms = S7.GetBitAt(buffer, 38, 1);
+                    Boolean ddjzc = S7.GetBitAt(buffer, 38, 2);
+                    Boolean gzbj = S7.GetBitAt(buffer, 38, 3);
+                    Boolean jtz = S7.GetBitAt(buffer, 38, 4);
+                    Boolean xzyxz = S7.GetBitAt(buffer, 38, 5);
+                    Boolean tsyxz = S7.GetBitAt(buffer, 38, 6);
+                    Boolean xpyxz = S7.GetBitAt(buffer, 38, 7);
+                    Boolean xxyxz = S7.GetBitAt(buffer, 39, 0);
+                    Boolean sxyxz = S7.GetBitAt(buffer, 39, 1);
+                    Boolean zdjcz = S7.GetBitAt(buffer, 39, 2);
+                    Boolean dzlqz = S7.GetBitAt(buffer, 39, 3);
+                    Boolean zhclz = S7.GetBitAt(buffer, 39, 4);
+                    Boolean zhqlz = S7.GetBitAt(buffer, 39, 5);
+                    Boolean kndbz = S7.GetBitAt(buffer, 39, 6);
+                    Boolean ddrwwc = S7.GetBitAt(buffer, 39, 7);
+                    Boolean ldqd = S7.GetBitAt(buffer, 44, 0);
+                    Boolean rkyxc = S7.GetBitAt(buffer, 44, 1);
+                    Boolean rkyxq = S7.GetBitAt(buffer, 44, 2);
+                    Boolean yxtd = S7.GetBitAt(buffer, 44, 3);
+                    Boolean zdjcyxtd = S7.GetBitAt(buffer, 44, 4);
+                    Boolean dzlqyxtd = S7.GetBitAt(buffer, 44, 5);
+                    Boolean zhclyxtd = S7.GetBitAt(buffer, 44, 6);
+                    Boolean zhqlyxtd = S7.GetBitAt(buffer, 44, 7);
+                    Boolean kndbyxtd = S7.GetBitAt(buffer, 45, 0);
+                    Boolean hydyx = S7.GetBitAt(buffer, 45, 1);
+                    Boolean zdyxz = S7.GetBitAt(buffer, 45, 2);
+                    Boolean rgvzdclz = S7.GetBitAt(buffer, 45, 3);
+                    Boolean rgvzdclwc = S7.GetBitAt(buffer, 45, 5);
+                    client.Disconnect();
+                    if (!ldms)
+                    {
+                        WS.SendJson("非联动模式");
+                        return 0;
+                    } else if (!ddjzc) {
+                        WS.SendJson("堆垛机存在问题");
+                        return 0;
+                    }
+                    else {
+                        if (WCSController.taskStatus1) {
+                            WCSController.RunTask(yxtd, ddrwwc, zdjcyxtd);
+                        }
+                        return 1;
+                    }
+                }
+                else {
+                    WS.SendJson("机器连接失败");
+                    return 0;
+                }
                 }
                 catch
                 {
-                    ds.Add("msg", true);
-                    return ds;
+                WS.SendJson("机器连接失败");
+                return 0;
                 }           
         }
 
@@ -234,24 +183,15 @@ namespace WMS.ControlPlc
             var client = Operation(IP, 1);
             if (client != null)
             {
-                try
-                {
+               
                     var writeBuffer = new byte[1];
                     S7.SetBitAt(ref writeBuffer, 0, 0, true);
                     int writeResult = client.DBWrite(1, 0, writeBuffer.Length, writeBuffer);
                     if (writeResult == 0)
                     {
-
                         client.Disconnect();
-                        WS.SendJson("true");
                     }
-                }
-                catch
-                {
-                    WS.SendJson ("机器连接失败,请联系技术人员");
-                }
             }
-            WS.SendJson("机器连接失败,请联系技术人员");
         }
         //启动RGV
         public static string StratRGV(string IP)

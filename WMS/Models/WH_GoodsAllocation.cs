@@ -18,18 +18,20 @@ namespace WMS.Models
         public string Name { get; set; }
         public double x_intercept { get; set; }
         public double y_intercept { get; set; }
-        public Nullable<double> z_intercept { get; set; }
+        public double z_intercept { get; set; }
         public Nullable<double> Size { get; set; }
         public string Description { get; set; }
-        public int TempPlate { get; set; }
-        public int StorageLocationID { get; set; }
-        public int WHAreaID { get; set; }
-        public int WHID { get; set; }
-        public System.DateTime CreatedTime { get; set; }
+        public Nullable<int> TempPlate { get; set; }
+        public Nullable<int> StorageLocationID { get; set; }
+        public Nullable<int> WHAreaID { get; set; }
+        public Nullable<int> WHID { get; set; }
+        public Nullable<System.DateTime> CreatedTime { get; set; }
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public string StatusID { get; set; }
-        public string height { get; set; }
+        public Nullable<int> height { get; set; }
+        public Nullable<bool> IsTempPlate { get; set; }
+        public Nullable<bool> IsTransit { get; set; }
     }
 }

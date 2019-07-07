@@ -25418,8 +25418,13 @@
                                 , t = this.config;
                             if (!F(e)) {
                                 var i = this.panel.getNodeByValue(e);
-                                if (i && (t.checkStrictly || i.isLeaf))
+                                if (i && (t.checkStrictly || i.isLeaf)) {
                                     return void (this.presentText = i.getText(this.showAllLevels, this.separator))
+                                }
+                            }
+                            if (e) {
+                                this.presentText = e.toString().replace(new RegExp(",", "g"), "/")
+                                return void (0);
                             }
                             this.presentText = null
                         },

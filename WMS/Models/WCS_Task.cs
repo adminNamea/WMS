@@ -16,16 +16,11 @@ namespace WMS.Models
     {
         public int ID { get; set; }
         public Nullable<int> MachineID { get; set; }
-        public Nullable<int> QTY { get; set; }
-        public string LocationFrom { get; set; }
-        public string LocationTo { get; set; }
-        public Nullable<System.DateTime> OrderStartTime { get; set; }
-        public Nullable<int> LenghtOfTime_ALL { get; set; }
-        public Nullable<System.DateTime> BeReadyToTakePlaceTime { get; set; }
-        public Nullable<int> LenghtOfTime_BeReadyToTakePlace { get; set; }
-        public Nullable<System.DateTime> WorkTime { get; set; }
-        public Nullable<int> LenghtOfTime_Work { get; set; }
-        public Nullable<int> LenghtOfTime_WaitingForOthers { get; set; }
         public string Status { get; set; }
+        public Nullable<System.DateTime> CreationTime { get; set; }
+        public Nullable<int> TaskQty { get; set; }
+        public string TaskID { get; set; }
+        public Nullable<System.DateTime> ExecTime { get; set; }
+        public Nullable<System.DateTime> CompletionTime { get; set; }
     }
 }

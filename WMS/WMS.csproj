@@ -167,6 +167,12 @@
     <Compile Include="Models\CheckCounts_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CheckDetails_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CheckGoods_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CheckHousCount_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -221,16 +227,19 @@
     <Compile Include="Models\checkwu_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CommSuccess_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Employee.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ExecTask_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\goid.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\hous.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\InOutMaterial_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MaterialStatistics.cs">
@@ -261,9 +270,6 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PurchaseOrder.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Strategy_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\StrToTable_Result.cs">
@@ -341,18 +347,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ck.png" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
-    <Content Include="css\ht.css" />
     <Content Include="css\StyleSheet1.css" />
     <Content Include="fen.jpg" />
     <Content Include="js\Home_vue.js" />
     <Content Include="js\In_vue.js" />
+    <Content Include="js\Location_vue.js" />
     <Content Include="js\ob.js" />
     <Content Include="js\vue-resource.js" />
     <Content Include="js\vue-router.js" />
+    <Content Include="js\xlsx.full.min.js" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -368,7 +371,6 @@
     <Content Include="css\index.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
     <Content Include="img\aa.svg" />
     <Content Include="img\bb.svg" />
     <Content Include="img\book.svg" />
@@ -566,16 +568,12 @@
     <Content Include="Views\Home\Observation.cshtml" />
     <Content Include="supersocket.sh" />
     <Content Include="supersocket.cmd" />
+    <Content Include="File\模板.xls" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />

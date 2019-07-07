@@ -22,7 +22,7 @@ namespace WMS.Models
         public Nullable<int> QTYperPallet { get; set; }
         public string Units { get; set; }
         public string CreatedBy { get; set; }
-        public string CreatedTime { get; set; }
+        public Nullable<System.DateTime> CreatedTime { get; set; }
         public Nullable<System.DateTime> UpdatedTime { get; set; }
         public string UpdatedBy { get; set; }
         public Nullable<int> StatusID { get; set; }

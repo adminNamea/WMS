@@ -11,18 +11,13 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class InOutMaterial_Result
+    public partial class CheckGoods_Result
     {
-        public string aid { get; set; }
-        public string mid { get; set; }
-        public string PartName { get; set; }
-        public string PartSpec { get; set; }
-        public string PartMaterial { get; set; }
-        public Nullable<double> QTY { get; set; }
-        public string Units { get; set; }
-        public int PalletQTY { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
-        public string type { get; set; }
-        public string Status { get; set; }
+        public Nullable<int> height { get; set; }
+        public double x { get; set; }
+        public double y { get; set; }
+        public double z { get; set; }
     }
 }

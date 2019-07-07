@@ -195,17 +195,12 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MachineID" Type="int" />
-          <Property Name="QTY" Type="int" />
-          <Property Name="LocationFrom" Type="varchar" MaxLength="50" />
-          <Property Name="LocationTo" Type="varchar" MaxLength="50" />
-          <Property Name="OrderStartTime" Type="datetime" />
-          <Property Name="LenghtOfTime_ALL" Type="int" />
-          <Property Name="BeReadyToTakePlaceTime" Type="datetime" />
-          <Property Name="LenghtOfTime_BeReadyToTakePlace" Type="int" />
-          <Property Name="WorkTime" Type="datetime" />
-          <Property Name="LenghtOfTime_Work" Type="int" />
-          <Property Name="LenghtOfTime_WaitingForOthers" Type="int" />
           <Property Name="Status" Type="varchar" MaxLength="20" />
+          <Property Name="CreationTime" Type="datetime" />
+          <Property Name="TaskQty" Type="int" />
+          <Property Name="TaskID" Type="varchar" MaxLength="20" />
+          <Property Name="ExecTime" Type="datetime" />
+          <Property Name="CompletionTime" Type="datetime" />
         </EntityType>
         <EntityType Name="WCS_Task_setup">
           <Key>
@@ -262,24 +257,29 @@
         </EntityType>
         <EntityType Name="WH_Comm">
           <Key>
-            <PropertyRef Name="aid" />
-            <PropertyRef Name="mid" />
+            <PropertyRef Name="ID" />
           </Key>
-          <Property Name="aid" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="mid" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="TaskID" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="mid" Type="varchar" MaxLength="20" />
           <Property Name="PartName" Type="varchar" MaxLength="50" />
           <Property Name="PartSpec" Type="varchar" MaxLength="50" />
           <Property Name="PartMaterial" Type="varchar" MaxLength="50" />
           <Property Name="QTY" Type="float" />
           <Property Name="Units" Type="nchar" MaxLength="10" />
-          <Property Name="PalletQTY" Type="int" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="type" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="CommQTY" Type="int" />
+          <Property Name="Name" Type="varchar" MaxLength="20" />
+          <Property Name="type" Type="varchar" MaxLength="4" />
           <Property Name="Status" Type="varchar" MaxLength="50" />
           <Property Name="FromID" Type="int" />
           <Property Name="ToID" Type="int" />
           <Property Name="CreatedTime" Type="datetime" />
           <Property Name="cl" Type="varchar" MaxLength="10" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="Del" Type="bit" />
+          <Property Name="CompletionTime" Type="datetime" />
+          <Property Name="ExecutionTime" Type="datetime" />
+          <Property Name="RunTime" Type="datetime" />
         </EntityType>
         <!--生成过程中发现错误:
 警告 6002: 表/视图“WMS.dbo.WH_Defect”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
@@ -303,19 +303,21 @@
           <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="x-intercept" Type="float" Nullable="false" />
           <Property Name="y-intercept" Type="float" Nullable="false" />
-          <Property Name="z-intercept" Type="float" />
+          <Property Name="z-intercept" Type="float" Nullable="false" />
           <Property Name="Size" Type="float" />
           <Property Name="Description" Type="varchar" MaxLength="20" />
-          <Property Name="TempPlate" Type="int" Nullable="false" />
-          <Property Name="StorageLocationID" Type="int" Nullable="false" />
-          <Property Name="WHAreaID" Type="int" Nullable="false" />
-          <Property Name="WHID" Type="int" Nullable="false" />
-          <Property Name="CreatedTime" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="TempPlate" Type="int" />
+          <Property Name="StorageLocationID" Type="int" />
+          <Property Name="WHAreaID" Type="int" />
+          <Property Name="WHID" Type="int" />
+          <Property Name="CreatedTime" Type="datetime" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="20" />
           <Property Name="UpdatedTime" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="20" />
           <Property Name="StatusID" Type="varchar" MaxLength="20" />
-          <Property Name="height" Type="varchar" MaxLength="20" />
+          <Property Name="height" Type="int" />
+          <Property Name="IsTempPlate" Type="bit" />
+          <Property Name="IsTransit" Type="bit" />
         </EntityType>
         <EntityType Name="WH_Material">
           <Key>
@@ -329,7 +331,7 @@
           <Property Name="QTYperPallet" Type="int" />
           <Property Name="Units" Type="nchar" MaxLength="10" />
           <Property Name="CreatedBy" Type="varchar" MaxLength="30" />
-          <Property Name="CreatedTime" Type="varchar" MaxLength="30" />
+          <Property Name="CreatedTime" Type="datetime" />
           <Property Name="UpdatedTime" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="20" />
           <Property Name="StatusID" Type="int" />
@@ -352,13 +354,13 @@
           <Property Name="IQC_RejectQTY" Type="int" />
           <Property Name="IQC_ReceivedQTY" Type="int" />
           <Property Name="OutQTY" Type="float" />
-          <Property Name="StockQTY" Type="float" />
+          <Property Name="StockQTY" Type="int" />
           <Property Name="Units" Type="nchar" MaxLength="10" />
           <Property Name="GoodsAllocationID" Type="int" />
           <Property Name="FromID" Type="int" />
           <Property Name="ToID" Type="nchar" MaxLength="10" />
           <Property Name="Status" Type="varchar" MaxLength="50" />
-          <Property Name="CreatedTime" Type="varchar" MaxLength="30" />
+          <Property Name="CreatedTime" Type="datetime" />
           <Property Name="PlaceID" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="WH_StorageLocation">
@@ -391,9 +393,7 @@
           <Key>
             <PropertyRef Name="Name" />
             <PropertyRef Name="ID" />
-            <PropertyRef Name="hid" />
-            <PropertyRef Name="aid" />
-            <PropertyRef Name="gid" />
+            <PropertyRef Name="z-intercept" />
           </Key>
           <Property Name="Category" Type="varchar" MaxLength="50" />
           <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
@@ -401,15 +401,29 @@
           <Property Name="PartSpec" Type="varchar" MaxLength="50" />
           <Property Name="StockQTY" Type="float" />
           <Property Name="ID" Type="int" Nullable="false" />
-          <Property Name="z" Type="int" />
+          <Property Name="z-intercept" Type="float" Nullable="false" />
           <Property Name="PartMaterial" Type="varchar" MaxLength="50" />
-          <Property Name="hid" Type="int" Nullable="false" />
-          <Property Name="aid" Type="int" Nullable="false" />
-          <Property Name="gid" Type="int" Nullable="false" />
           <Property Name="height" Type="varchar" MaxLength="20" />
           <Property Name="Type" Type="varchar" MaxLength="4" />
           <Property Name="mid" Type="int" />
         </EntityType>
+        <Function Name="AddExcel" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="varchar" Mode="In" />
+          <Parameter Name="PartName" Type="varchar" Mode="In" />
+          <Parameter Name="PartSpec" Type="varchar" Mode="In" />
+          <Parameter Name="PartMaterial" Type="varchar" Mode="In" />
+          <Parameter Name="Type" Type="varchar" Mode="In" />
+          <Parameter Name="sum" Type="int" Mode="In" />
+          <Parameter Name="Priority" Type="int" Mode="In" />
+        </Function>
+        <Function Name="AddGoods" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="x" Type="int" Mode="In" />
+          <Parameter Name="y" Type="int" Mode="In" />
+          <Parameter Name="z" Type="int" Mode="In" />
+          <Parameter Name="name" Type="varchar" Mode="In" />
+          <Parameter Name="height" Type="varchar" Mode="In" />
+          <Parameter Name="type" Type="int" Mode="In" />
+        </Function>
         <Function Name="AddStorage" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="name" Type="varchar" Mode="In" />
           <Parameter Name="ID" Type="varchar" Mode="In" />
@@ -444,6 +458,10 @@
           <Parameter Name="Name" Type="varchar" Mode="In" />
         </Function>
         <Function Name="CheckCounts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="CheckDetails" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="CheckGoods" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="CheckHousCount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="CheckHousSum" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PartName" Type="varchar" Mode="In" />
@@ -494,21 +512,46 @@
           <Parameter Name="Category" Type="varchar" Mode="In" />
           <Parameter Name="ID" Type="varchar" Mode="In" />
         </Function>
-        <Function Name="CommSuccess" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="aid" Type="varchar" Mode="In" />
+        <Function Name="CommDetails" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="stu" Type="bit" Mode="In" />
+          <Parameter Name="gid" Type="int" Mode="In" />
+          <Parameter Name="tid" Type="varchar" Mode="In" />
+          <Parameter Name="cid" Type="varchar" Mode="In" />
+          <Parameter Name="qty" Type="int" Mode="In" />
+          <Parameter Name="ip" Type="varchar" Mode="In" />
+          <Parameter Name="mid" Type="int" Mode="In" />
+          <Parameter Name="nqty" Type="int" Mode="In" />
+        </Function>
+        <Function Name="CommSuccess" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="CreateTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskID" Type="varchar" Mode="In" />
+          <Parameter Name="partName" Type="varchar" Mode="In" />
+          <Parameter Name="partSpec" Type="varchar" Mode="In" />
+          <Parameter Name="partMaterial" Type="varchar" Mode="In" />
+          <Parameter Name="qty" Type="int" Mode="In" />
+          <Parameter Name="action" Type="int" Mode="In" />
+          <Parameter Name="priority" Type="int" Mode="In" />
         </Function>
         <Function Name="DelAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="type" Type="varchar" Mode="In" />
           <Parameter Name="id" Type="varchar" Mode="In" />
         </Function>
         <Function Name="delSuTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="Error" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="aid" Type="varchar" Mode="In" />
+        <Function Name="DelTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taid" Type="varchar" Mode="In" />
+          <Parameter Name="type" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="Error" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ExecTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskID" Type="varchar" Mode="In" />
         </Function>
         <Function Name="HowToPick" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="aid" Type="varchar" Mode="In" />
           <Parameter Name="height" Type="varchar" Mode="In" />
           <Parameter Name="inqty" Type="int" Mode="In" />
+        </Function>
+        <Function Name="InComm" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="varchar" Mode="In" />
         </Function>
         <Function Name="InOutMaterial" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PartName" Type="varchar" Mode="In" />
@@ -521,6 +564,9 @@
           <Parameter Name="QTYperPallet" Type="varchar" Mode="In" />
           <Parameter Name="To" Type="varchar" Mode="In" />
           <Parameter Name="GoodsAllocationID" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="OutComm" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="taskId" Type="varchar" Mode="In" />
         </Function>
         <Function Name="OutHuo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="PickMany" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -541,6 +587,9 @@
         </Function>
         <Function Name="PlcIn" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="aid" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="RunComm" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
         </Function>
         <Function Name="Strategy" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="aid" Type="varchar" Mode="In" />
@@ -590,14 +639,22 @@
           <Parameter Name="width" Type="varchar" Mode="In" />
           <Parameter Name="height" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="UpGoods" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="x" Type="int" Mode="In" />
+          <Parameter Name="y" Type="int" Mode="In" />
+          <Parameter Name="z" Type="int" Mode="In" />
+          <Parameter Name="name" Type="varchar" Mode="In" />
+          <Parameter Name="ID" Type="int" Mode="In" />
+          <Parameter Name="height" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="UpInventory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="qty" Type="varchar" Mode="In" />
+          <Parameter Name="qty" Type="int" Mode="In" />
           <Parameter Name="ID" Type="varchar" Mode="In" />
           <Parameter Name="PartName" Type="varchar" Mode="In" />
           <Parameter Name="PartSpec" Type="varchar" Mode="In" />
           <Parameter Name="PartMaterial" Type="varchar" Mode="In" />
           <Parameter Name="Type" Type="varchar" Mode="In" />
-          <Parameter Name="wh" Type="varchar" Mode="In" />
+          <Parameter Name="wh" Type="int" Mode="In" />
         </Function>
         <Function Name="WcsAddAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Name" Type="varchar" Mode="In" />
@@ -718,11 +775,8 @@
     [hous].[PartSpec] AS [PartSpec], 
     [hous].[StockQTY] AS [StockQTY], 
     [hous].[ID] AS [ID], 
-    [hous].[z] AS [z], 
+    [hous].[z-intercept] AS [z-intercept], 
     [hous].[PartMaterial] AS [PartMaterial], 
-    [hous].[hid] AS [hid], 
-    [hous].[aid] AS [aid], 
-    [hous].[gid] AS [gid], 
     [hous].[height] AS [height], 
     [hous].[Type] AS [Type], 
     [hous].[mid] AS [mid]
@@ -911,17 +965,12 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MachineID" Type="Int32" />
-          <Property Name="QTY" Type="Int32" />
-          <Property Name="LocationFrom" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="LocationTo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="OrderStartTime" Type="DateTime" Precision="3" />
-          <Property Name="LenghtOfTime_ALL" Type="Int32" />
-          <Property Name="BeReadyToTakePlaceTime" Type="DateTime" Precision="3" />
-          <Property Name="LenghtOfTime_BeReadyToTakePlace" Type="Int32" />
-          <Property Name="WorkTime" Type="DateTime" Precision="3" />
-          <Property Name="LenghtOfTime_Work" Type="Int32" />
-          <Property Name="LenghtOfTime_WaitingForOthers" Type="Int32" />
           <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CreationTime" Type="DateTime" Precision="3" />
+          <Property Name="TaskQty" Type="Int32" />
+          <Property Name="TaskID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ExecTime" Type="DateTime" Precision="3" />
+          <Property Name="CompletionTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="WCS_Task_setup">
           <Key>
@@ -961,24 +1010,29 @@
         </EntityType>
         <EntityType Name="WH_Comm">
           <Key>
-            <PropertyRef Name="aid" />
-            <PropertyRef Name="mid" />
+            <PropertyRef Name="ID" />
           </Key>
-          <Property Name="aid" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="mid" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TaskID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="mid" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="PartName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PartSpec" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="PartMaterial" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="QTY" Type="Double" />
           <Property Name="Units" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="PalletQTY" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="type" Type="String" MaxLength="4" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CommQTY" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="type" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="FromID" Type="Int32" />
           <Property Name="ToID" Type="Int32" />
           <Property Name="CreatedTime" Type="DateTime" Precision="3" />
           <Property Name="cl" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="Del" Type="Boolean" />
+          <Property Name="CompletionTime" Type="DateTime" Precision="3" />
+          <Property Name="ExecutionTime" Type="DateTime" Precision="3" />
+          <Property Name="RunTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="WH_GoodsAllocation">
           <Key>
@@ -988,19 +1042,21 @@
           <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="x_intercept" Type="Double" Nullable="false" />
           <Property Name="y_intercept" Type="Double" Nullable="false" />
-          <Property Name="z_intercept" Type="Double" />
+          <Property Name="z_intercept" Type="Double" Nullable="false" />
           <Property Name="Size" Type="Double" />
           <Property Name="Description" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="TempPlate" Type="Int32" Nullable="false" />
-          <Property Name="StorageLocationID" Type="Int32" Nullable="false" />
-          <Property Name="WHAreaID" Type="Int32" Nullable="false" />
-          <Property Name="WHID" Type="Int32" Nullable="false" />
-          <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CreatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TempPlate" Type="Int32" />
+          <Property Name="StorageLocationID" Type="Int32" />
+          <Property Name="WHAreaID" Type="Int32" />
+          <Property Name="WHID" Type="Int32" />
+          <Property Name="CreatedTime" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedTime" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="StatusID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="height" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="height" Type="Int32" />
+          <Property Name="IsTempPlate" Type="Boolean" />
+          <Property Name="IsTransit" Type="Boolean" />
         </EntityType>
         <EntityType Name="WH_Material">
           <Key>
@@ -1014,7 +1070,7 @@
           <Property Name="QTYperPallet" Type="Int32" />
           <Property Name="Units" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="CreatedBy" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedTime" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedTime" Type="DateTime" Precision="3" />
           <Property Name="UpdatedTime" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="StatusID" Type="Int32" />
@@ -1037,13 +1093,13 @@
           <Property Name="IQC_RejectQTY" Type="Int32" />
           <Property Name="IQC_ReceivedQTY" Type="Int32" />
           <Property Name="OutQTY" Type="Double" />
-          <Property Name="StockQTY" Type="Double" />
+          <Property Name="StockQTY" Type="Int32" />
           <Property Name="Units" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="GoodsAllocationID" Type="Int32" />
           <Property Name="FromID" Type="Int32" />
           <Property Name="ToID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedTime" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedTime" Type="DateTime" Precision="3" />
           <Property Name="PlaceID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="WH_StorageLocation">
@@ -1113,9 +1169,7 @@
           <Key>
             <PropertyRef Name="Name" />
             <PropertyRef Name="ID" />
-            <PropertyRef Name="hid" />
-            <PropertyRef Name="aid" />
-            <PropertyRef Name="gid" />
+            <PropertyRef Name="z_intercept" />
           </Key>
           <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
@@ -1123,11 +1177,8 @@
           <Property Name="PartSpec" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="StockQTY" Type="Double" />
           <Property Name="ID" Type="Int32" Nullable="false" />
-          <Property Name="z" Type="Int32" />
+          <Property Name="z_intercept" Type="Double" Nullable="false" />
           <Property Name="PartMaterial" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="hid" Type="Int32" Nullable="false" />
-          <Property Name="aid" Type="Int32" Nullable="false" />
-          <Property Name="gid" Type="Int32" Nullable="false" />
           <Property Name="height" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Type" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
           <Property Name="mid" Type="Int32" />
@@ -1163,6 +1214,23 @@
           <FunctionImport Name="StrToTable" IsComposable="true" ReturnType="Collection(WMSModel.StrToTable_Result)">
           <Parameter Name="str" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="AddExcel">
+            <Parameter Name="ID" Mode="In" Type="String" />
+            <Parameter Name="PartName" Mode="In" Type="String" />
+            <Parameter Name="PartSpec" Mode="In" Type="String" />
+            <Parameter Name="PartMaterial" Mode="In" Type="String" />
+            <Parameter Name="Type" Mode="In" Type="String" />
+            <Parameter Name="sum" Mode="In" Type="Int32" />
+            <Parameter Name="Priority" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="AddGoods">
+            <Parameter Name="x" Mode="In" Type="Int32" />
+            <Parameter Name="y" Mode="In" Type="Int32" />
+            <Parameter Name="z" Mode="In" Type="Int32" />
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="height" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="Int32" />
+          </FunctionImport>
           <FunctionImport Name="AddStorage">
             <Parameter Name="name" Mode="In" Type="String" />
             <Parameter Name="ID" Mode="In" Type="String" />
@@ -1197,6 +1265,10 @@
           <Parameter Name="Name" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="CheckCounts" ReturnType="Collection(WMSModel.CheckCounts_Result)" />
+          <FunctionImport Name="CheckDetails" ReturnType="Collection(WMSModel.CheckDetails_Result)">
+          <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="CheckGoods" ReturnType="Collection(WMSModel.CheckGoods_Result)" />
           <FunctionImport Name="CheckHousCount" ReturnType="Collection(WMSModel.CheckHousCount_Result)" />
           <FunctionImport Name="CheckHousSum" ReturnType="Collection(WMSModel.CheckHousSum_Result)">
             <Parameter Name="PartName" Mode="In" Type="String" />
@@ -1211,6 +1283,7 @@
             <Parameter Name="type" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="CheckHuos" ReturnType="Collection(WMSModel.CheckHuos_Result)" />
+          <FunctionImport Name="CheckHw" ReturnType="Collection(WMSModel.CheckHw_Result)" />
           <FunctionImport Name="CheckInventory" ReturnType="Collection(WMSModel.CheckInventory_Result)" />
           <FunctionImport Name="checkKq" ReturnType="Collection(WMSModel.checkKq_Result)">
             <Parameter Name="WHAreaID" Mode="In" Type="String" />
@@ -1246,8 +1319,26 @@
             <Parameter Name="Category" Mode="In" Type="String" />
             <Parameter Name="ID" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="CommSuccess">
-          <Parameter Name="aid" Mode="In" Type="String" />
+          <FunctionImport Name="CommDetails">
+            <Parameter Name="stu" Mode="In" Type="Boolean" />
+            <Parameter Name="gid" Mode="In" Type="Int32" />
+            <Parameter Name="tid" Mode="In" Type="String" />
+            <Parameter Name="cid" Mode="In" Type="String" />
+            <Parameter Name="qty" Mode="In" Type="Int32" />
+            <Parameter Name="ip" Mode="In" Type="String" />
+            <Parameter Name="mid" Mode="In" Type="Int32" />
+            <Parameter Name="nqty" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="CommSuccess" ReturnType="Collection(WMSModel.CommSuccess_Result)">
+          </FunctionImport>
+          <FunctionImport Name="CreateTask">
+            <Parameter Name="taskID" Mode="In" Type="String" />
+            <Parameter Name="partName" Mode="In" Type="String" />
+            <Parameter Name="partSpec" Mode="In" Type="String" />
+            <Parameter Name="partMaterial" Mode="In" Type="String" />
+            <Parameter Name="qty" Mode="In" Type="Int32" />
+            <Parameter Name="action" Mode="In" Type="Int32" />
+            <Parameter Name="priority" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="DelAll">
             <Parameter Name="type" Mode="In" Type="String" />
@@ -1255,14 +1346,19 @@
           </FunctionImport>
           <FunctionImport Name="delSuTask" />
           <FunctionImport Name="Error">
-          <Parameter Name="aid" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="ExecTask">
+          <Parameter Name="taskID" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="HowToPick">
             <Parameter Name="aid" Mode="In" Type="String" />
             <Parameter Name="height" Mode="In" Type="String" />
             <Parameter Name="inqty" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="InOutMaterial" ReturnType="Collection(WMSModel.InOutMaterial_Result)">
+          <FunctionImport Name="InComm">
+          <Parameter Name="taskId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="InOutMaterial">
             <Parameter Name="PartName" Mode="In" Type="String" />
             <Parameter Name="PartSpec" Mode="In" Type="String" />
             <Parameter Name="PartMaterial" Mode="In" Type="String" />
@@ -1273,6 +1369,9 @@
             <Parameter Name="QTYperPallet" Mode="In" Type="String" />
             <Parameter Name="To" Mode="In" Type="String" />
             <Parameter Name="GoodsAllocationID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="OutComm">
+          <Parameter Name="taskId" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="OutHuo" ReturnType="Collection(WMSModel.OutHuo_Result)" />
           <FunctionImport Name="PickMany">
@@ -1294,7 +1393,7 @@
           <FunctionImport Name="PlcIn">
           <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="Strategy" ReturnType="Collection(WMSModel.Strategy_Result)">
+          <FunctionImport Name="Strategy">
           <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="SystemSe">
@@ -1331,14 +1430,22 @@
             <Parameter Name="width" Mode="In" Type="String" />
             <Parameter Name="height" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="UpGoods">
+            <Parameter Name="x" Mode="In" Type="Int32" />
+            <Parameter Name="y" Mode="In" Type="Int32" />
+            <Parameter Name="z" Mode="In" Type="Int32" />
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="ID" Mode="In" Type="Int32" />
+            <Parameter Name="height" Mode="In" Type="String" />
+          </FunctionImport>
           <FunctionImport Name="UpInventory">
-            <Parameter Name="qty" Mode="In" Type="String" />
+            <Parameter Name="qty" Mode="In" Type="Int32" />
             <Parameter Name="ID" Mode="In" Type="String" />
             <Parameter Name="PartName" Mode="In" Type="String" />
             <Parameter Name="PartSpec" Mode="In" Type="String" />
             <Parameter Name="PartMaterial" Mode="In" Type="String" />
             <Parameter Name="Type" Mode="In" Type="String" />
-            <Parameter Name="wh" Mode="In" Type="String" />
+            <Parameter Name="wh" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="WcsAddAll">
             <Parameter Name="Name" Mode="In" Type="String" />
@@ -1382,16 +1489,22 @@
             <Parameter Name="IP" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="Zhzy" />
-          <FunctionImport Name="ZnIn" ReturnType="Collection(Int32)">
+          <FunctionImport Name="ZnIn">
           <Parameter Name="aid" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="CheckHw" ReturnType="Collection(WMSModel.CheckHw_Result)" />
+          <FunctionImport Name="DelTask">
+            <Parameter Name="taid" Mode="In" Type="String" />
+            <Parameter Name="type" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="RunComm" >
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="CeckHCount_Result">
           <Property Type="Int32" Name="value" Nullable="false" />
           <Property Type="String" Name="label" Nullable="false" MaxLength="20" />
-          <Property Type="String" Name="size" Nullable="true" MaxLength="20" />
-          <Property Type="Double" Name="stockQTY" Nullable="true" />
+          <Property Type="Int32" Name="size" Nullable="true" />
+          <Property Type="Int32" Name="stockQTY" Nullable="true" />
           <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
@@ -1411,27 +1524,40 @@
           <Property Type="String" Name="gname" Nullable="false" MaxLength="20" />
           <Property Type="Int32" Name="gid" Nullable="false" />
         </ComplexType>
+        <ComplexType Name="CheckDetails_Result">
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="Int32" Name="StockQTY" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="CheckGoods_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="Int32" Name="height" Nullable="true" />
+          <Property Type="Double" Name="x" Nullable="false" />
+          <Property Type="Double" Name="y" Nullable="false" />
+          <Property Type="Double" Name="z" Nullable="false" />
+        </ComplexType>
         <ComplexType Name="CheckHousCount_Result">
-          <Property Type="Double" Name="count" Nullable="true" />
+          <Property Type="Int32" Name="count" Nullable="true" />
           <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
         </ComplexType>
         <ComplexType Name="CheckHousSum_Result">
-          <Property Type="Int32" Name="sumQty" Nullable="true" />
-          <Property Type="Int32" Name="sum" Nullable="true" />
-          <Property Type="Int32" Name="suQty" Nullable="true" />
+          <Property Type="String" Name="sumQty" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="qty" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="h" Nullable="true" />
+          <Property Type="String" Name="sh" Nullable="true" MaxLength="20" />
         </ComplexType>
         <ComplexType Name="checkHuo_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
           <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
           <Property Type="Double" Name="x_intercept" Nullable="false" />
           <Property Type="Double" Name="y_intercept" Nullable="false" />
-          <Property Type="Double" Name="z_intercept" Nullable="true" />
+          <Property Type="Double" Name="z_intercept" Nullable="false" />
           <Property Type="String" Name="Size" Nullable="true" MaxLength="24" />
           <Property Type="String" Name="Description" Nullable="true" MaxLength="20" />
-          <Property Type="Int32" Name="TempPlate" Nullable="false" />
-          <Property Type="Int32" Name="StorageLocationID" Nullable="false" />
-          <Property Type="Int32" Name="WHAreaID" Nullable="false" />
-          <Property Type="Int32" Name="WHID" Nullable="false" />
+          <Property Type="Int32" Name="TempPlate" Nullable="true" />
+          <Property Type="Int32" Name="StorageLocationID" Nullable="true" />
+          <Property Type="Int32" Name="WHAreaID" Nullable="true" />
+          <Property Type="Int32" Name="WHID" Nullable="true" />
           <Property Type="String" Name="StatusID" Nullable="true" MaxLength="20" />
           <Property Type="String" Name="CreatedTime" Nullable="true" MaxLength="20" />
         </ComplexType>
@@ -1440,16 +1566,20 @@
           <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
           <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
-          <Property Type="Double" Name="StockQTY" Nullable="true" />
+          <Property Type="Int32" Name="StockQTY" Nullable="true" />
           <Property Type="Int32" Name="ID" Nullable="false" />
-          <Property Type="Int32" Name="z" Nullable="true" />
+          <Property Type="Double" Name="z_intercept" Nullable="false" />
           <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
-          <Property Type="Int32" Name="hid" Nullable="false" />
-          <Property Type="Int32" Name="aid" Nullable="false" />
-          <Property Type="Int32" Name="gid" Nullable="false" />
-          <Property Type="String" Name="height" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="height" Nullable="true" />
           <Property Type="String" Name="Type" Nullable="true" MaxLength="4" />
           <Property Type="Int32" Name="mid" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="CheckHw_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="mid" Nullable="true" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
+          <Property Type="Int32" Name="height" Nullable="true" />
+          <Property Type="Int32" Name="StockQTY" Nullable="true" />
         </ComplexType>
         <ComplexType Name="CheckInventory_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1457,9 +1587,7 @@
           <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="Type" Nullable="true" MaxLength="50" />
-          <Property Type="Int32" Name="sum" Nullable="true" />
-          <Property Type="String" Name="upStatus" Nullable="false" MaxLength="5" />
-          <Property Type="String" Name="NotQty" Nullable="false" MaxLength="10" />
+          <Property Type="Int32" Name="sum" Nullable="false" />
         </ComplexType>
         <ComplexType Name="checkKq_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1508,7 +1636,7 @@
         </ComplexType>
         <ComplexType Name="CheckMQTY_Result">
           <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
-          <Property Type="Double" Name="qty" Nullable="true" />
+          <Property Type="Int32" Name="qty" Nullable="true" />
         </ComplexType>
         <ComplexType Name="checkPlace_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -1558,24 +1686,11 @@
           <Property Type="Int32" Name="QTYperPallet" Nullable="true" />
           <Property Type="String" Name="Units" Nullable="true" MaxLength="10" />
         </ComplexType>
-        <ComplexType Name="InOutMaterial_Result">
-          <Property Type="String" Name="aid" Nullable="false" MaxLength="20" />
-          <Property Type="String" Name="mid" Nullable="false" MaxLength="20" />
-          <Property Type="String" Name="PartName" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="PartSpec" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="PartMaterial" Nullable="true" MaxLength="50" />
-          <Property Type="Double" Name="QTY" Nullable="true" />
-          <Property Type="String" Name="Units" Nullable="true" MaxLength="10" />
-          <Property Type="Int32" Name="PalletQTY" Nullable="false" />
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
-          <Property Type="String" Name="type" Nullable="false" MaxLength="4" />
-          <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
-        </ComplexType>
         <ComplexType Name="OutHuo_Result">
           <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
           <Property Type="Int32" Name="ID" Nullable="false" />
         </ComplexType>
-        <ComplexType Name="Strategy_Result">
+        <ComplexType Name="ExecTask_Result">
           <Property Type="String" Name="AID" Nullable="false" MaxLength="20" />
           <Property Type="String" Name="CID" Nullable="false" MaxLength="10" />
           <Property Type="String" Name="Name" Nullable="true" MaxLength="50" />
@@ -1599,12 +1714,10 @@
           <Property Type="String" Name="ids" Nullable="true" MaxLength="10" />
           <Property Type="String" Name="type" Nullable="true" MaxLength="10" />
         </ComplexType>
-        <ComplexType Name="CheckHw_Result">
-          <Property Type="Int32" Name="ID" Nullable="false" />
-          <Property Type="String" Name="Name" Nullable="false" MaxLength="20" />
-          <Property Type="Double" Name="height" Nullable="true" />
-          <Property Type="Int32" Name="mid" Nullable="true" />
-          <Property Type="Double" Name="StockQTY" Nullable="true" />
+        <ComplexType Name="CommSuccess_Result">
+          <Property Type="String" Name="type" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="IP" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="AID" Nullable="false" MaxLength="20" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1798,17 +1911,12 @@
               <MappingFragment StoreEntitySet="WCS_Task">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="MachineID" ColumnName="MachineID" />
-                <ScalarProperty Name="QTY" ColumnName="QTY" />
-                <ScalarProperty Name="LocationFrom" ColumnName="LocationFrom" />
-                <ScalarProperty Name="LocationTo" ColumnName="LocationTo" />
-                <ScalarProperty Name="OrderStartTime" ColumnName="OrderStartTime" />
-                <ScalarProperty Name="LenghtOfTime_ALL" ColumnName="LenghtOfTime_ALL" />
-                <ScalarProperty Name="BeReadyToTakePlaceTime" ColumnName="BeReadyToTakePlaceTime" />
-                <ScalarProperty Name="LenghtOfTime_BeReadyToTakePlace" ColumnName="LenghtOfTime_BeReadyToTakePlace" />
-                <ScalarProperty Name="WorkTime" ColumnName="WorkTime" />
-                <ScalarProperty Name="LenghtOfTime_Work" ColumnName="LenghtOfTime_Work" />
-                <ScalarProperty Name="LenghtOfTime_WaitingForOthers" ColumnName="LenghtOfTime_WaitingForOthers" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreationTime" ColumnName="CreationTime" />
+                <ScalarProperty Name="TaskQty" ColumnName="TaskQty" />
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="ExecTime" ColumnName="ExecTime" />
+                <ScalarProperty Name="CompletionTime" ColumnName="CompletionTime" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1854,14 +1962,14 @@
           <EntitySetMapping Name="WH_Comm">
             <EntityTypeMapping TypeName="WMSModel.WH_Comm">
               <MappingFragment StoreEntitySet="WH_Comm">
-                <ScalarProperty Name="aid" ColumnName="aid" />
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
                 <ScalarProperty Name="mid" ColumnName="mid" />
                 <ScalarProperty Name="PartName" ColumnName="PartName" />
                 <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
                 <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
                 <ScalarProperty Name="QTY" ColumnName="QTY" />
                 <ScalarProperty Name="Units" ColumnName="Units" />
-                <ScalarProperty Name="PalletQTY" ColumnName="PalletQTY" />
+                <ScalarProperty Name="CommQTY" ColumnName="CommQTY" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
@@ -1869,6 +1977,12 @@
                 <ScalarProperty Name="ToID" ColumnName="ToID" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
                 <ScalarProperty Name="cl" ColumnName="cl" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="Del" ColumnName="Del" />
+                <ScalarProperty Name="CompletionTime" ColumnName="CompletionTime" />
+                <ScalarProperty Name="ExecutionTime" ColumnName="ExecutionTime" />
+                <ScalarProperty Name="RunTime" ColumnName="RunTime" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1892,6 +2006,8 @@
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="StatusID" ColumnName="StatusID" />
                 <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="IsTempPlate" ColumnName="IsTempPlate" />
+                <ScalarProperty Name="IsTransit" ColumnName="IsTransit" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2018,11 +2134,8 @@
                 <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
                 <ScalarProperty Name="StockQTY" ColumnName="StockQTY" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="z" ColumnName="z" />
+                <ScalarProperty Name="z_intercept" ColumnName="z-intercept" />
                 <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
-                <ScalarProperty Name="hid" ColumnName="hid" />
-                <ScalarProperty Name="aid" ColumnName="aid" />
-                <ScalarProperty Name="gid" ColumnName="gid" />
                 <ScalarProperty Name="height" ColumnName="height" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="mid" ColumnName="mid" />
@@ -2037,6 +2150,8 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="AddExcel" FunctionName="WMSModel.Store.AddExcel" />
+          <FunctionImportMapping FunctionImportName="AddGoods" FunctionName="WMSModel.Store.AddGoods" />
           <FunctionImportMapping FunctionImportName="AddStorage" FunctionName="WMSModel.Store.AddStorage" />
           <FunctionImportMapping FunctionImportName="AddUser" FunctionName="WMSModel.Store.AddUser" />
           <FunctionImportMapping FunctionImportName="CeckHCount" FunctionName="WMSModel.Store.CeckHCount">
@@ -2075,6 +2190,26 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="CheckDetails" FunctionName="WMSModel.Store.CheckDetails">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckDetails_Result">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="StockQTY" ColumnName="StockQTY" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="CheckGoods" FunctionName="WMSModel.Store.CheckGoods">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckGoods_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="x" ColumnName="x" />
+                <ScalarProperty Name="y" ColumnName="y" />
+                <ScalarProperty Name="z" ColumnName="z" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="CheckHousCount" FunctionName="WMSModel.Store.CheckHousCount">
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.CheckHousCount_Result">
@@ -2087,8 +2222,9 @@
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.CheckHousSum_Result">
                 <ScalarProperty Name="sumQty" ColumnName="sumQty" />
-                <ScalarProperty Name="sum" ColumnName="sum" />
-                <ScalarProperty Name="suQty" ColumnName="suQty" />
+                <ScalarProperty Name="qty" ColumnName="qty" />
+                <ScalarProperty Name="h" ColumnName="h" />
+                <ScalarProperty Name="sh" ColumnName="sh" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -2120,14 +2256,22 @@
                 <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
                 <ScalarProperty Name="StockQTY" ColumnName="StockQTY" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="z" ColumnName="z" />
+                <ScalarProperty Name="z_intercept" ColumnName="z-intercept" />
                 <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
-                <ScalarProperty Name="hid" ColumnName="hid" />
-                <ScalarProperty Name="aid" ColumnName="aid" />
-                <ScalarProperty Name="gid" ColumnName="gid" />
                 <ScalarProperty Name="height" ColumnName="height" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="mid" ColumnName="mid" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="CheckHw" FunctionName="WMSModel.Store.CheckHw">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WMSModel.CheckHw_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="mid" ColumnName="mid" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="StockQTY" ColumnName="StockQTY" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -2140,8 +2284,6 @@
                 <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="sum" ColumnName="sum" />
-                <ScalarProperty Name="upStatus" ColumnName="upStatus" />
-                <ScalarProperty Name="NotQty" ColumnName="NotQty" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -2290,28 +2432,26 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="CommSuccess" FunctionName="WMSModel.Store.CommSuccess" />
-          <FunctionImportMapping FunctionImportName="DelAll" FunctionName="WMSModel.Store.DelAll" />
-          <FunctionImportMapping FunctionImportName="delSuTask" FunctionName="WMSModel.Store.delSuTask" />
-          <FunctionImportMapping FunctionImportName="Error" FunctionName="WMSModel.Store.Error" />
-          <FunctionImportMapping FunctionImportName="HowToPick" FunctionName="WMSModel.Store.HowToPick" />
-          <FunctionImportMapping FunctionImportName="InOutMaterial" FunctionName="WMSModel.Store.InOutMaterial">
+          <FunctionImportMapping FunctionImportName="CommDetails" FunctionName="WMSModel.Store.CommDetails" />
+          <FunctionImportMapping FunctionImportName="CommSuccess" FunctionName="WMSModel.Store.CommSuccess" >
             <ResultMapping>
-              <ComplexTypeMapping TypeName="WMSModel.InOutMaterial_Result">
-                <ScalarProperty Name="aid" ColumnName="aid" />
-                <ScalarProperty Name="mid" ColumnName="mid" />
-                <ScalarProperty Name="PartName" ColumnName="PartName" />
-                <ScalarProperty Name="PartSpec" ColumnName="PartSpec" />
-                <ScalarProperty Name="PartMaterial" ColumnName="PartMaterial" />
-                <ScalarProperty Name="QTY" ColumnName="QTY" />
-                <ScalarProperty Name="Units" ColumnName="Units" />
-                <ScalarProperty Name="PalletQTY" ColumnName="PalletQTY" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
+              <ComplexTypeMapping TypeName="WMSModel.CommSuccess_Result">
                 <ScalarProperty Name="type" ColumnName="type" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="AID" ColumnName="AID" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="CreateTask" FunctionName="WMSModel.Store.CreateTask" />
+          <FunctionImportMapping FunctionImportName="DelAll" FunctionName="WMSModel.Store.DelAll" />
+          <FunctionImportMapping FunctionImportName="delSuTask" FunctionName="WMSModel.Store.delSuTask" />
+          <FunctionImportMapping FunctionImportName="Error" FunctionName="WMSModel.Store.Error" />
+          <FunctionImportMapping FunctionImportName="ExecTask" FunctionName="WMSModel.Store.ExecTask" >
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="HowToPick" FunctionName="WMSModel.Store.HowToPick" />
+          <FunctionImportMapping FunctionImportName="InComm" FunctionName="WMSModel.Store.InComm" />
+          <FunctionImportMapping FunctionImportName="InOutMaterial" FunctionName="WMSModel.Store.InOutMaterial" />
+          <FunctionImportMapping FunctionImportName="OutComm" FunctionName="WMSModel.Store.OutComm" />
           <FunctionImportMapping FunctionImportName="OutHuo" FunctionName="WMSModel.Store.OutHuo">
             <ResultMapping>
               <ComplexTypeMapping TypeName="WMSModel.OutHuo_Result">
@@ -2323,53 +2463,18 @@
           <FunctionImportMapping FunctionImportName="PickMany" FunctionName="WMSModel.Store.PickMany" />
           <FunctionImportMapping FunctionImportName="PickOne" FunctionName="WMSModel.Store.PickOne" />
           <FunctionImportMapping FunctionImportName="PlcIn" FunctionName="WMSModel.Store.PlcIn" />
-          <FunctionImportMapping FunctionImportName="Strategy" FunctionName="WMSModel.Store.Strategy">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="WMSModel.Strategy_Result">
-                <ScalarProperty Name="AID" ColumnName="AID" />
-                <ScalarProperty Name="CID" ColumnName="CID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="qx" ColumnName="qx" />
-                <ScalarProperty Name="qy" ColumnName="qy" />
-                <ScalarProperty Name="fx" ColumnName="fx" />
-                <ScalarProperty Name="fy" ColumnName="fy" />
-                <ScalarProperty Name="InQTY" ColumnName="InQTY" />
-                <ScalarProperty Name="Statu" ColumnName="Statu" />
-                <ScalarProperty Name="IP" ColumnName="IP" />
-                <ScalarProperty Name="pname" ColumnName="pname" />
-                <ScalarProperty Name="gname" ColumnName="gname" />
-                <ScalarProperty Name="speed" ColumnName="speed" />
-                <ScalarProperty Name="mo" ColumnName="mo" />
-                <ScalarProperty Name="z1" ColumnName="z1" />
-                <ScalarProperty Name="y1" ColumnName="y1" />
-                <ScalarProperty Name="qz" ColumnName="qz" />
-                <ScalarProperty Name="fz" ColumnName="fz" />
-                <ScalarProperty Name="time" ColumnName="time" />
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="ids" ColumnName="ids" />
-                <ScalarProperty Name="type" ColumnName="type" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Strategy" FunctionName="WMSModel.Store.Strategy" />
           <FunctionImportMapping FunctionImportName="SystemSe" FunctionName="WMSModel.Store.SystemSe" />
           <FunctionImportMapping FunctionImportName="UpAll" FunctionName="WMSModel.Store.UpAll" />
+          <FunctionImportMapping FunctionImportName="UpGoods" FunctionName="WMSModel.Store.UpGoods" />
           <FunctionImportMapping FunctionImportName="UpInventory" FunctionName="WMSModel.Store.UpInventory" />
           <FunctionImportMapping FunctionImportName="WcsAddAll" FunctionName="WMSModel.Store.WcsAddAll" />
           <FunctionImportMapping FunctionImportName="WcsDelAll" FunctionName="WMSModel.Store.WcsDelAll" />
           <FunctionImportMapping FunctionImportName="WcsUpAll" FunctionName="WMSModel.Store.WcsUpAll" />
           <FunctionImportMapping FunctionImportName="Zhzy" FunctionName="WMSModel.Store.Zhzy" />
           <FunctionImportMapping FunctionImportName="ZnIn" FunctionName="WMSModel.Store.ZnIn" />
-          <FunctionImportMapping FunctionImportName="CheckHw" FunctionName="WMSModel.Store.CheckHw">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="WMSModel.CheckHw_Result">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="height" ColumnName="height" />
-                <ScalarProperty Name="mid" ColumnName="mid" />
-                <ScalarProperty Name="StockQTY" ColumnName="StockQTY" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="DelTask" FunctionName="WMSModel.Store.DelTask" />
+          <FunctionImportMapping FunctionImportName="RunComm" FunctionName="WMSModel.Store.RunComm" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

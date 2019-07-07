@@ -5,15 +5,127 @@ using System.Web.Mvc;
 using WMS.Models;
 using System.Text;
 using WMS.ControlPlc;
+using System.Timers;
 
 namespace WMS.Controllers
 {
+
     public class WCSController : Controller
     {
+        public static bool taskStatus=false;
+        public static bool taskStatus1 = false;
+        public static Timer tmr = new Timer
+        {
+            Interval = 1000,
+            AutoReset = true
+        };
         // GET: WCS
         public ActionResult Index()
         {
             return View();
+        }
+        //执行列表
+        public static void ExecList(string taskId) {
+            using (WMSEntities wm = new WMSEntities()) {
+                WS.SendJson(wm.WH_Comm.Where(p=>p.TaskID==taskId).ToList());
+            }
+                
+        }
+        //机器故障
+        public static void Fault(string taid)
+        {
+            tmr.Stop();
+            using (WMSEntities wm =new WMSEntities()) {
+                wm.Error();
+                ExecList(taid);
+                CheckAll();
+            }
+        }
+        //删除任务
+        public static void DelTask(string type ,string taid) {
+            using (WMSEntities wm = new WMSEntities())
+            {
+                _ = wm.DelTask(taid,type);
+                CheckAll();
+            }
+        }
+        //任务运行
+        public static void RunTask(bool run,bool Complete,bool zdjcyxtd) {
+            try
+            {
+                if (run)
+                {
+                    if (Complete)
+                    {
+                        using (WMSEntities w = new WMSEntities())
+                        {
+                            if (taskStatus)
+                            {
+                               var comm= w.CommSuccess().FirstOrDefault();
+                                if (comm.type == "出库") {
+                                    Controls.StratRGV(comm.IP);
+                                }
+                                var task = w.WCS_Task.Where(p => p.TaskID == comm.AID).ToList();
+                                if (task.Count == 0) {
+                                    tmr.Stop();
+                                }
+                                CheckAll();
+                                ExecList(comm.AID);
+                            }
+                            List<WCS_Comm> list = w.WCS_Comm.Where(p => p.Statu == "执行中").ToList();
+                            if (list.Count > 0)
+                            {
+                                var a = list[0];
+                                w.RunComm(a.id);
+                                taskStatus = true;
+                                Controls.WholePileInOut(a.IP, byte.Parse(a.mo), a.qx.Value, a.qy.Value, a.qz.Value, a.fx.Value, a.fy.Value, a.fz.Value);
+                                if (a.type=="出库" || a.type == "入库") {
+                                    if (zdjcyxtd) {
+                                        Controls.PlcStrat(a.IP);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch {
+                WS.SendJson("发生错误");
+                tmr.Stop();
+            }
+        }
+        //重试
+        public static void Retry() {
+            tmr.Start();
+        }
+        //开始执行
+        static void Tmr_Elapsed(object sender, ElapsedEventArgs e) {
+            if (Controls.CheckPLCDate()==0) {
+                tmr.Stop();
+            }
+        }
+        public static void ExecTask(string taid) {
+            tmr.Elapsed += new ElapsedEventHandler(Tmr_Elapsed);
+            using (WMSEntities wm=new WMSEntities()) {
+                if (Controls.CheckPLCDate() == 1) { 
+                _ = wm.ExecTask(taid);
+                CheckAll();
+                ExecList(taid);
+                taskStatus1 = true;
+                tmr.Start();
+                }
+            }
+               
+        }
+        //创建任务
+        private static void AddTask(Dictionary<string, string> data)
+        {
+            Tools<object>.SqlComm("exec CreateTask ", data);
+        }
+        public static void CreateTask(List<Dictionary<string, string>> data)
+        {
+            data.ForEach(AddTask);
+            CheckAll();
         }
         #region 库存管理
         //库存查询
@@ -30,9 +142,42 @@ namespace WMS.Controllers
                 WS.SendJson(map);
             }
         }
+        //更新库存
         public static void UpInventory(Dictionary<string,string> data) {
-            //Tools<object>.SqlComm("exec UpInventory ", data);
-            CheckInventory();
+            Tools<object>.SqlComm("exec UpInventory ", data);
+        }
+        //查询行详情
+        public static void CheckDetails(string id) {
+            using (WMSEntities wm = new WMSEntities())
+            {
+                WS.SendJson(wm.CheckDetails(id).ToList());
+            }
+        }
+        //excel导入
+        private static void Import(Dictionary<string, string> data) {
+            Tools<object>.SqlComm("exec AddExcel ", data);
+        }
+        public static void ExcelImport(List<Dictionary<string,string>> data) {
+            data.ForEach(Import);
+        }
+        #endregion
+        #region 货位管理
+        //查询货位
+        public static void CheckGoods() {
+            using (WMSEntities wm =new WMSEntities()) {
+                WS.SendJson(wm.CheckGoods().ToList());
+            }
+        }
+        //修改货位
+        public static void UpGoods(Dictionary<string,string> data) {
+            Tools<object>.SqlComm("exec UpGoods ", data);
+        }
+        //添加货位
+        private static void Add(Dictionary<string, string> data) {
+            Tools<object>.SqlComm("exec AddGoods ", data);
+        }
+        public static void AddGoods(List<Dictionary<string,string>> data) {
+            data.ForEach(Add);
         }
         #endregion
         #region 仓库实时运行状况
@@ -50,13 +195,7 @@ namespace WMS.Controllers
                 return Json(wm.CheckHousCount().ToList(),JsonRequestBehavior.AllowGet);
             }
         }
-        //zhzy
-        public string Zhzy() {
-            using (WMSEntities wMS=new WMSEntities ()) {
-                wMS.Zhzy();
-            }
-                return "true";
-        }
+       
         //库存统计
         public ActionResult CheckHousSum(WH_Material data) {
             using (WMSEntities wMS=new WMSEntities ()) {
@@ -84,7 +223,7 @@ namespace WMS.Controllers
                     { "MQTY", w.CheckMQTY().ToList() },
                     { "Counts", w.CheckCounts().ToList() },
                     { "HousCount", w.CheckHousCount().ToList() },
-                    { "Task", w.WH_Comm.ToList() },
+                    { "Task", w.WCS_Task.ToList() },
                     { "Place", w.WCS_Place.ToList() },
                     { "WcsComm", w.WCS_Comm.ToList() },
                     { "Huos", w.CheckHuos().ToList() },
@@ -154,7 +293,7 @@ namespace WMS.Controllers
         //修改任务状态
         public void UpTaskStatu(string aid,string status) {
             using (WMSEntities wMS=new WMSEntities ()) {
-               var list= wMS.WH_Comm.Where(p => p.aid == aid).FirstOrDefault();
+               var list= wMS.WH_Comm.Where(p =>p.TaskID == aid).FirstOrDefault();
                 list.Status = status;
                 wMS.SaveChanges();
             }
@@ -165,38 +304,10 @@ namespace WMS.Controllers
                 wms.delSuTask();
             }
         }
-        //完成任务
-        public void SuTask(string aid) {
-            using (WMSEntities wMS = new WMSEntities()) {
-                wMS.CommSuccess(aid);
-            }
-        }
-        //查询任务队列
-        public ActionResult CheckTask() {
-            using (WMSEntities wMS = new WMSEntities()) {
-                return Json(wMS.WH_Comm.ToList(), JsonRequestBehavior.AllowGet);
-            }
-        }
-        //检查PLC情况
-        public ActionResult CheckPlc(string ip) {
-            Dictionary<string, bool> map = Controls.CheckPLCDate(ip);
-            return Json(map,JsonRequestBehavior.AllowGet);
-        }
         //运行下个指令
         public string NextComm() {
 
             return "";
-        }
-        //完成命令
-        public string Success() {
-
-            return "";
-        }
-        //故障处理
-        public void Error(string aid) {
-            using (WMSEntities wMS=new WMSEntities()) {
-                wMS.Error(aid);
-            }
         }
         #endregion
         #region 命令分解
@@ -401,14 +512,6 @@ namespace WMS.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
         #endregion
-        //入库命令生成
-        public ActionResult InComm(Dictionary<string,string> wc) {
-            using (WMSEntities wm=new WMSEntities()) {
-
-
-            }
-                return Json(wc, JsonRequestBehavior.AllowGet);
-        }
        
     }
 }

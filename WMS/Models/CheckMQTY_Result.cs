@@ -14,6 +14,6 @@ namespace WMS.Models
     public partial class CheckMQTY_Result
     {
         public string PartName { get; set; }
-        public Nullable<double> qty { get; set; }
+        public Nullable<int> qty { get; set; }
     }
 }

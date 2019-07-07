@@ -17,13 +17,13 @@ namespace WMS.Models
         public string Name { get; set; }
         public double x_intercept { get; set; }
         public double y_intercept { get; set; }
-        public Nullable<double> z_intercept { get; set; }
+        public double z_intercept { get; set; }
         public string Size { get; set; }
         public string Description { get; set; }
-        public int TempPlate { get; set; }
-        public int StorageLocationID { get; set; }
-        public int WHAreaID { get; set; }
-        public int WHID { get; set; }
+        public Nullable<int> TempPlate { get; set; }
+        public Nullable<int> StorageLocationID { get; set; }
+        public Nullable<int> WHAreaID { get; set; }
+        public Nullable<int> WHID { get; set; }
         public string StatusID { get; set; }
         public string CreatedTime { get; set; }
     }

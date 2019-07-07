@@ -12,6 +12,7 @@
     <script src="~/js/elemenui.js"></script>
     <script src="~/js/ob.js" type="module"></script>
     <script src="~/js/vue-router.js"></script>
+    <script src="~/js/xlsx.full.min.js"></script>
     <title>WarehouseState</title>
     <link href="~/css/index.css" rel="stylesheet" />
     <link href="~/css/StyleSheet1.css" rel="stylesheet" />
@@ -41,18 +42,17 @@
                      text-color="#fff"
                      active-text-color="#ffd04b">
                 <el-menu-item index="/">首页</el-menu-item>
-                <el-menu-item >货位管理</el-menu-item>
-                <el-menu-item v-if="pathStatus" @@click="centerDialogVisible=true">基本设置</el-menu-item>
-                <el-menu-item v-if="pathStatus"  @@click="rizi=true">日志报告</el-menu-item>
-                <el-menu-item index="/bar">机器管理</el-menu-item>
+                <el-menu-item index="/bar">货位管理</el-menu-item>
+                <el-menu-item>机器管理</el-menu-item>
                 <el-menu-item index="/foo">库存管理</el-menu-item>
+                <el-menu-item v-if="pathStatus" @@click="centerDialogVisible=true">基本设置</el-menu-item>
+                <el-menu-item v-if="pathStatus" @@click="rizi=true">日志报告</el-menu-item>
             </el-menu>
             <router-view></router-view>
-             
-            <el-dialog title="基本设置"
+            <el-dialog title="基本设置" v-if="pathStatus"
                        :visible.sync="centerDialogVisible"
                        @@closed="taskCancel"
-                       width="40%"
+                       width="40%" 
                        center>
                 <el-row>
                     <el-col :span="12">
@@ -158,7 +158,7 @@
                     <el-button type="primary" @@click="centerDialogVisible1 = false">确 定</el-button>
                 </span>
             </el-dialog>*@
-            <el-dialog title="日志报告" :visible.sync="rizi">
+            <el-dialog title="日志报告" :visible.sync="rizi" v-if="pathStatus">
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">任务执行总次数</el-tag><span>{{Logging.length}}</span></div>
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;">今日执行次数</el-tag><span>{{lo.jlo}}</span></div>
                 <div style="margin:10px;display:inline-block"> <el-tag style="margin:10px;" type="danger">机器故障总次数</el-tag><span>{{Logging.filter(x=>x.type=="机器故障").length}}</span></div>

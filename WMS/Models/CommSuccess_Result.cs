@@ -11,9 +11,10 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class CheckHousCount_Result
+    public partial class CommSuccess_Result
     {
-        public Nullable<int> count { get; set; }
-        public string PartName { get; set; }
+        public string type { get; set; }
+        public string IP { get; set; }
+        public string AID { get; set; }
     }
 }

@@ -409,11 +409,11 @@ namespace WMS.Controllers
         }
 
         //查询出入库详情
-        public ActionResult CheckIn(int page, int limit)
-        {
-            string sql = "exec InOutMaterial @type='sel'";
-            return Json(Tools<InOutMaterial_Result>.SqlMap(sql, page, limit), JsonRequestBehavior.AllowGet);
-        }
+        //public ActionResult CheckIn(int page, int limit)
+        //{
+        //    string sql = "exec InOutMaterial @type='sel'";
+        //    return Json(Tools<InOutMaterial_Result>.SqlMap(sql, page, limit), JsonRequestBehavior.AllowGet);
+        //}
         //入库出库
         public int InMaterial(Dictionary<string, string> data)
         {

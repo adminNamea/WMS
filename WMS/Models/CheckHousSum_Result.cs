@@ -13,8 +13,9 @@ namespace WMS.Models
     
     public partial class CheckHousSum_Result
     {
-        public Nullable<int> sumQty { get; set; }
-        public Nullable<int> sum { get; set; }
-        public Nullable<int> suQty { get; set; }
+        public string sumQty { get; set; }
+        public string qty { get; set; }
+        public Nullable<int> h { get; set; }
+        public string sh { get; set; }
     }
 }

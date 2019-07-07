@@ -14,14 +14,14 @@ namespace WMS.Models
     
     public partial class WH_Comm
     {
-        public string aid { get; set; }
+        public string TaskID { get; set; }
         public string mid { get; set; }
         public string PartName { get; set; }
         public string PartSpec { get; set; }
         public string PartMaterial { get; set; }
         public Nullable<double> QTY { get; set; }
         public string Units { get; set; }
-        public int PalletQTY { get; set; }
+        public Nullable<int> CommQTY { get; set; }
         public string Name { get; set; }
         public string type { get; set; }
         public string Status { get; set; }
@@ -29,5 +29,11 @@ namespace WMS.Models
         public Nullable<int> ToID { get; set; }
         public Nullable<System.DateTime> CreatedTime { get; set; }
         public string cl { get; set; }
+        public int ID { get; set; }
+        public Nullable<int> Priority { get; set; }
+        public Nullable<bool> Del { get; set; }
+        public Nullable<System.DateTime> CompletionTime { get; set; }
+        public Nullable<System.DateTime> ExecutionTime { get; set; }
+        public Nullable<System.DateTime> RunTime { get; set; }
     }
 }

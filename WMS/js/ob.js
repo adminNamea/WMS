@@ -1,6 +1,9 @@
 ﻿window.ws = new WebSocket("ws://localhost:8080/");
 window.mws = new WebSocket("ws://localhost:8080/");
 window.ajaxWs = (w, obj, callBack) => {
+    if (!obj.Class) {
+        obj.Class = "WCS";
+    }
     if (callBack) {
         w.onmessage = callBack;
     }
@@ -15,7 +18,7 @@ window.mws.onopen = function () {
         const routes = [
             { path: '/foo', component: () => import('/js/In_vue.js') },
             { path: '/', component: () => import('/js/Home_vue.js') },
-            { path: '/bar', component: { template: "<div>666</div>" } }
+            { path: '/bar', component: () => import('/js/Location_vue.js') }
         ]
         const router = new VueRouter({
             routes

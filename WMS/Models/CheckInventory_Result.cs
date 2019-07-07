@@ -18,8 +18,6 @@ namespace WMS.Models
         public string PartSpec { get; set; }
         public string PartMaterial { get; set; }
         public string Type { get; set; }
-        public Nullable<int> sum { get; set; }
-        public string upStatus { get; set; }
-        public string NotQty { get; set; }
+        public int sum { get; set; }
     }
 }

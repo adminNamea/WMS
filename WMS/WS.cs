@@ -4,7 +4,6 @@ using SuperSocket.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Timers;
 using WMS.Controllers;
 using WMS.ControlPlc;
 
@@ -13,11 +12,6 @@ namespace WMS
     public class WS
     {
         private static Datas Datas = null;
-        private static readonly Timer tmr = new Timer
-        {
-            Interval = 500,
-            AutoReset = true
-    };
         private static readonly List<WebSocketSession> list = new List<WebSocketSession>();
         public static void WsStart()
         {
@@ -35,20 +29,12 @@ namespace WMS
         }
         private static void Ws_SessionClosed(WebSocketSession session, CloseReason value)
         {
-            if (tmr != null)
-            {
-                tmr.Stop();
-            }
             list.Clear();
         }
         private static void Ws_NewSessionConnected(WebSocketSession session)
         {
              list.Add(session);
-             //tmr.Elapsed += new ElapsedEventHandler(Tmr_Elapsed);
-        }
-        static void Tmr_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            WCSController.CheckAll();
+            
         }
         private static void Ws_NewMessageReceived(WebSocketSession session, string value)
         {

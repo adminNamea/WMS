@@ -17,14 +17,11 @@ namespace WMS.Models
         public string Name { get; set; }
         public string PartName { get; set; }
         public string PartSpec { get; set; }
-        public Nullable<double> StockQTY { get; set; }
+        public Nullable<int> StockQTY { get; set; }
         public int ID { get; set; }
-        public Nullable<int> z { get; set; }
+        public double z_intercept { get; set; }
         public string PartMaterial { get; set; }
-        public int hid { get; set; }
-        public int aid { get; set; }
-        public int gid { get; set; }
-        public string height { get; set; }
+        public Nullable<int> height { get; set; }
         public string Type { get; set; }
         public Nullable<int> mid { get; set; }
     }

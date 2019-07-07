@@ -15,8 +15,8 @@ namespace WMS.Models
     {
         public int value { get; set; }
         public string label { get; set; }
-        public string size { get; set; }
-        public Nullable<double> stockQTY { get; set; }
+        public Nullable<int> size { get; set; }
+        public Nullable<int> stockQTY { get; set; }
         public string PartName { get; set; }
         public string PartSpec { get; set; }
         public string PartMaterial { get; set; }

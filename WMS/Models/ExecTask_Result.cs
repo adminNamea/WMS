@@ -11,7 +11,7 @@ namespace WMS.Models
 {
     using System;
     
-    public partial class Strategy_Result
+    public partial class ExecTask_Result
     {
         public string AID { get; set; }
         public string CID { get; set; }

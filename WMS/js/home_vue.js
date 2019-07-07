@@ -32,7 +32,7 @@ var CheckQTY = (rule, value, callback) => {
     } else {
         callback(new Error('请选择物料'));
     }
-    if (!value) {
+    if (!value || value == 0) {
         callback(new Error('数量不能为空'));
     } else if (isNaN(value)) {
         callback(new Error('请输入数字'));
@@ -63,6 +63,99 @@ var CheckQTY = (rule, value, callback) => {
 export default {
     template: `
  <el-container>
+<el-dialog
+  title="操作详细"
+  :visible.sync="centerDialogVisible"
+@closed="excelList=[]"
+  width="70%"
+  center :close-on-click-modal="false">
+<el-button @click="addInformation" type="warning">添加操作信息</el-button>
+<el-badge value="推荐" style="margin-bottom: 1px;" class="right">
+ <el-upload :auto-upload="false" :on-change="excelImport" :show-file-list="false">
+<el-button slot="trigger" type="success">excel导入信息</el-button>
+</el-upload>
+</el-badge>
+<el-button @click="excelDownload" type="primary">excel信息模板下载</el-button>
+<el-divider content-position="left">
+<span style="margin-right:10px">动作:</span>
+<el-select @change="execTableChange" v-model="Action">
+    <el-option label="入库" value="0"></el-option>
+<el-option label="出库" value="1"></el-option>
+  </el-select><span style="margin-right:10px;margin-left:10px">优先:</span>
+<el-select v-model="Priority" @change="execTableChange">
+    <el-option :label="Action=='0'?'放置外侧':'先进先出'" value="0"></el-option>
+    <el-option v-if="Action=='0'" label="放置内侧" value="1"></el-option>
+  </el-select></el-divider>
+ <el-table :data="excelList" class="taskAdd">
+    <el-table-column label="物料名称">
+<template slot-scope="scope">
+<transition name="slide-fade" mode="out-in">
+<el-input v-if="scope.row.upStatus" placeholder="请输入物料名称"
+  v-model="scope.row.PartName" @blur="inputBlur"
+  clearable>
+</el-input>
+<div v-else>{{scope.row.PartName}}</div>
+</transition>
+</template>
+</el-table-column>
+    <el-table-column label="物料规格">
+<template slot-scope="scope">
+<transition name="slide-fade" mode="out-in">
+<el-input v-if="scope.row.upStatus" placeholder="(1~4)*(1~4)*(1~2)"
+  v-model="scope.row.PartSpec" @blur="inputBlur"
+  clearable>
+</el-input>
+<div v-else>{{scope.row.PartSpec}}</div>
+</transition>
+</template>
+</el-table-column>
+    <el-table-column label="物料材质">
+<template slot-scope="scope">
+<transition name="slide-fade" mode="out-in">
+<el-input v-if="scope.row.upStatus" placeholder="请输入物料材质"
+  v-model="scope.row.PartMaterial" @blur="inputBlur"
+  clearable>
+</el-input>
+<div v-else>{{scope.row.PartMaterial}}</div>
+</transition>
+</template>
+</el-table-column>
+    <el-table-column label="类型">
+<template slot-scope="scope">
+<transition name="slide-fade" mode="out-in">
+<el-input v-if="scope.row.upStatus" placeholder="请输入物料类型"
+  v-model="scope.row.Type" @blur="inputBlur"
+  clearable>
+</el-input>
+<div v-else>{{scope.row.Type}}</div>
+</transition>
+</template>
+</el-table-column>
+    <el-table-column label="数量">
+<template slot-scope="scope">
+<transition name="slide-fade" mode="out-in">
+<el-input v-if="scope.row.upStatus" placeholder="请输入物料数量"
+  v-model.number="scope.row.sum" @blur="inputBlur"
+  clearable>
+</el-input>
+<div v-else>{{scope.row.sum}}</div>
+</transition>
+</template>
+</el-table-column>
+<el-table-column
+        label="操作">
+<template slot-scope="scope">
+<el-button :key="scope.row.upStatus" size="small"
+          @click="upConfirm(scope.row,scope.$index)" :icon="scope.row.upStatus?'el-icon-circle-check':'el-icon-edit'" :type="scope.row.upStatus?'success':'danger'">{{scope.row.upStatus?"确定":"修改"}}</el-button>
+<el-button @click="del(scope.row)" size="small" icon="el-icon-delete-solid" type="danger">删除</el-button>
+</template>
+      </el-table-column>
+  </el-table>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="centerDialogVisible = false">取 消</el-button>
+    <el-button type="primary" v-if="excelList.length>0" @click="excelConfirm">确 认!</el-button>
+  </span>
+</el-dialog>
                 <el-header>
                     <el-row>
                         <el-col :span="8">
@@ -77,8 +170,9 @@ export default {
                                 </div>
                             </div>
                         </el-col>
-                        <el-col :span="14" style="text-align:center;padding-top:15px">
+                        <el-col :span="10" style="padding-top:15px">
                             <div class="grid-content bg-purple">
+<el-button type="success" icon="el-icon-tickets" @click="centerDialogVisible = true" plain>批量操作</el-button>
                                 <el-tag type="warning">物料查询<i class="el-icon-search"></i></el-tag>
                                 <el-cascader :options="vals"
                                              filterable
@@ -94,7 +188,7 @@ export default {
                                              placeholder="仓库/库区/库位"
                                              :clearable="true">
                                 </el-cascader>
-                                <el-button type="success" icon="el-icon-tickets" @click="zhzy" :disabled="guz" plain>智能操作</el-button>
+   
                             </div>
                         </el-col>
                     </el-row>
@@ -207,32 +301,29 @@ export default {
                                         <span slot="label"><i class="el-icon-date"></i>任务队列</span>
                                         <div>
                                             <el-timeline>
-                                                <el-timeline-item v-if="timelineStatu" v-for="(item,index) in timelineList" placement="top"
+                                                <el-timeline-item v-if="timelineList.length>0" v-for="(item,index) in timelineList" placement="top"
                                                                   :key="index"
-                                                                  :timestamp="toDateString(item.Time,'yyyy-MM-dd','创建日期：')"
-                                                                  size="large"
-                                                                  :type="itemStatu(item.statu).types">
+                                                                  :timestamp="toDateString(item.CreationTime,'yyyy-MM-dd','创建日期：')"
+                                                                   size="large" :type="taskStatu(item.Status).type">
                                                     <el-card>
-                                                        <i :class="itemStatu(item.statu).icon" style=" float:right;cursor:pointer" @click="cofp(item.statu,item.aid)"></i>
-
-                                                        <div class="task">
-                                                            <p>任务编号：{{item.aid}}</p>
-                                                            <p>任务类型：{{item.type}}</p>
-                                                            <p>任务状态：{{item.statu}}</p>
-                                                            <p>创建于：{{toDateString(item.Time,'HH:mm:ss')}}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p @click="progress(item.aid)" style="cursor:pointer">
-                                                                <el-progress type="circle"
-                                                                             :percentage="item.percentage"
-                                                                             :status="item.status"
-                                                                             :text="itemStatu(item.statu,item.percentage).text"
-                                                                             :width="100"></el-progress>
-                                                            </p>
-                                                        </div>
+<div>任务编号:{{item.TaskID}}
+<i style="margin-left: 40px;cursor:pointer;" 
+@click="delTask(item.TaskID,item.Status)" 
+:class="item.Status=='完成'?'el-icon-close':'el-icon-delete'">
+</i></div>
+<el-badge :value="item.TaskQty" style="margin: 10px">
+   <el-button size="small" :type="taskStatu(item.Status).type" @click="taskDetails(item.TaskID)">查 看</el-button>
+</el-badge>                                               
+<el-button size="small" 
+:loading="item.Status=='正在执行'" 
+style="margin:10px" 
+:type="taskStatu(item.Status).type" 
+:disabled="execTaskList&&item.Status=='开始'"
+@click="execTask(item.TaskID)">{{taskStatu(item.Status).text}}
+</el-button>
                                                     </el-card>
                                                 </el-timeline-item>
-                                                <el-timeline-item v-if="!timelineStatu" :timestamp="date" size="large" placement="top" type="danger">
+                                                <el-timeline-item v-if="timelineList.length==0" :timestamp="date" size="large" placement="top" type="danger">
                                                     <el-card>
                                                         任务还没有创建
                                                     </el-card>
@@ -287,31 +378,95 @@ export default {
                     <el-button type="primary" @click="submit">确 定</el-button>
                 </div>
             </el-dialog>
-            </el-container>
+<el-dialog
+  title="任务详情"
+  :visible.sync="taskDialog"
+  width="95%"
+  center>
+<el-steps :active="execSteps.active" finish-status="success" simple>
+  <el-step v-for="(item,index) in execSteps.list" :key="index" :icon="item.icon" :title="item.text" ></el-step>
+</el-steps>
+<el-row style="margin: 10px;">
+  <el-col :span="item.span" v-for="(item,index) in el_colList" :key="index">
+<div class="grid-content bg-purple-dark">
+<el-tag effect="dark" type="danger">
+{{item.text}}
+</el-tag>
+<div v-if="index<4" style="display: inline-block;">
+<i class="el-icon-time" v-if="index!=0"></i>
+<span>{{item.value}}</span>
+</div>
+<div v-else class="progress">
+<el-progress class="striped active" :text="item.value==0?'未开始':''"  :text-inside="true" :stroke-width="24" :percentage="item.value" color="#39b54a"></el-progress>
+</div></el-col>
+</el-row>
+<el-tabs tab-position="left" type="border-card" style="height: 350px;">
+    <el-tab-pane label="运行列表"><el-table
+    v-loading="execLoading"
+    :data="execList" height="340">
+    <el-table-column
+      prop="TaskID"
+      label="任务编号">
+    </el-table-column>
+    <el-table-column
+      prop="PartName"
+      label="任务物料"
+      width="180">
+    </el-table-column>
+    <el-table-column
+      prop="PartSpec"
+      label="物料规格">
+    </el-table-column>
+<el-table-column
+      prop="QTY"
+      :label="execParent.type+'数量'">
+    </el-table-column>
+<el-table-column
+      prop="ExecutionTime"
+      label="执行时间">
+<template slot-scope="scope">
+        <i class="el-icon-time"></i>
+        <span style="margin-left: 10px">{{ scope.row.ExecutionTime?scope.row.ExecutionTime:"未开始" }}</span>
+      </template>
+</el-table-column>
+<el-table-column
+      prop="Status"
+      label="任务状态">
+<template slot-scope="scope">
+       <el-tag effect="dark" :type="taskStatu(scope.row.Status).type1">{{scope.row.Status}}
+<i :class="taskStatu(scope.row.Status).icon"></i>
+</el-tag>
+      </template>
+    </el-table-column>
+  </el-table></el-tab-pane>
+    <el-tab-pane label="已完成任务">配置管理</el-tab-pane>
+</el-tabs>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="taskDialog = false">关 闭</el-button>
+    <el-button type="primary" @click="execTask(false)" :disabled="execParent.time!='未开始'">开始执行</el-button>
+  </span>
+</el-dialog>
+</el-container>
 `,
     data() {
         return {
-            whComm: {},
+            execLoading: true,
+            taskDialog: false,
+            Action:'0',
             gQuantity: {
                 q1: 0,
                 q2: 0,
                 q3: 0
             },
             title: "",
-            guz: true,
+            centerDialogVisible: false,
             optionss: [],
-            wcsComm: [],
             timelineList: [],
-            su: "机器检测中...",
-            no: "无",
-            thisTask: "",
-            wcsLength: 0,
             date: "",
             Place: [],
             mqty: [],
             options: [],
             vals: [],
-            i: false,
             myChart: "",
             datas: {
                 name: [],
@@ -332,13 +487,13 @@ export default {
                     percentage: 0
                 },
                 {
-                    name: '已用空间',
+                    name: '货位利用率',
                     value: "",
                     type: "danger",
                     percentage: 0
                 },
                 {
-                    name: '剩余空间',
+                    name: '未利用货位',
                     value: ""
                     , type: "danger"
                     , percentage: 0
@@ -358,16 +513,16 @@ export default {
             ],
             remind: [{
                 name: "库存提示",
-                text: "当前库存充足",
-                type: "success"
+                text: "无货位信息",
+                type: "error"
             }, {
                 name: "物料提示",
-                text: "物料数量充足",
-                type: "success"
+                text: "无物料信息",
+                type: "error"
             }],
+            Priority: "0",
             selects: [],
             selectd: false,
-            stratRgv: false,
             dialogFormVisible: false,
             form: {
                 PartName: "",
@@ -379,52 +534,323 @@ export default {
                 InType: "",
                 selectedOptions3: []
             },
+            excelList: [],
             rules: {
                 selectedOptions3: [
                     { required: true, message: '请选择物料', trigger: 'change' }],
                 InQTY: [{ validator: CheckQTY, trigger: 'blur' }],
                 To: [{ validator: CheckTo, trigger: 'change' }]
             },
-            rgv: false,
-            sDate: ""
+            sDate: "",
+            execList: [],
+            taskDate: "未开始",
+            taskDate1: "未开始",
+            loadings: {
+                close: function () {
+                    return "";
+                }
+            },
+            pro: 0,
+            WcsComm: 0,
+            myVar:""
         }
     },
     methods: {
-        taskCancel(b) {
-            if (b) {
-                localStorage.setItem("taskSet", JSON.stringify(this.SetData))
-            }
-            this.centerDialogVisible = false
-            if (localStorage.getItem('taskSet')) {
-                this.SetData = JSON.parse(localStorage.getItem('taskSet'))
-            }
-        },
-        machineInfo() {
-            this.$notify({
-                title: '机器信息',
-                position: 'top-left',
-                dangerouslyUseHTMLString: true,
-                message: '<strong><i>机器信息</i></strong>',
-                duration: 0
-            });
-        },
-        wcsControl(type) {
+        delTask(taskID, status) {
+            var Type = "0"
+            if (status == "完成") {
+                Type = "1"
+            } else if (status == "正在执行") {
+                Type = "2"
+                this.$confirm('任务正在执行确定删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    ajaxWs(ws, { Method: "DelTask", Value: taskID, Type })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
 
-            //this.loading = this.$loading({
-            //    lock: true,
-            //    text: '执行中',
-            //    spinner: 'el-icon-loading',
-            //    background: 'rgba(0, 0, 0, 0.7)'
-            //});
-            //this.ajaxWs(ws,{ ip: "192.168.1.130", type: type, Method: "PlcOperation" }, (eve) => {
-            //    var data = JSON.parse(eve.data)
-            //    this.loading.close()
-            //})
+                });
+                return
+            }
+            
+            ajaxWs(ws, { Method: "DelTask", Value: taskID, Type })
+            if (Type == "1") {
+                this.$message({
+                    title: '提示',
+                    message: '移除成功',
+                    type: 'success'
+                });
+            } else {
+                this.$message({
+                    title: '提示',
+                    message: '删除成功',
+                    type: 'error'
+                });
+            }
         },
-        zhzy() {
-            this.$http.get("/WCS/zhzy").then(() => {
-                mws.send("init");
+        execTask(taskID) {
+            var Value = taskID ? taskID : this.execList[0].TaskID
+            this.loading = this.$loading({
+                lock: true,
+                text: '正在执行中',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            ajaxWs(ws, { Class: "WCS", Method: "ExecTask", Value }, e => {
+                var data = JSON.parse(e.data);
+                if (typeof (data) == "object") {
+                    data.forEach(x => {
+                        if (x.Status == "正在执行") {
+                            x.ExecutionTime = this.toDateString(x.ExecutionTime)
+                        }
+                    })
+                    this.execList = data;
+                    this.$nextTick(() => {
+                        this.loadings.close()
+                    })
+                } else {
+                    this.$message({
+                        title: '提示',
+                        message: data,
+                        type: 'error'
+                    });
+                }
             })
+        },
+        taskDetails(TaskID) {
+            ajaxWs(ws, { Class: "WCS", Method: "ExecList", Value: TaskID }, res => {
+                var data = JSON.parse(res.data)
+                data.forEach(x => {
+                    if (x.Status == "正在执行") {
+                        x.ExecutionTime = this.toDateString(x.ExecutionTime)
+                    }
+                })
+                this.execList = data;
+                this.execLoading = false;
+            })
+            this.taskDialog = true;
+        },
+        taskStatu(status) {
+            var obj = { type1:"info", type: "primary", text: "开 始", icon: "", status: true }
+            if (status == "错误") {
+                obj.type = "danger";
+                obj.text = "机器故障";
+                obj.status = false;
+            } else if (status == "完成") {
+                obj.type = "success";
+                obj.text = "任务完成";
+            } else if (status == "正在执行") {
+                obj.text = "正在执行";
+                obj.type1 = "warning";
+                obj.icon ="el-icon-loading"
+            }
+            return obj;
+        },
+        upConfirm(row, index) {
+            var a = document.querySelectorAll(".taskAdd .el-table__body tr")[index]
+            a.querySelectorAll("div").forEach(x => {
+                x.classList.remove("divColor")
+            })
+            if (row.upStatus) {
+                var message = "";
+                a.querySelectorAll("input").forEach((x, i) => {
+                    if (x.value == "" || x.value == "空") {
+                        message = `请填写完整`;
+                        x.classList.add("tableBur")
+                        x.focus();
+                    } else if (i == 1) {
+                        if (!/^\d{1,4}[*]{1}\d{1,4}[*]{1}\d{1,2}$/.test(x.value)) {
+                            message = `规格${x.value},格式不正确`;
+                            x.classList.add("tableBur")
+                            x.focus();
+                        }
+                    } else if (i == 4) {
+                        if (!/^\d{1,9}$/.test(x.value) || x.value <= 0) {
+                            message = `数量${x.value},不是有效数值`;
+                            x.classList.add("tableBur")
+                            x.focus();
+                        }
+                    }
+                })
+                if (message != "") {
+                    this.$message({
+                        message,
+                        type: 'error',
+                        duration: 6000
+                    });
+                } else {
+                    row.upStatus = false;
+                }
+            } else {
+                row.upStatus = true;
+            }
+        },
+        inputBlur(e) {
+            if (e.target.value != "") {
+                e.target.classList.remove("tableBur")
+            }
+        },
+        del(row) {
+            this.excelList.forEach((x, i) => {
+                if (x.ID == row.ID) {
+                    this.excelList.splice(i, 1)
+                }
+            })
+        },
+        execTableChange() {
+            this.excelList.forEach(x => {
+                x.Priority = this.Priority;
+                x.Action = this.Action;
+            })
+            if (this.Action == '1') {
+                this.Priority='0'
+            }
+        },
+        fixdata(data) {
+            var o = "",
+                l = 0,
+                w = 10240;
+            for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+            o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+            return o;
+        },
+        excelImport(obj) {
+            var reader = new FileReader();
+            reader.onload = e => {
+                var data = e.target.result;
+                var wb;
+                if (false) {
+                    wb = XLSX.read(btoa(fixdata(data)), {
+                        type: 'base64'
+                    });
+                } else {
+                    wb = XLSX.read(data, {
+                        type: 'binary'
+                    });
+                }
+                XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]).forEach((x, i) => {
+                    var status = true;
+                    this.excelList.forEach(y => {
+                        if (y.PartName == x["物料名称"] && y.PartSpec == x["物料规格"] && y.PartMaterial == x["物料材质"]) {
+                            y.sum += Number(x["数量"]);
+                            status = false;
+                            return false
+                        }
+                    })
+                    if (status) {
+                        this.excelList.push({
+                            ID: i,
+                            PartName: x["物料名称"] ? x["物料名称"] : "空",
+                            PartSpec: x["物料规格"] ? x["物料规格"] : "空",
+                            PartMaterial: x["物料材质"] ? x["物料材质"] : "空",
+                            Type: x["类型"] ? x["类型"] : "空",
+                            sum: x["数量"] | 0,
+                            Priority: this.Priority,
+                            Action: this.Action,
+                            upStatus: false
+                        })
+                    }
+                })
+            };
+            if (false) {
+                reader.readAsArrayBuffer(obj.raw);
+            } else {
+                reader.readAsBinaryString(obj.raw);
+            }
+        },
+        excelDownload() {
+            location.href = "http://localhost:58655/File/模板.xls";
+        },
+        excelConfirm() {
+            var message = "";
+            var p = [], s = [];
+            if (this.excelList.some(x => x.upStatus)) {
+                this.$message({
+                    message: "请先确认修改",
+                    type: 'warning',
+                    duration: 6000
+                });
+                return
+            }
+            var a = document.querySelectorAll(".taskAdd .el-table__body tr")
+            a.forEach(y => {
+                y.querySelectorAll(".cell").forEach((x, i) => {
+                    if (x.innerText == "" || x.innerText == "空") {
+                        message = `请输入填写完整`
+                        x.classList.add("divColor")
+                    } else if (i == 4) {
+                        if (!/^\d{1,9}$/.test(x.innerText) || x.innerText <= 0) {
+                            s.push(x.innerText);
+                            x.classList.add("divColor")
+                        }
+                    } else if (i == 1) {
+                        if (!/^\d{1,4}[*]{1}\d{1,4}[*]{1}\d{1,2}$/.test(x.innerText)) {
+                            p.push(x.innerText);
+                            x.classList.add("divColor")
+                        }
+                    }
+                })
+            })
+            if (p.length > 0) {
+                message = `规格${p.toString()},格式不正确`
+            }
+            if (s.length > 0) {
+                message = `数量${s.toString()},不是有效数值`
+            }
+            if (message != "") {
+                this.$message({
+                    message,
+                    type: 'error',
+                    duration: 6000
+                });
+                return;
+            }
+            var no = this.timelineList.length
+            var List = this.excelList.map(x => ({
+                taskID: x.Action == '0' ? 'In_' + no : 'Out_' + no,
+                partName: x.PartName,
+                partSpec: x.PartSpec,
+                partMaterial: x.PartMaterial,
+                qty: x.sum,
+                action: x.Action,
+                priority: x.Priority
+            }))
+            ajaxWs(ws, { Class: "WCS", Method: "CreateTask", List})
+            this.$message({
+                message: "任务创建成功",
+                type: 'warning',
+                duration: 6000
+            });
+            this.centerDialogVisible = false;
+        },
+        addInformation() {
+            this.excelList.unshift({
+                ID: this.excelList.length,
+                PartName: "",
+                PartSpec: "",
+                PartMaterial: "",
+                Type: "",
+                sum: "",
+                Priority: this.Priority,
+                Action: this.Action,
+                upStatus: true
+            })
+        },
+        timeAgo() {
+            var i = this
+                i.taskDate = i.toDateString(new Date() - new Date(i.execParent.timeAll), "mm:ss");
+                i.taskDate1 = i.toDateString(new Date() - new Date(i.execParent.thisTime), "mm:ss");
+                if (i.myVar == "") {
+                    i.myVar = setInterval(() => {
+                    i.taskDate = i.toDateString(new Date() - new Date(i.execParent.timeAll), "mm:ss");
+                    i.taskDate1 = i.toDateString(new Date() - new Date(i.execParent.thisTime), "mm:ss");
+                }, 1000)
+            }
         },
         digit(t, e) {
             var i = "";
@@ -522,7 +948,7 @@ export default {
         Change_a(value) {
             var newOption = [];
             this.options = this.optionss
-            if (value.length > 0) {
+            if (value.length > 1) {
                 this.options.forEach(function (x) {
                     if (x.PartName == value[0] && x.PartSpec == value[1] && x.PartMaterial == value[2]) {
                         newOption.push(x)
@@ -550,10 +976,9 @@ export default {
             }
             v.$http.get("/WCS/CheckHousSum", { params: b }).then(function (res) {
                 var data = res.body
-                v.counts[1].value = data.suQty
-                if (data.sumQty != null) {
-
-                    v.counts[1].percentage = (data.suQty / data.sumQty) * 100
+                v.counts[1].value = data.qty
+                if (data.h != 0) {
+                    v.counts[1].percentage = (data.h / data.sh) * 100
                 } else {
                     v.counts[1].percentage = 0
                     v.counts[1].value = 0
@@ -600,377 +1025,11 @@ export default {
                     break;
             }
         },
-        run(boo, aid) {
-            if (boo) {
-                v.timelineList.find(function (x) {
-                    if (x.aid == aid) {
-                        const loading = v.$loading({
-                            lock: true,
-                            text: '机器连接中',
-                            spinner: 'el-icon-loading',
-                            background: 'rgba(0, 0, 0, 0.7)'
-                        });
-                        setTimeout(() => {
-                            v.$http.get("/WMS/PlcIn", { params: { aid: aid } }).then(function (data) {
-                                var res = data.body
-                                if (res.msg == "true") {
-                                    v.$http.get("/WCS/UpTaskStatu", {
-                                        params: { aid: aid, status: "正在执行" }
-                                    }).then(function () {
-                                        mws.send("init")
-                                    })
-                                    loading.close();
-                                    v.$message({
-                                        message: "任务" + x.aid + '开始执行',
-                                        type: 'success'
-                                    });
-                                } else {
-                                    loading.close();
-                                    v.$http.get("/WCS/UpTaskStatu", {
-                                        params: { aid: aid, status: "错误" }
-                                    }).then(function () {
-                                        mws.send("init")
-                                    })
-                                    v.no = res.msg
-                                    v.$message.error("任务" + x.aid + '执行失败,原因:' + res.msg);
-                                }
-                            })
-                        }, 500);
-                        return true
-                    }
-                })
-            }
-
-        },
-        progress(aid) {
-            v.$http.get("/WCS/CheckPlc").then(function (res) {
-                var data = res.body
-                if (!data.ldms) {
-                    v.$message.error("非联动模式，请更改模式");
-                } else {
-                    if (!data.ddjzc) {
-                        v.$message.error("堆垛机不正常");
-                    } else {
-                        var boo = true
-                        var booo = true
-                        var a = v.itemStatus
-                        if (a.bo3 != null) {
-                            a.bo3.forEach(va => {
-                                if (va.aid == aid) {
-                                    booo = false;
-                                    return false;
-                                }
-                            })
-                        }
-                        if (booo) {
-                            if (a.boo != null) {
-                                v.$message({
-                                    message: '请等待任务完成',
-                                    type: 'warning'
-                                });
-                                boo = false;
-                                return false;
-                            }
-                            if (a.bo1 != null) {
-                                var t = false
-                                a.bo1.forEach(va => {
-                                    if (va.aid == aid) {
-                                        t = true;
-                                        return false;
-                                    }
-                                })
-                                if (t) {
-                                    v.$confirm('已确保机器信息正确？, 是否重试?', '提示', {
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '取消',
-                                        type: 'warning',
-                                        center: true
-                                    }).then(() => {
-                                        boo = true
-                                        v.$message({
-                                            type: 'success',
-                                            message: '开始重试!'
-                                        });
-                                        v.run(boo, aid)
-                                    }).catch(() => {
-                                        v.$message({
-                                            type: 'info',
-                                            message: '已取消重试'
-                                        });
-                                    });
-                                } else {
-                                    v.run(boo, aid)
-                                }
-                            } else {
-                                v.run(boo, aid)
-                            }
-                        } else {
-                            v.$message({
-                                message: '任务已完成',
-                                type: 'warning'
-                            });
-                        }
-                    }
-                }
-            })
-        },
-        setTime() {
-            v.wcsLength == 0 ? this.sDate = this.toDateString() : ""
-            setTimeout(() => {
-                this.guz = true
-                if (v.wcsComm.length < 2) {
-                    v.itemStatus.boo.percentage += 2
-                    if (v.itemStatus.boo.percentage > 99) {
-                        v.itemStatus.boo.percentage = 100
-                    }
-                }
-                v.$http.get("/WCS/CheckPlc", {
-                    params: { ip: "192.168.3.30" }
-                }).then((res) => {
-                    var data = res.body
-                    if (data.zdyxz) {
-                        v.i = true
-                    }
-                    if (v.wcsComm[v.wcsLength].type == "入库") {
-                        if (data.rkyxq) {
-                            v.rgv = true
-                        }
-                    } else if (v.wcsComm[v.wcsLength].type == "出库") {
-                        if (data.rkyxc) {
-                            v.stratRgv = true
-                            v.rgv = true
-                        }
-                    } else {
-                        v.rgv = true
-                    }
-                    if (data.msg) {
-                        v.su = "无";
-                        v.no = "信息读取失败"
-                        v.$notify.error({
-                            title: '错误',
-                            message: '连接信息读取失败',
-                            duration: 0
-                        });
-                        v.$http.get("/WCS/UpTaskStatu", { params: { aid: v.thisTask, status: "错误" } })
-                        v.itemStatus.boo.status = "exception"
-                        v.itemStatus.boo.statu = "错误"
-                    } else if (data.gzbj) {
-                        v.$http.get("/WCS/Error", {
-                            params: { aid: v.thisTask }
-                        }).then(() => {
-                            v.$notify.error({
-                                title: '错误',
-                                message: '机器出现故障请及时处理',
-                                duration: 0
-                            });
-                            v.no = "机器故障"
-                            v.itemStatus.boo.status = "exception"
-                            v.itemStatus.boo.statu = "错误"
-                            v.Loggings("机器故障")
-                        })
-                    } else if (v.su == "机器检测中...") {
-                        if (data.yxtd) {
-                            v.$http.get("/WMS/PlcIn", {
-                                params: {
-                                    aid: v.itemStatus.boo.aid, wcs: new String(v.wcsLength)
-                                }
-                            }).then(data => {
-                                if (data.msg == "true") {
-                                    if (v.wcsComm[v.wcsLength].type != "回原点") {
-                                        if (v.rgv) {
-                                            v.$http.get("/WMS/PlcSn", {
-                                                params: { ip: "192.168.3.30" }
-                                            }).then((res) => {
-                                                var data = res.body
-                                                if (data == "true") {
-                                                    v.su = "机器正在运行"
-                                                    v.setTime()
-                                                } else {
-                                                    v.su = "无";
-                                                    v.no = "信息读取失败"
-                                                    v.$notify.error({
-                                                        title: '错误',
-                                                        message: '连接信息读取失败',
-                                                        duration: 0
-                                                    });
-                                                    v.$http.get("/WCS/UpTaskStatu", { params: { aid: v.thisTask, status: "错误" } })
-                                                    v.itemStatus.boo.status = "exception"
-                                                    v.itemStatus.boo.statu = "错误"
-                                                    v.Loggings("连接信息读取失败")
-                                                }
-                                            })
-                                        } else {
-                                            v.setTime()
-                                        }
-                                    } else {
-                                        v.su = "机器正在运行"
-                                        v.setTime()
-                                    }
-                                } else {
-                                    v.setTime()
-                                }
-                            })
-                        } else {
-                            v.setTime()
-                        }
-                    } else if (v.i) {
-                        if (data.ddrwwc) {
-                            v.wcsLength++;
-                            var count = v.wcsComm.length - v.wcsLength
-                            if (v.stratRgv) {
-                                v.$http.get("/WCS/StratRGV", {
-                                    params: { ip: "192.168.3.30" }
-                                }).then(function () {
-                                    v.stratRgv = false
-                                })
-                            }
-                            if (count > 0) {
-                                var hui = true
-                                if (v.wcsComm[v.wcsLength].type == "回原点") {
-                                    hui = false
-                                    if (data.hydyx) {
-                                        hui = true
-                                    }
-                                }
-                                if (hui) {
-                                    var jd = 0;
-                                    if (v.wcsLength > 0) {
-                                        jd = parseInt(v.itemStatus.boo.percentage + 100 / v.wcsComm.length)
-                                        v.itemStatus.boo.percentage = jd
-                                    }
-                                    //layui.data("wcs", {
-                                    //    key: 'wcsLength'
-                                    //    , value: v.wcsLength
-                                    //})
-                                    //layui.data("wcs", {
-                                    //    key: 'percentage'
-                                    //    , value: jd
-                                    //})
-                                    v.su = "机器检测中...";
-                                    v.i = false;
-                                    v.setTime()
-                                }
-                            } else {
-                                //v.$message({
-                                //    message: "任务" + v.thisTask + '完成',
-                                //    type: 'success'
-                                //});
-                                //v.$http.get("/WCS/SuTask", {
-                                //    params: { aid: v.thisTask }
-                                //}).then( function () {
-                                //     mws.send("init")
-                                //    })
-                                //if (v.wcsLength > 0) {
-                                //    layui.data("wcs", null)
-                                //}
-                                //v.rgv = false;
-                                //v.thisTask = "";
-                                //v.su = "机器检测中...";
-                                //v.itemStatus.boo.percentage = 100
-                                //v.itemStatus.boo.status = "success"
-                                //v.itemStatus.boo.statu = "完成"
-                                //v.wcsLength = 0;
-                                //v.i = false
-                                //clearTimeout(st)
-                                v.Loggings("正常运行")
-                                setTimeout(function () {
-                                    location.reload()
-                                }, 20000)
-                            }
-                        } else {
-                            v.setTime()
-                        }
-                    } else {
-                        v.setTime()
-                    }
-                })
-            }, v.MoniTime)
-        },
-        itemStatu(statu, percentage) {
-            var text = "";
-            var icon = "";
-            var types = "primary";
-            if (this.itemStatus.boo == null) {
-                text = statu == "正在执行" ? percentage + "%" : "点击执行"
-            } else {
-                text = statu == "正在执行" ? percentage + "%" : "等待执行"
-            }
-            switch (statu) {
-                case "等待执行":
-                    types = "warning"
-                    icon = "el-icon-delete";
-                    break;
-                case "正在执行":
-                    types = "danger"
-                    icon = "el-icon-loading";
-                    break;
-                case "完成":
-                    types = "success"
-                    icon = "el-icon-close";
-                    break;
-                case "错误":
-                    types = "danger"
-                    icon = "el-icon-delete";
-                    break;
-            }
-            return {
-                text: text,
-                icon: icon,
-                types: types
-            }
-        },
-        colse(aid) {
-            var boo = true
-            this.timelineList.forEach(x => {
-                if (x.aid == aid) {
-                    boo = x.statu == "完成" ? false : true
-                }
-            })
-            if (boo) {
-                this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
-                }).then(() => {
-                    v.$http.get("/WCS/WcsDelSingle", { params: { id: aid, type: "task" } }).then(function (res) {
-                        var data = res.body
-                        mws.send("init");
-                        if (data == "true") {
-                            v.$message({
-                                type: 'success',
-                                message: '删除成功!'
-                            });
-                        }
-                    })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
-            } else {
-                v.$http.get("/WCS/WcsDelSingle", { params: { id: aid, type: "task" } }).then(function (res) {
-                    mws.send("init");
-                    var data = res.body
-                    if (data == "true") {
-                        v.$message({
-                            type: 'success',
-                            message: '已移除!'
-                        });
-                    }
-                })
-            }
-        },
-        cofp(statu, aid) {
-            return statu == "正在执行" ? this.progress(aid) : this.colse(aid)
-
-        },
         arr(a) {
             if (a.length < 2) {
                 return a;
             }
-            var d = a[0];
+            var d = a[0]
             const ccc = [];
             a.forEach((x, index) => {
                 if (x.children != undefined) {
@@ -979,26 +1038,26 @@ export default {
                             d.children = d.children.concat(x.children)
                             d.children = v.arr(d.children)
                             if (a.length - 1 == index) {
-                                ccc.push(d)
+                                ccc.push(Object.freeze(d))
                             }
                         } else {
-                            ccc.push(d)
+                            ccc.push(Object.freeze(d))
                             d = x
                             if (a.length - 1 == index) {
-                                ccc.push(d)
+                                ccc.push(Object.freeze(d))
                             }
                         }
                     }
                 } else {
-                    ccc.push(x)
+                    ccc.push(Object.freeze(x))
                 }
             })
             return ccc
         },
         init(data) {
             var k = 0;
-            
             var h = 0;
+            this.timelineList = data.Task.map(x => Object.freeze(x));
             if (data.WhMaterial.length > 0) {
                 data.WhMaterial.forEach(val => {
                     v.selects.push({
@@ -1016,62 +1075,9 @@ export default {
                 })
                 v.selects = v.arr(v.selects)
             }
-            if (this.wcsComm.length > 0) {
-                this.guz = true
-            } else {
-                this.guz = false
-            }
-            this.timelineList = []
-            if (data.Task.length > 0) {
-                data.Task.forEach(x => {
-                    var status = "text"
-                    var percentage = 0;
-                    switch (x.Status) {
-                        case "完成":
-                            status = "success"
-                            percentage = 100;
-                            break;
-                        case "错误":
-                            status = "exception"
-                            break;
-                        case "正在执行":
-                            v.thisTask = x.aid
-                            break;
-                    }
-                    v.timelineList.push({
-                        aid: x.aid,
-                        statu: x.Status,
-                        type: x.type,
-                        Time: x.CreatedTime,
-                        status: status,
-                        percentage: percentage,
-                        qty: x.QTY
-                    })
-                    if (x.Status != "完成") {
-                        data.Huos.forEach(function (x1) {
-                            if (x.ToID == x1.ID) {
-                                var q = x1.StockQTY + x.QTY
-                                x1.PartName = x.PartName
-                                x1.PartSpec = x.PartSpec
-                                x1.Category = '板'
-                                x1.PartMaterial = x.PartMaterial
-                                x1.StockQTY = x1.StockQTY + "=>" + q
-                            } else if (x.FromID == x1.ID) {
-                                var q = x1.StockQTY - x.QTY
-                                x1.StockQTY = x1.StockQTY + "=>" + q
-                                x1.Category = '板'
-                            }
-
-                        })
-                    }
-                    if (x.Status == '正在执行') {
-                        v.whComm = x
-                    }
-                })
-            }
             data.Huos.forEach(function (x) {
                 h++;
-                if (x.StockQTY > 0) {
+                if (x.StockQTY > 0 || typeof x.StockQTY == "string") {
                     k++;
                 }
             })
@@ -1112,11 +1118,12 @@ export default {
                         }]
                     })
                 })
+                
                 v.options1 = v.arr(v.options1)
             }
             if (data.HousSum != null) {
 
-                v.counts[0].value = String(data.HousSum.sum)
+                v.counts[0].value = String(data.HousSum.sumQty)
                 v.counts[0].percentage = 100
             }
             if (data.HousCount.length > 0) {
@@ -1126,10 +1133,10 @@ export default {
                 })
 
             }
-            this.options = data.Huos;
-            this.optionss = data.Huos;
-            v.counts[2].percentage = Number((k / h * 100).toFixed(0))
-            v.counts[3].percentage = Number(((h - k) / h * 100).toFixed(0))
+            this.options = data.Huos.map(x => Object.freeze(x));
+            this.optionss = data.Huos.map(x => Object.freeze(x));
+            v.counts[2].percentage = Number((k / h * 100).toFixed(0)) | 0
+            v.counts[3].percentage = Number(((h - k) / h * 100).toFixed(0)) | 0
             if (data.MaterialStatistics.length > 0) {
                 data.MaterialStatistics.forEach(function (val, i) {
                     if (val.InType == '出库') {
@@ -1160,9 +1167,11 @@ export default {
     },
     created: function () {
         v = this;
+        
         mws.onmessage = (evt) => {
             var data = JSON.parse(evt.data);
             v.mqty = data.MQTY
+            v.WcsComm = data.WcsComm
             v.selects = [];
             v.Place = [];
             v.vals = []
@@ -1170,24 +1179,64 @@ export default {
             v.datas.name = []
             v.datas.count = []
             v.Place = data.Place
-            v.wcsComm = data.WcsComm;
             v.init(data)
-            console.log(1)
             v.$nextTick(function () {
-                this.loading.close()
+               this.loading.close()
             })
         };
         mws.send("init")
     },
     computed: {
+        execTaskList() {
+            return this.timelineList.find(x => x.Status == "正在执行")
+        },
+        el_colList() {
+            var obj = [
+                { text: "任务执行类型:", span: 4, value: this.execParent.type },
+                { text: "任务开始时间:", span: 4, value: this.execParent.time },
+                { text: "任务总共用时:", span: 4, value: this.taskDate},
+                { text: "当前任务用时:", span: 4, value: this.taskDate1},
+                { text: "当前任务进度:", span: 8, value: this.execParent.pro},
+            ]
+            return obj;
+        },
+        execParent() {
+            if (this.execList.length == 0) {
+                return {}
+            }
+            var exec = {
+                type: this.execList[0].type,
+                thisTime: this.execList[0].ExecutionTime
+            }
+            var obj = Object.assign(exec, this.timelineList.find(x => x.TaskID.includes(this.execList[0].TaskID)))
+            return {
+                type: obj.type == "0" ? "入库" : "出库",
+                time: obj.ExecTime == null ? "未开始" : this.toDateString(obj.ExecTime),
+                timeAll: obj.ExecTime == null ? 0 : this.toDateString(obj.ExecTime),
+                thisTime: obj.thisTime == null ? 0 : this.toDateString(obj.thisTime),
+                pro: this.pro
+            }
+        },
+        execSteps() {
+            var obj = { active: -1, list: [] }
+            obj.list=this.execList.map((x, i) => {
+                var icon = "";
+                if (x.Status == "正在执行") {
+                    obj.active = i;
+                    icon="el-icon-loading"
+                }
+                return {
+                    text: x.PartName,
+                    icon
+                }
+            })
+            return obj
+        },
         lo() {
             return {
                 jlo: this.Logging.filter(x => this.toDateString(x.sDate, "yyyy-MM-dd") == this.toDateString(new Date(), "yyyy-MM-dd")).length,
                 jg: this.Logging.filter(x => x.type == "机器故障" && this.toDateString(x.sDate, "yyyy-MM-dd") == this.toDateString(new Date(), "yyyy-MM-dd")).length
             }
-        },
-        timelineStatu() {
-            return this.timelineList.length > 0 ? true : false
         },
         goodsStatus() {
             return [{
@@ -1210,36 +1259,26 @@ export default {
         },
         count() {
             return this.gQuantity.q1 + this.gQuantity.q2 + this.gQuantity.q3
-        },
-        itemStatus() {
-            var boo = null;
-            var bo1 = [];
-            var bo2 = [];
-            var bo3 = [];
-            this.timelineList.forEach((index, x) => {
-                if (x.statu == "正在执行") {
-                    boo = x
-                } else if (x.statu == "错误") {
-                    bo1.push(x)
-                } else if (x.statu == "完成") {
-                    bo3.push(x)
-                } else {
-                    bo2.push(x)
-                }
-            })
-            return {
-                boo: boo,
-                bo1: bo1,
-                bo2: bo2,
-                bo3: bo3
-            }
-        },
-        MoniTime() {
-            return this.taskSetData.MonitoringTime * 1000
         }
 
     },
     watch: {
+        execList(val) {
+            if (val[0].ExecutionTime != null) {
+                this.timeAgo();
+                if (this.WcsComm.length > 0) {
+                    var len = this.WcsComm.length;
+                    var a = this.WcsComm.filter(x => x.Statu == "完成").length + 1
+                    this.pro = Number((a / len) * 100).toFixed(0)
+                }
+            } else {
+                clearInterval(this.myVar)
+                this.myVar = "";
+                this.pro = 0;
+                this.taskDate = "未开始"
+                this.taskDate1 = "未开始"
+            }
+        },
         counts: {
             handler: function (val) {
                 if (val[0].value == 0) {
@@ -1250,14 +1289,16 @@ export default {
                     v.remind[0].text = "当前库存过低，请及时补充"
                     v.remind[0].type = "warning"
                     v.remind[0].name = ""
+                } else {
+                    v.remind[0].text = "库存充足"
+                    v.remind[0].type = "success"
                 }
             },
             deep: true
         },
-        mqty: {
-            handler: function (val) {
+        mqty(val) {
                 var a = "";
-                val.find( (x)=> {
+                val.find((x) => {
                     if (x.qty == null || x.qty == 0) {
                         a += x.PartName + "库存已用完；"
                         if (v.remind[1].type != "error") {
@@ -1268,14 +1309,15 @@ export default {
                         if (v.remind[1].type != "warning" && v.remind[1].type != "error") {
                             v.remind[1].type = "warning"
                         }
+                    } else {
+                        v.remind[1].text = "物料充足"
+                        v.remind[1].type = "success"
                     }
                 })
                 if (a != "") {
                     v.remind[1].name = ""
+                    v.remind[1].text = a;
                 }
-                v.remind[1].text = "当前物料充足"
-            },
-            deep: true
         },
         datas: {
             handler: function (val) {

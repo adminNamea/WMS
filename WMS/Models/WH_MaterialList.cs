@@ -26,13 +26,13 @@ namespace WMS.Models
         public Nullable<int> IQC_RejectQTY { get; set; }
         public Nullable<int> IQC_ReceivedQTY { get; set; }
         public Nullable<double> OutQTY { get; set; }
-        public Nullable<double> StockQTY { get; set; }
+        public Nullable<int> StockQTY { get; set; }
         public string Units { get; set; }
         public Nullable<int> GoodsAllocationID { get; set; }
         public Nullable<int> FromID { get; set; }
         public string ToID { get; set; }
         public string Status { get; set; }
-        public string CreatedTime { get; set; }
+        public Nullable<System.DateTime> CreatedTime { get; set; }
         public string PlaceID { get; set; }
     }
 }

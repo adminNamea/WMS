@@ -11,6 +11,7 @@ namespace WMS
         public string IP { get; set; }
         public string Method { get; set; }
         public string Class { get; set; }
+        public List<Dictionary<string, string>> List { get; set; }
         public Dictionary<string,string> Data { get; set; }
         public object[] Obj() {
             List<object> list = new List<object>();
@@ -31,6 +32,9 @@ namespace WMS
             }
             if (Data != null) {
                 list.Add(Data);
+            }
+            if (List!=null) {
+                list.Add(List);
             }
             return list.ToArray();
         }

@@ -14,9 +14,9 @@ namespace WMS.Models
     public partial class CheckHw_Result
     {
         public int ID { get; set; }
-        public string Name { get; set; }
-        public Nullable<double> height { get; set; }
         public Nullable<int> mid { get; set; }
-        public Nullable<double> StockQTY { get; set; }
+        public string Name { get; set; }
+        public Nullable<int> height { get; set; }
+        public Nullable<int> StockQTY { get; set; }
     }
 }
